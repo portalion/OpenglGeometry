@@ -1,6 +1,7 @@
 #pragma once
 #include "utils/Initialization.h"
 #include <string>
+#include "utils/Window.h"
 
 class App {
 public:
@@ -10,7 +11,6 @@ public:
 	void Run();
 private:
 	bool running;
-	GLFWwindow* currentWindow;
+	Window window;
 
-	bool InitializeWindow(const int width, const int height, const std::string& title);
 };

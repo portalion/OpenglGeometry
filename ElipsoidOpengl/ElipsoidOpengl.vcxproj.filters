@@ -51,7 +51,7 @@
     <ClCompile Include="src\utils\GlCall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\WindowManager.cpp">
+    <ClCompile Include="src\utils\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,7 +95,7 @@
     <ClInclude Include="src\utils\GlCall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\WindowManager.h">
+    <ClInclude Include="src\utils\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

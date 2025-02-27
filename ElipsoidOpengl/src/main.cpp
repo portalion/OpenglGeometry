@@ -8,6 +8,10 @@
 
 int main(void)
 {
+    if (!glfwInit()) {
+        return -1;
+    }
+
     App app;
     app.Run();
 

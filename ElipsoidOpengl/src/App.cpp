@@ -1,12 +1,16 @@
 #include "App.h"
 #include <string>
+#include <stdexcept>
 
 App::App()
-    : currentWindow{nullptr}, running{true}
+    : window{640, 480, "Elipsoid"}, running{true}
 {
-    running &= InitializeWindow(640, 480, "temp");
-    running &= InitImgui(currentWindow);
     running &= InitGLEW();
+    running &= InitImgui(window.GetWindowPointer());
+    if (!running)
+    {
+        throw std::runtime_error("cannot initialize app");
+    }
 }
 
 App::~App()
@@ -19,54 +23,22 @@ App::~App()
 
 void App::Run()
 {
-    while (running && !glfwWindowShouldClose(currentWindow))
+    while (running && !window.ShouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+#ifdef DEBUG
         ImGui::ShowDemoWindow();
+#endif // DEBUG
 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5f, -0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
-        glEnd();
 
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        /* Swap front and back buffers */
-        glfwSwapBuffers(currentWindow);
 
-        /* Poll for and process events */
-        glfwPollEvents();
-        // Rendering
+        window.ProcessFrame();
     }
-}
-
-bool App::InitializeWindow(const int width, const int height, const std::string& title)
-{
-    if (!glfwInit())
-    {
-        return false;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    currentWindow = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-    if (!currentWindow)
-    {
-        glfwTerminate();
-        return false;
-    }
-
-    glViewport(0, 0, width, height);
-
-    glfwMakeContextCurrent(currentWindow);
-
-	return false;
 }
