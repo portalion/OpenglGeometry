@@ -1,5 +1,6 @@
 #include "Vector4.h"
 #include <stdexcept>
+#include "Matrix4.h"
 
 using namespace Algebra;
 
@@ -34,7 +35,7 @@ Vector4 Algebra::Vector4::Normalize() const
 	return *this / Length();
 }
 
-const float Vector4::operator[](std::size_t index) const
+float& Vector4::operator[](std::size_t index)
 {
 	switch (index) 
 	{
@@ -49,6 +50,11 @@ const float Vector4::operator[](std::size_t index) const
 	default:
 		throw std::runtime_error("invalid vector4 index");
 	}
+}
+
+const float& Algebra::Vector4::operator[](std::size_t index) const
+{
+	return (*this)[index];
 }
 
 const Vector4 Algebra::Vector4::operator+(const Vector4& add) const
@@ -66,6 +72,12 @@ const Vector4 Algebra::Vector4::operator-(const Vector4& remove) const
 const float Algebra::Vector4::operator*(const Vector4& rightVector) const
 {
 	return Scale(rightVector).Sum();
+}
+
+const Vector4 Algebra::Vector4::operator*(const Matrix4& matrix) const
+{
+	return Vector4((*this)*matrix.Column(0), (*this) * matrix.Column(1),
+		(*this) * matrix.Column(2), (*this) * matrix.Column(3));
 }
 
 Vector4 Algebra::operator*(const Vector4& vector, const float& scale)

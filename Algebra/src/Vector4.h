@@ -1,9 +1,10 @@
 #pragma once
 #include <cstddef>
-#include "Matrix4.h"
 
 namespace Algebra
 {
+	class Matrix4;
+
 	class Vector4
 	{
 	public:
@@ -20,7 +21,8 @@ namespace Algebra
 		const Vector4 Scale(const Vector4& scalingVector) const;
 		Vector4 Normalize() const;
 
-		const float operator[](std::size_t index) const;
+		float& operator[](std::size_t index);
+		const float& operator[](std::size_t index) const;
 		const Vector4 operator+(const Vector4& add) const;
 		const Vector4 operator-(const Vector4& remove) const;
 
