@@ -1,0 +1,89 @@
+#include "Vector4.h"
+#include <stdexcept>
+
+using namespace Algebra;
+
+Vector4::Vector4()
+	:x{ 0 }, y{ 0 }, z{ 0 }, w{ 0 }
+{
+}
+
+Vector4::Vector4(float x, float y, float z, float w)
+	:x{ x }, y{ y }, z{ z }, w{ w }
+{
+}
+
+float Algebra::Vector4::Length() const
+{
+	return sqrt(x * x + y * y + z * z + w * w);
+}
+
+float Algebra::Vector4::Sum() const
+{
+	return x + y + z + w;
+}
+
+const Vector4 Algebra::Vector4::Scale(const Vector4& scalingVector) const
+{
+	return Vector4(this->x * scalingVector.x, this->y * scalingVector.y,
+		this->z * scalingVector.z, this->w * scalingVector.w);
+}
+
+Vector4 Algebra::Vector4::Normalize() const
+{
+	return *this / Length();
+}
+
+const float Vector4::operator[](std::size_t index) const
+{
+	switch (index) 
+	{
+	case 0:
+		return x;
+	case 1:
+		return y;
+	case 2: 
+		return z;
+	case 3:
+		return w;
+	default:
+		throw std::runtime_error("invalid vector4 index");
+	}
+}
+
+const Vector4 Algebra::Vector4::operator+(const Vector4& add) const
+{
+	return Vector4(this->x + add.x, this->y + add.y,
+		this->z + add.z, this->w + add.w);
+}
+
+const Vector4 Algebra::Vector4::operator-(const Vector4& remove) const
+{
+	return Vector4(this->x - remove.x, this->y - remove.y,
+		this->z - remove.z, this->w - remove.w);
+}
+
+const float Algebra::Vector4::operator*(const Vector4& rightVector) const
+{
+	return Scale(rightVector).Sum();
+}
+
+Vector4 Algebra::operator*(const Vector4& vector, const float& scale)
+{
+	return Vector4(vector.x * scale, vector.y * scale,
+		vector.z * scale, vector.w * scale);
+}
+
+Vector4 Algebra::operator/(const Vector4& vector, const float& scale)
+{
+	if (scale == 0)
+	{
+		throw std::runtime_error("length of vector is 0");
+	}
+	return 1.f / scale * vector;
+}
+
+Vector4 Algebra::operator*(const float& scale, const Vector4& vector)
+{
+	return vector * scale;
+}

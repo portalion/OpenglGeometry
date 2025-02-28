@@ -19,7 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClInclude Include="src\Matrix4.h" />
+    <ClInclude Include="src\Vector4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Matrix4.cpp" />
+    <ClCompile Include="src\Vector4.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
