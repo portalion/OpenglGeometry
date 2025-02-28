@@ -1,13 +1,12 @@
 #include "Utils.h"
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include <numbers>
 
 float Algebra::DegreeToRadians(float degree)
 {
-    return static_cast<float>(M_PI * degree / 180.f);
+	return std::numbers::pi_v<float> * degree / 180.f;
 }
 
 float Algebra::RadiansToDegree(float radians)
 {
-    return static_cast<float>(180.f * radians / M_PI);
+	return std::numbers::inv_pi_v<float> * 180.f * radians;
 }
