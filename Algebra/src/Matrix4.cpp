@@ -130,8 +130,8 @@ Matrix4 Algebra::Matrix4::Rotation(float x, float y, float z)
 Matrix4 Algebra::Matrix4::RotationX(float angle)
 {
 	Matrix4 result = Matrix4::Identity();
-	float cosOfAngle = cos(angle);
-	float sinOfAngle = sin(angle);
+	float cosOfAngle = cosf(angle);
+	float sinOfAngle = sinf(angle);
 
 	result[1][1] = cosOfAngle;
 	result[1][2] = -sinOfAngle;
@@ -144,8 +144,8 @@ Matrix4 Algebra::Matrix4::RotationX(float angle)
 Matrix4 Algebra::Matrix4::RotationY(float angle)
 {
 	Matrix4 result = Matrix4::Identity();
-	float cosOfAngle = cos(angle);
-	float sinOfAngle = sin(angle);
+	float cosOfAngle = cosf(angle);
+	float sinOfAngle = sinf(angle);
 
 	result[0][0] = cosOfAngle;
 	result[0][2] = sinOfAngle;
@@ -158,8 +158,8 @@ Matrix4 Algebra::Matrix4::RotationY(float angle)
 Matrix4 Algebra::Matrix4::RotationZ(float angle)
 {
 	Matrix4 result = Matrix4::Identity();
-	float cosOfAngle = cos(angle);
-	float sinOfAngle = sin(angle);
+	float cosOfAngle = cosf(angle);
+	float sinOfAngle = sinf(angle);
 
 	result[0][0] = cosOfAngle;
 	result[0][1] = -sinOfAngle;

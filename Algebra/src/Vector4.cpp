@@ -16,7 +16,7 @@ Vector4::Vector4(float x, float y, float z, float w)
 
 float Algebra::Vector4::Length() const
 {
-	return sqrt(x * x + y * y + z * z + w * w);
+	return sqrtf(x * x + y * y + z * z + w * w);
 }
 
 float Algebra::Vector4::Sum() const
@@ -54,7 +54,19 @@ float& Vector4::operator[](std::size_t index)
 
 const float& Algebra::Vector4::operator[](std::size_t index) const
 {
-	return (*this)[index];
+	switch (index)
+	{
+	case 0:
+		return x;
+	case 1:
+		return y;
+	case 2:
+		return z;
+	case 3:
+		return w;
+	default:
+		throw std::runtime_error("invalid vector4 index");
+	}
 }
 
 const Vector4 Algebra::Vector4::operator+(const Vector4& add) const

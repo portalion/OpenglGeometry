@@ -4,10 +4,10 @@
 
 float Algebra::DegreeToRadians(float degree)
 {
-    return M_PI * degree / 180.f;
+    return static_cast<float>(M_PI * degree / 180.f);
 }
 
 float Algebra::RadiansToDegree(float radians)
 {
-    return 180.f * radians / M_PI;
+    return static_cast<float>(180.f * radians / M_PI);
 }
