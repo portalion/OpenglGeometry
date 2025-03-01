@@ -32,13 +32,27 @@ void App::Run()
         ImGui::NewFrame();
 #ifdef DEBUG
         ImGui::ShowDemoWindow();
-#endif // DEBUG
+#endif 
 
-
+        HandleInput();
+        Update();
+        Render();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         window.ProcessFrame();
     }
+}
+
+void App::HandleInput()
+{
+}
+
+void App::Update()
+{
+}
+
+void App::Render()
+{
 }

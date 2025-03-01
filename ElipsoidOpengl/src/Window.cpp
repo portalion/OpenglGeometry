@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "GlCall.h"
+#include "utils/GlCall.h"
 #include <stdexcept>
 
 Window::Window(int width, int height, std::string title)

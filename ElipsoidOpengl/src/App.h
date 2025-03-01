@@ -1,7 +1,7 @@
 #pragma once
 #include "utils/Initialization.h"
 #include <string>
-#include "utils/Window.h"
+#include "Window.h"
 
 class App {
 public:
@@ -9,6 +9,9 @@ public:
 	~App();
 
 	void Run();
+	void Render();
+	void HandleInput();
+	void Update();
 private:
 	bool running;
 	Window window;
