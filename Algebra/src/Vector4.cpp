@@ -35,6 +35,11 @@ Vector4 Algebra::Vector4::Normalize() const
 	return *this / Length();
 }
 
+std::vector<float> Algebra::Vector4::ToVector() const
+{
+	return std::vector<float>{x, y, z, w};
+}
+
 float& Vector4::operator[](std::size_t index)
 {
 	switch (index) 

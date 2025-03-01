@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <vector>
 
 namespace Algebra
 {
@@ -20,6 +21,7 @@ namespace Algebra
 		float Sum() const;
 		const Vector4 Scale(const Vector4& scalingVector) const;
 		Vector4 Normalize() const;
+		std::vector<float> ToVector() const;
 
 		float& operator[](std::size_t index);
 		const float& operator[](std::size_t index) const;
