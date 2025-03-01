@@ -8,7 +8,8 @@
 
 int main(void)
 {
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         return -1;
     }
 

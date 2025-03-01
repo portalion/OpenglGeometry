@@ -25,6 +25,11 @@ Window::Window(int width, int height, std::string title)
         Window* tempThis = static_cast<Window*>(glfwGetWindowUserPointer(window));
         tempThis->HandleResize(window, w, h);
         });
+
+    if (!InitGLEW())
+    {
+        throw std::runtime_error("Cannot inititate glew");
+    }
 }
 
 bool Window::ShouldClose()

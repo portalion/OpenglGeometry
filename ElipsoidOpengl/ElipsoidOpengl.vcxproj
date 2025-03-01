@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Raycaster.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -184,6 +185,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Raycaster.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />

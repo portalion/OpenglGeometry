@@ -2,6 +2,7 @@
 #include "utils/Initialization.h"
 #include <string>
 #include "Window.h"
+#include "Raycaster.h"
 
 class App {
 public:
@@ -16,4 +17,5 @@ private:
 	bool running;
 	Window window;
 
+	Raycaster raycaster;
 };

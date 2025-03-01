@@ -14,7 +14,7 @@ Shader::Shader(const std::string& filepath)
 
 Shader::~Shader()
 {
-    GLCall(glDeleteProgram(m_RendererID));
+    glDeleteProgram(m_RendererID);
 }
 
 ShaderProgramSource Shader::parseShader(const std::string& filepath)
