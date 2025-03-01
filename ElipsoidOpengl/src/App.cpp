@@ -26,7 +26,7 @@ void App::Run()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-#ifdef DEBUG
+#ifdef _DEBUG
         ImGui::ShowDemoWindow();
 #endif 
 
@@ -51,5 +51,5 @@ void App::Update()
 
 void App::Render()
 {
-    raycaster.RenderResult();
+    raycaster.RenderResult(&window);
 }

@@ -8,8 +8,8 @@ public:
 	Window(int width, int height, std::string title);
 
 	inline int GetWidth() { return width; }
-	inline int GetTitle() { return height; }
-	inline std::string GetHeight() { return title; }
+	inline int GetHeight() { return height; }
+	inline std::string GetTitle() { return title; }
 	inline GLFWwindow* GetWindowPointer(){ return handle; }
 
 	bool ShouldClose();

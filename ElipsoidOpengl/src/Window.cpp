@@ -48,4 +48,8 @@ void Window::HandleResize(GLFWwindow* window, int width, int height)
     this->width = width;
     this->height = height;
     GLCall(glViewport(0, 0, width, height));
+
+    glMatrixMode(GL_PROJECTION);
+    float aspect = (float)width / (float)height;
+    glOrtho(-aspect, aspect, -1, 1, -1, 1);
 }

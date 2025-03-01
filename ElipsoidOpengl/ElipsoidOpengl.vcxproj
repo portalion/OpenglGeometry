@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\RaycastableEllipsoid.cpp" />
     <ClCompile Include="src\Raycaster.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
@@ -185,6 +186,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\RaycastableEllipsoid.h" />
     <ClInclude Include="src\Raycaster.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\utils\GlCall.h" />
