@@ -6,12 +6,7 @@
 App::App()
     : window{640, 480, "Elipsoid"}, running{true}
 {
-    running &= InitGLEW();
-    running &= InitImgui(window.GetWindowPointer());
-    if (!running)
-    {
-        throw std::runtime_error("cannot initialize app");
-    }
+    InitImgui(window.GetWindowPointer());
 }
 
 App::~App()
@@ -24,8 +19,6 @@ App::~App()
 
 void App::Run()
 {
-    Shader temporaryShader("resources/temp.shader");
-    temporaryShader.bind();
     while (running && !window.ShouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -58,4 +51,5 @@ void App::Update()
 
 void App::Render()
 {
+    raycaster.RenderResult();
 }
