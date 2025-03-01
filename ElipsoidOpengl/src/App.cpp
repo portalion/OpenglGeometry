@@ -1,6 +1,7 @@
 #include "App.h"
 #include <string>
 #include <stdexcept>
+#include "Shader.h"
 
 App::App()
     : window{640, 480, "Elipsoid"}, running{true}
@@ -23,6 +24,8 @@ App::~App()
 
 void App::Run()
 {
+    Shader temporaryShader("resources/temp.shader");
+    temporaryShader.bind();
     while (running && !window.ShouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
