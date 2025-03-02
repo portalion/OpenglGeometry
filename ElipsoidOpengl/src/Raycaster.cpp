@@ -3,36 +3,49 @@
 #include "RaycastableEllipsoid.h"
 
 
-void Raycaster::RunRays(Window* window, int xSize, int ySize)
+void Raycaster::RunRays(Window* window, int thickness)
 {
 	RaycastableEllipsoid ellispoid;
 	textureData.clear();
 	const float width = static_cast<float>(window->GetWidth() / 100.f);
 	const float height = static_cast<float>(window->GetHeight() / 100.f);
-	const float xStep = width / xSize;
-	const float yStep = height / ySize;
-	for (float x = -width / 2.f; x < width / 2.f; x += xStep)
+	float thicknessf = static_cast<float>(thickness) / 100.f;
+	float thicknessStep = thicknessf / static_cast<float>(thickness);
+
+	for (float x = -width / 2.f; x < width / 2.f; x += thicknessf)
 	{
-		for (float y = -height / 2.f; y < height / 2.f; y += yStep)
+		for (float y = -height / 2.f; y < height / 2.f; y += thicknessf)
 		{
 			auto foundZ = ellispoid.FindZ(x, y);
 			if (foundZ.first)
 			{
-				Algebra::Vector4 v = (Algebra::Vector4{ 100.f, 100.f, 0.f, 0.f } -
-					Algebra::Vector4{ x, y, foundZ.second, 0.f }).Normalize();
+				float lightIntensity = GetLightIntensity(
+					Algebra::Vector4{ 10.f, 10.f, 10.f, 0.f },
+					Algebra::Vector4{ x, y, foundZ.second, 0.f },
+					ellispoid.FindGradient(x, y, foundZ.second).Normalize(),
+					6);
 
-				Algebra::Vector4 grad = ellispoid.FindGradient(x, y, foundZ.second).Normalize();
-
-				float scal = v * grad; // -1
-				scal = scal * scal * scal * scal * scal;
-
-				textureData.push_back(RaycasterVertexData{
-				   .position{x / width * 2.f, y / height * 2.f, 0, 1},
-				   .color{ scal, scal,  scal, 1.f},
-					});
+				for (float i = 0; i < thicknessf; i+= thicknessStep)
+				{
+					for (float j = 0; j < thicknessf; j+= thicknessStep)
+					{
+						textureData.push_back(RaycasterVertexData{
+						.position{(x + i) / width * 2.f, (y + j) / height * 2.f, 0, 1},
+						.color{ lightIntensity, lightIntensity,  lightIntensity, 1.f},
+							});
+					}
+				}
 			}
 		}
 	}
+}
+
+float Raycaster::GetLightIntensity(Algebra::Vector4 observatorPosition, Algebra::Vector4 point, Algebra::Vector4 gradient, int m)
+{
+	Algebra::Vector4 v = (observatorPosition - point).Normalize();
+
+	float intensity = std::max(v * gradient, 0.f);
+	return std::powf(intensity, m);
 }
 
 void Raycaster::SaveToBuffers()
@@ -60,7 +73,7 @@ Raycaster::Raycaster()
 
 void Raycaster::RenderResult(Window* window)
 {
-	this->RunRays(window, window->GetWidth(), window->GetHeight());
+	this->RunRays(window, 16);
 	this->SaveToBuffers();
 
 	usedShader.bind();

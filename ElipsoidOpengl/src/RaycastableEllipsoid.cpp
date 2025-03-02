@@ -19,11 +19,6 @@ std::pair<bool, float> RaycastableEllipsoid::FindZ(float x, float y)
 	{
 		return { false, 0.f };
 	}
-
-	if (abs(delta) < 1e-5)
-	{
-		float da = 10;
-	}
 	
 	float deltaSquared = sqrtf(delta);
 	float z1 = (-b + deltaSquared) / (2.f * a);

@@ -16,8 +16,8 @@ private:
 
 	std::vector<RaycasterVertexData> textureData;
 
-	void RunRays(Window* window, int xSize = 100, int ySize = 100);
-
+	void RunRays(Window* window, int thickness);
+	float GetLightIntensity(Algebra::Vector4 observatorPosition, Algebra::Vector4 point, Algebra::Vector4 gradient, int m);
 	void SaveToBuffers();
 public:
 	Raycaster();
