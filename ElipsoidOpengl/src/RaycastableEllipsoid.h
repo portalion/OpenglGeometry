@@ -4,12 +4,13 @@
 class RaycastableEllipsoid
 {
 private:
-	float a = 0.1f;
-	float b = 0.1f;
-	float c = 0.1f;
+	float a = 1.f;
+	float b = 1.f;
+	float c = 1.f;
 
 	Algebra::Matrix4 GetMatrix();
 public:
 	std::pair<bool, float> FindZ(float x, float y);
+	Algebra::Vector4 FindGradient(float x, float y, float z);
 };
 

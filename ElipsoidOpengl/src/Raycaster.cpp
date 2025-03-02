@@ -18,9 +18,17 @@ void Raycaster::RunRays(Window* window, int xSize, int ySize)
 			auto foundZ = ellispoid.FindZ(x, y);
 			if (foundZ.first)
 			{
+				Algebra::Vector4 v = (Algebra::Vector4{ 100.f, 100.f, 0.f, 0.f } -
+					Algebra::Vector4{ x, y, foundZ.second, 0.f }).Normalize();
+
+				Algebra::Vector4 grad = ellispoid.FindGradient(x, y, foundZ.second).Normalize();
+
+				float scal = v * grad; // -1
+				scal = scal * scal * scal * scal * scal;
+
 				textureData.push_back(RaycasterVertexData{
 				   .position{x / width * 2.f, y / height * 2.f, 0, 1},
-				   .color{0.5f, 0.5f, 0.5f, 1.f},
+				   .color{ scal, scal,  scal, 1.f},
 					});
 			}
 		}
