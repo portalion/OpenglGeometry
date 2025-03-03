@@ -2,6 +2,8 @@
 #include "Shader.h"
 #include "Vector4.h"
 #include "Window.h"
+#include "RaycastableEllipsoid.h"
+
 class Raycaster
 {
 private:
@@ -16,11 +18,21 @@ private:
 
 	std::vector<RaycasterVertexData> textureData;
 
-	void RunRays(Window* window, int thickness);
-	float GetLightIntensity(Algebra::Vector4 observatorPosition, Algebra::Vector4 point, Algebra::Vector4 gradient, int m);
+	RaycastableEllipsoid shape;
+
+	int intensityPower;
+	int rayThickness;
+	bool shouldRecalculate;
+
+	void RunRays(Window* window);
+	float GetLightIntensity(Algebra::Vector4 observatorPosition, 
+		Algebra::Vector4 point, Algebra::Vector4 gradient);
 	void SaveToBuffers();
 public:
 	Raycaster();
-	void RenderResult(Window* window);
+
+	void RayCast(Window* window);
+	void RenderMenu();
+	void RenderResult();
 };
 

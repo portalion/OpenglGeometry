@@ -1,4 +1,5 @@
 #include "RaycastableEllipsoid.h"
+#include <imgui/imgui.h>
 
 Algebra::Matrix4 RaycastableEllipsoid::GetMatrix()
 {
@@ -50,4 +51,16 @@ Algebra::Vector4 RaycastableEllipsoid::FindGradient(float x, float y, float z)
 
 
 	return Algebra::Vector4(xGradient, yGradient, zGradient, 0.f);
+}
+
+bool RaycastableEllipsoid::RenderMenu()
+{
+	bool somethingChanged = false;
+	if (ImGui::CollapsingHeader("Ellipsoid", ImGuiTreeNodeFlags_Leaf))
+	{
+		somethingChanged |= ImGui::InputFloat("a", &a, 0.1f);
+		somethingChanged |= ImGui::InputFloat("b", &b, 0.1f);
+		somethingChanged |= ImGui::InputFloat("c", &c, 0.1f);
+	}
+	return somethingChanged;
 }

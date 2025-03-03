@@ -12,5 +12,6 @@ private:
 public:
 	std::pair<bool, float> FindZ(float x, float y);
 	Algebra::Vector4 FindGradient(float x, float y, float z);
+	bool RenderMenu();
 };
 

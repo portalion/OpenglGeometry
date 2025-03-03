@@ -13,6 +13,7 @@ public:
 	void Render();
 	void HandleInput();
 	void Update();
+	void DisplayParameters();
 private:
 	bool running;
 	Window window;

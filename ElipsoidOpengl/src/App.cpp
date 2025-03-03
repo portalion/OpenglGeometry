@@ -4,7 +4,7 @@
 #include "Shader.h"
 
 App::App()
-    : window{640, 480, "Elipsoid"}, running{true}
+    : window{640 + 200, 480, "Elipsoid"}, running{true}
 {
     InitImgui(window.GetWindowPointer());
 }
@@ -32,6 +32,8 @@ void App::Run()
 
         HandleInput();
         Update();
+
+        DisplayParameters();
         Render();
 
         ImGui::Render();
@@ -47,9 +49,29 @@ void App::HandleInput()
 
 void App::Update()
 {
+    raycaster.RayCast(&window);
+}
+
+void App::DisplayParameters()
+{
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoResize;
+    window_flags |= ImGuiWindowFlags_NoCollapse;
+    window_flags |= ImGuiWindowFlags_NoDocking;
+
+    ImGui::SetNextWindowPos(ImVec2(window.GetWidth() - 200, 0.f));
+    ImGui::SetNextWindowSize(ImVec2(200, window.GetHeight()));
+
+    ImGui::Begin("Main Menu", nullptr, window_flags);
+
+    raycaster.RenderMenu();
+
+    ImGui::End();
 }
 
 void App::Render()
 {
-    raycaster.RenderResult(&window);
+    raycaster.RenderResult();
 }
