@@ -80,6 +80,11 @@ const Vector4 Algebra::Vector4::operator+(const Vector4& add) const
 		this->z + add.z, this->w + add.w);
 }
 
+const Vector4 Algebra::Vector4::operator-() const
+{
+	return -1*(*this);
+}
+
 const Vector4 Algebra::Vector4::operator-(const Vector4& remove) const
 {
 	return Vector4(this->x - remove.x, this->y - remove.y,

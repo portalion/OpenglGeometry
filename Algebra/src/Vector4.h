@@ -26,6 +26,7 @@ namespace Algebra
 		float& operator[](std::size_t index);
 		const float& operator[](std::size_t index) const;
 		const Vector4 operator+(const Vector4& add) const;
+		const Vector4 operator-() const;
 		const Vector4 operator-(const Vector4& remove) const;
 
 		const float operator*(const Vector4& rightVector) const;
