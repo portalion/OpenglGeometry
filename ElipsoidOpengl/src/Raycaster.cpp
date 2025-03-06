@@ -23,9 +23,9 @@ void Raycaster::RunRays(Window* window)
 					Algebra::Vector4{ x, y, foundZ.second, 0.f },
 					shape.FindGradient(x, y, foundZ.second).Normalize());
 
-				for (float i = 0; i < thicknessf; i+= thicknessStep)
+				for (float i = -thicknessf/2.f; i < thicknessf/2.f; i+= thicknessStep)
 				{
-					for (float j = 0; j < thicknessf; j+= thicknessStep)
+					for (float j = -thicknessf / 2.f; j < thicknessf /2.f; j+= thicknessStep)
 					{
 						textureData.push_back(RaycasterVertexData{
 						.position{(x + i) / width * 2.f, (y + j) / height * 2.f, 0, 1},
