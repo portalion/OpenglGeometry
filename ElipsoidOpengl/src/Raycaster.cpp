@@ -61,11 +61,12 @@ void Raycaster::SaveToBuffers()
 	GLCall(glBindVertexArray(0));
 }
 
-Raycaster::Raycaster()
-	:usedShader{ "resources/temp.shader" }, VBO{ 0 }, VAO{ 0 }
+Raycaster::Raycaster(RaycastableEllipsoid& shape)
+	:usedShader{ "resources/temp.shader" }, VBO{ 0 }, VAO{ 0 },
+	shape{shape}
 {
 	intensityPower = 5;
-	rayThickness = 1;
+	rayThickness = 5;
 	shouldRecalculate = true;
 
 	GLCall(glGenBuffers(1, &VBO));
@@ -74,10 +75,10 @@ Raycaster::Raycaster()
 
 void Raycaster::RayCast(Window* window)
 {
-	if (!shouldRecalculate)
+	/*if (!shouldRecalculate)
 	{
 		return;
-	}
+	}*/
 	this->RunRays(window);
 	this->SaveToBuffers();
 

@@ -2,6 +2,12 @@
 #include "utils/Initialization.h"
 #include <string>
 
+struct WindowUserPointerData
+{
+	class App* app;
+	class Window* window;
+};
+
 class Window
 {
 public:
@@ -14,12 +20,11 @@ public:
 
 	bool ShouldClose();
 	void ProcessFrame();
+	void HandleResize(int width, int height);
 private:
 	std::string title;
 	GLFWwindow* handle;
 	int width;
 	int height;
-
-	void HandleResize(GLFWwindow* window, int width, int height);
 };
 

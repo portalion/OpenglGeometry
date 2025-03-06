@@ -4,7 +4,8 @@
 #include "Shader.h"
 
 App::App()
-    : window{640 + 200, 480, "Elipsoid"}, running{true}
+    : window{640 + 200, 480, "Elipsoid"}, running{true},
+    raycaster(ellipsoid)
 {
     InitImgui(window.GetWindowPointer());
 }
@@ -45,6 +46,14 @@ void App::Run()
 
 void App::HandleInput()
 {
+    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+    {
+        ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+
+        ellipsoid.Translate(delta.x / 100.f, -delta.y / 100.f, 0.f);
+
+        ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+    }
 }
 
 void App::Update()

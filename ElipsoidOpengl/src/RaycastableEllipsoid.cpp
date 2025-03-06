@@ -3,7 +3,12 @@
 
 Algebra::Matrix4 RaycastableEllipsoid::GetMatrix()
 {
-	return Algebra::Matrix4(a, b, c, -1.f);
+	return ReverseTransformations.Transpose() * Algebra::Matrix4(a, b, c, -1.f) * ReverseTransformations;
+}
+
+RaycastableEllipsoid::RaycastableEllipsoid()
+{
+	ReverseTransformations = Algebra::Matrix4::Identity();
 }
 
 std::pair<bool, float> RaycastableEllipsoid::FindZ(float x, float y)
@@ -63,4 +68,9 @@ bool RaycastableEllipsoid::RenderMenu()
 		somethingChanged |= ImGui::InputFloat("c", &c, 0.1f);
 	}
 	return somethingChanged;
+}
+
+void RaycastableEllipsoid::Translate(float x, float y, float z)
+{
+	ReverseTransformations = ReverseTransformations * Algebra::Matrix4::Translation(-x, -y, -z);
 }

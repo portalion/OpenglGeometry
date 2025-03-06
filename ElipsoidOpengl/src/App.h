@@ -18,5 +18,6 @@ private:
 	bool running;
 	Window window;
 
+	RaycastableEllipsoid ellipsoid;
 	Raycaster raycaster;
 };

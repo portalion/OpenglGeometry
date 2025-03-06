@@ -18,7 +18,7 @@ private:
 
 	std::vector<RaycasterVertexData> textureData;
 
-	RaycastableEllipsoid shape;
+	RaycastableEllipsoid& shape;
 
 	int intensityPower;
 	int rayThickness;
@@ -29,7 +29,7 @@ private:
 		Algebra::Vector4 point, Algebra::Vector4 gradient);
 	void SaveToBuffers();
 public:
-	Raycaster();
+	Raycaster(RaycastableEllipsoid& shape);
 
 	void RayCast(Window* window);
 	void RenderMenu();

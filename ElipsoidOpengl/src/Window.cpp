@@ -19,11 +19,11 @@ Window::Window(int width, int height, std::string title)
     glfwMakeContextCurrent(handle);
 
 
-    HandleResize(handle, width, height);
+    HandleResize(width, height);
 
     glfwSetFramebufferSizeCallback(handle, [](GLFWwindow* window, int w, int h) {
         Window* tempThis = static_cast<Window*>(glfwGetWindowUserPointer(window));
-        tempThis->HandleResize(window, w, h);
+        tempThis->HandleResize(w, h);
         });
 
     if (!InitGLEW())
@@ -43,7 +43,7 @@ void Window::ProcessFrame()
     glfwPollEvents();
 }
 
-void Window::HandleResize(GLFWwindow* window, int width, int height)
+void Window::HandleResize(int width, int height)
 {
     this->width = width;
     this->height = height;
