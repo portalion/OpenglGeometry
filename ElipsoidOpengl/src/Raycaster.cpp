@@ -19,7 +19,7 @@ void Raycaster::RunRays(Window* window)
 			if (foundZ.first)
 			{
 				float lightIntensity = GetLightIntensity(
-					Algebra::Vector4{ 10.f, 10.f, 10.f, 0.f },
+					Algebra::Vector4{ 0.f, 0.f, 10.f, 0.f },
 					Algebra::Vector4{ x, y, foundZ.second, 0.f },
 					shape.FindGradient(x, y, foundZ.second).Normalize());
 

@@ -8,7 +8,10 @@ private:
 	float b = 1.f;
 	float c = 1.f;
 
-	Algebra::Matrix4 ReverseTransformations;
+	float scale = 1.f;
+
+	Algebra::Matrix4 ReverseTranslations;
+	Algebra::Matrix4 ReverseRotations;
 	Algebra::Matrix4 GetMatrix();
 public:
 	RaycastableEllipsoid();
@@ -17,5 +20,7 @@ public:
 	bool RenderMenu();
 	
 	void Translate(float x, float y, float z);
+	void Rotate(float angle);
+	void RotateDegrees(float angle);
 };
 

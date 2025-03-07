@@ -3,12 +3,19 @@
 
 Algebra::Matrix4 RaycastableEllipsoid::GetMatrix()
 {
-	return ReverseTransformations.Transpose() * Algebra::Matrix4(a, b, c, -1.f) * ReverseTransformations;
+	auto reverseScaleMatrix = Algebra::Matrix4::DiagonalScaling(1.f / scale, 1.f / scale, 1.f / scale);
+	auto ellispoidParameters = Algebra::Matrix4(a, b, c, -1.f);
+
+	auto transformationMatrix = reverseScaleMatrix * ReverseRotations * ReverseTranslations;
+
+	return transformationMatrix.Transpose() * ellispoidParameters *
+		transformationMatrix;
 }
 
 RaycastableEllipsoid::RaycastableEllipsoid()
 {
-	ReverseTransformations = Algebra::Matrix4::Identity();
+	ReverseTranslations = Algebra::Matrix4::Identity();
+	ReverseRotations = Algebra::Matrix4::Identity();
 }
 
 std::pair<bool, float> RaycastableEllipsoid::FindZ(float x, float y)
@@ -66,11 +73,22 @@ bool RaycastableEllipsoid::RenderMenu()
 		somethingChanged |= ImGui::InputFloat("a", &a, 0.1f);
 		somethingChanged |= ImGui::InputFloat("b", &b, 0.1f);
 		somethingChanged |= ImGui::InputFloat("c", &c, 0.1f);
+		somethingChanged |= ImGui::InputFloat("scale", &scale, 0.1f);
 	}
 	return somethingChanged;
 }
 
 void RaycastableEllipsoid::Translate(float x, float y, float z)
 {
-	ReverseTransformations = ReverseTransformations * Algebra::Matrix4::Translation(-x, -y, -z);
+	ReverseTranslations = ReverseTranslations * Algebra::Matrix4::Translation(-x, -y, -z);
+}
+
+void RaycastableEllipsoid::Rotate(float angle)
+{
+	ReverseRotations = ReverseRotations * Algebra::Matrix4::Rotation(-angle, 0, 0);
+}
+
+void RaycastableEllipsoid::RotateDegrees(float angle)
+{
+	ReverseRotations = ReverseRotations * Algebra::Matrix4::RotationDegree(-angle, 0, 0);
 }

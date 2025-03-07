@@ -46,6 +46,11 @@ void App::Run()
 
 void App::HandleInput()
 {
+    if (ImGui::IsAnyItemActive() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+    {
+        return;
+    }
+
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
     {
         ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
@@ -53,6 +58,11 @@ void App::HandleInput()
         ellipsoid.Translate(delta.x / 100.f, -delta.y / 100.f, 0.f);
 
         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+    }
+
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        ellipsoid.RotateDegrees(30);
     }
 }
 
