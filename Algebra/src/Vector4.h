@@ -21,6 +21,7 @@ namespace Algebra
 		float Sum() const;
 		const Vector4 Scale(const Vector4& scalingVector) const;
 		Vector4 Normalize() const;
+		Vector4 Cross(Vector4 anotherVector);
 		std::vector<float> ToVector() const;
 
 		float& operator[](std::size_t index);

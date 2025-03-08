@@ -35,6 +35,11 @@ Vector4 Algebra::Vector4::Normalize() const
 	return *this / Length();
 }
 
+Vector4 Algebra::Vector4::Cross(Vector4 b)
+{
+	return Vector4(y * b.z - z * b.y, x * b.z - z * b.x, x * b.y - y * b.x, 0.f);
+}
+
 std::vector<float> Algebra::Vector4::ToVector() const
 {
 	return std::vector<float>{x, y, z, w};

@@ -20,4 +20,7 @@ private:
 
 	RaycastableEllipsoid ellipsoid;
 	Raycaster raycaster;
+
+	Algebra::Vector4 GetMousePoint(float x, float y);
+	Algebra::Vector4 draggingPoint;
 };

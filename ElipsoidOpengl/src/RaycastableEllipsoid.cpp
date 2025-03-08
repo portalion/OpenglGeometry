@@ -92,3 +92,8 @@ void RaycastableEllipsoid::RotateDegrees(float angle)
 {
 	ReverseRotations = ReverseRotations * Algebra::Matrix4::RotationDegree(-angle, 0, 0);
 }
+
+void RaycastableEllipsoid::SetupRotation(Algebra::Matrix4 rot)
+{
+	ReverseRotations = rot;
+}
