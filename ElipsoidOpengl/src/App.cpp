@@ -9,6 +9,7 @@ App::App()
     raycaster(ellipsoid)
 {
     InitImgui(window.GetWindowPointer());
+    ellipsoid.Translate(-100.f / 100.f, 0.f, 0.f);
 }
 
 App::~App()

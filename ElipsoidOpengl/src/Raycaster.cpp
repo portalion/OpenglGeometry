@@ -23,7 +23,7 @@ void Raycaster::RunRays(Window* window)
 					Algebra::Vector4{ x, y, foundZ.second, 0.f },
 					shape.FindGradient(x, y, foundZ.second).Normalize());
 
-				for (float i = -thicknessf/2.f; i < thicknessf/2.f; i+= thicknessStep)
+				for (float i = -thicknessf / 2.f; i < thicknessf / 2.f; i+= thicknessStep)
 				{
 					for (float j = -thicknessf / 2.f; j < thicknessf /2.f; j+= thicknessStep)
 					{
