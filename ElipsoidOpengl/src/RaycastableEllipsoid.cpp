@@ -4,7 +4,7 @@
 Algebra::Matrix4 RaycastableEllipsoid::GetMatrix()
 {
 	auto reverseScaleMatrix = Algebra::Matrix4::DiagonalScaling(1.f / scale, 1.f / scale, 1.f / scale);
-	auto ellispoidParameters = Algebra::Matrix4(a, b, c, -1.f);
+	auto ellispoidParameters = Algebra::Matrix4(1/a/a, 1/b/b, 1/c/c, -1.f);
 
 	auto transformationMatrix = reverseScaleMatrix * ReverseRotations * ReverseTranslations;
 
