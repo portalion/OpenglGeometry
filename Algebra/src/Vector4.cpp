@@ -107,6 +107,11 @@ const Vector4 Algebra::Vector4::operator*(const Matrix4& matrix) const
 		(*this) * matrix.Column(2), (*this) * matrix.Column(3));
 }
 
+const bool Algebra::Vector4::operator==(const Vector4& v2) const
+{
+	return x == v2.x && y == v2.y && z == v2.z && w == v2.w;
+}
+
 Vector4 Algebra::operator*(const Vector4& vector, const float& scale)
 {
 	return Vector4(vector.x * scale, vector.y * scale,

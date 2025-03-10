@@ -72,6 +72,10 @@ void App::HandleInput()
     {
         auto mousePos = ImGui::GetMousePos();
         Algebra::Vector4 q = GetMousePoint(mousePos.x, mousePos.y).Normalize();
+        if (q == draggingPoint)
+        {
+            return;
+        }
         float theta = acosf(draggingPoint * q);
         auto w = q.Cross(draggingPoint).Normalize();
         auto tempMat = Algebra::Matrix4(0, 0, 0, 0);
@@ -81,9 +85,9 @@ void App::HandleInput()
         tempMat[2][0] = w.y;
         tempMat[2][1] = w.x;
         tempMat[1][2] = -w.x;
-        auto quat = Algebra::Matrix4::Identity() + sinf(theta) * tempMat + ((1.f - cosf(theta)) * tempMat * tempMat);
-
-        ellipsoid.SetupRotation(quat);
+        auto rotation = Algebra::Matrix4::Identity() + sinf(theta) * tempMat + ((1.f - cosf(theta)) * tempMat * tempMat);
+        draggingPoint = q;
+        ellipsoid.AddRotation(rotation);
     }
 }
 

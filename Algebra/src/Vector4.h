@@ -32,6 +32,7 @@ namespace Algebra
 
 		const float operator*(const Vector4& rightVector) const;
 		const Vector4 operator*(const Matrix4& matrix) const;
+		const bool operator==(const Vector4& v2) const;
 
 		friend Vector4 operator*(const Vector4& vector, const float& scale);
 		friend Vector4 operator*(const float& scale, const Vector4& vector);

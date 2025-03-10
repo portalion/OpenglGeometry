@@ -83,17 +83,7 @@ void RaycastableEllipsoid::Translate(float x, float y, float z)
 	ReverseTranslations = ReverseTranslations * Algebra::Matrix4::Translation(-x, -y, -z);
 }
 
-void RaycastableEllipsoid::Rotate(float angle)
+void RaycastableEllipsoid::AddRotation(Algebra::Matrix4 rot)
 {
-	ReverseRotations = ReverseRotations * Algebra::Matrix4::Rotation(-angle, 0, 0);
-}
-
-void RaycastableEllipsoid::RotateDegrees(float angle)
-{
-	ReverseRotations = ReverseRotations * Algebra::Matrix4::RotationDegree(-angle, 0, 0);
-}
-
-void RaycastableEllipsoid::SetupRotation(Algebra::Matrix4 rot)
-{
-	ReverseRotations = rot;
+	ReverseRotations = ReverseRotations * rot;
 }

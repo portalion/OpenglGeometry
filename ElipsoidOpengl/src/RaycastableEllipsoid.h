@@ -20,8 +20,6 @@ public:
 	bool RenderMenu();
 	
 	void Translate(float x, float y, float z);
-	void Rotate(float angle);
-	void RotateDegrees(float angle);
-	void SetupRotation(Algebra::Matrix4 rot);
+	void AddRotation(Algebra::Matrix4 rot);
 };
 
