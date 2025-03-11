@@ -74,6 +74,14 @@ bool RaycastableEllipsoid::RenderMenu()
 		somethingChanged |= ImGui::InputFloat("b", &b, 0.1f);
 		somethingChanged |= ImGui::InputFloat("c", &c, 0.1f);
 		somethingChanged |= ImGui::InputFloat("scale", &scale, 0.1f);
+		if (scale <= 0.f) scale = 0.1f;
+		if (scale >= 10.f) scale = 10.f;
+		if (a <= 0.f) a = 0.1f;
+		if (a >= 10.f) a = 10.f;
+		if (b <= 0.f) b = 0.1f;
+		if (b >= 10.f) b = 10.f;
+		if (c <= 0.f) c = 0.1f;
+		if (c >= 10.f) c = 10.f;
 	}
 	return somethingChanged;
 }

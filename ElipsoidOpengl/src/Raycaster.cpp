@@ -92,6 +92,10 @@ void Raycaster::RenderMenu()
 	{
 		shouldRecalculate |= ImGui::InputInt("m", &intensityPower, 1, 10);
 		shouldRecalculate |= ImGui::SliderInt("accuracy", &rayThickness, 1, 32);
+		if (intensityPower <= 1) intensityPower = 1;
+		if (intensityPower >= 100) intensityPower = 100;
+		if (rayThickness <= 1) rayThickness = 1;
+		if (rayThickness >= 32) rayThickness = 32;
 	}
 }
 
