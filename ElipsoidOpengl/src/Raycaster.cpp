@@ -5,11 +5,15 @@
 
 void Raycaster::RunRays(Window* window)
 {
+	if (actualRayThickness <= 0)
+	{
+		return;
+	}
 	textureData.clear();
 	const float width = static_cast<float>(window->GetWidth() / 100.f);
 	const float height = static_cast<float>(window->GetHeight() / 100.f);
-	float thicknessf = static_cast<float>(rayThickness) / 100.f;
-	float thicknessStep = thicknessf / static_cast<float>(rayThickness);
+	float thicknessf = static_cast<float>(actualRayThickness) / 100.f;
+	float thicknessStep = thicknessf / static_cast<float>(actualRayThickness);
 
 	for (float x = -width / 2.f; x < width / 2.f; x += thicknessf)
 	{
@@ -36,6 +40,7 @@ void Raycaster::RunRays(Window* window)
 			}
 		}
 	}
+	actualRayThickness /= 2;
 }
 
 float Raycaster::GetLightIntensity(Algebra::Vector4 observatorPosition, Algebra::Vector4 point, Algebra::Vector4 gradient)
@@ -67,7 +72,7 @@ Raycaster::Raycaster(RaycastableEllipsoid& shape)
 {
 	intensityPower = 5;
 	rayThickness = 5;
-	shouldRecalculate = true;
+	actualRayThickness = 1;
 
 	GLCall(glGenBuffers(1, &VBO));
 	GLCall(glGenVertexArrays(1, &VAO));
@@ -75,27 +80,25 @@ Raycaster::Raycaster(RaycastableEllipsoid& shape)
 
 void Raycaster::RayCast(Window* window)
 {
-	/*if (!shouldRecalculate)
-	{
-		return;
-	}*/
 	this->RunRays(window);
 	this->SaveToBuffers();
-
-	shouldRecalculate = false;
 }
 
 void Raycaster::RenderMenu()
 {
-	shouldRecalculate |= shape.RenderMenu();
+	bool shouldRecalculate = shape.RenderMenu();
 	if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_Leaf))
 	{
 		shouldRecalculate |= ImGui::InputInt("m", &intensityPower, 1, 10);
-		shouldRecalculate |= ImGui::SliderInt("accuracy", &rayThickness, 1, 32);
+		ImGui::SliderInt("accuracy", &rayThickness, 1, 32);
 		if (intensityPower <= 1) intensityPower = 1;
 		if (intensityPower >= 100) intensityPower = 100;
 		if (rayThickness <= 1) rayThickness = 1;
 		if (rayThickness >= 32) rayThickness = 32;
+	}
+	if (shouldRecalculate)
+	{
+		actualRayThickness = 1;
 	}
 }
 
@@ -106,4 +109,9 @@ void Raycaster::RenderResult()
 	GLCall(glDrawArrays(GL_POINTS, 0, textureData.size()));
 	GLCall(glBindVertexArray(0));
 	usedShader.unBind();
+}
+
+void Raycaster::ForceRerender(bool accurate)
+{
+	actualRayThickness = accurate ? 1 : rayThickness;
 }

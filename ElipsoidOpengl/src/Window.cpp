@@ -15,16 +15,14 @@ Window::Window(int width, int height, std::string title)
         throw std::runtime_error("Cannot create window");
     }
 
-    glfwSetWindowUserPointer(handle, static_cast<void*>(this));
+    data.window = this;
+
+    glfwSetWindowUserPointer(handle, static_cast<void*>(&data));
     glfwMakeContextCurrent(handle);
 
 
     HandleResize(width, height);
 
-    glfwSetFramebufferSizeCallback(handle, [](GLFWwindow* window, int w, int h) {
-        Window* tempThis = static_cast<Window*>(glfwGetWindowUserPointer(window));
-        tempThis->HandleResize(w, h);
-        });
 
     if (!InitGLEW())
     {

@@ -22,7 +22,7 @@ private:
 
 	int intensityPower;
 	int rayThickness;
-	bool shouldRecalculate;
+	int actualRayThickness;
 
 	void RunRays(Window* window);
 	float GetLightIntensity(Algebra::Vector4 observatorPosition, 
@@ -34,5 +34,6 @@ public:
 	void RayCast(Window* window);
 	void RenderMenu();
 	void RenderResult();
+	void ForceRerender(bool accurate = false);
 };
 

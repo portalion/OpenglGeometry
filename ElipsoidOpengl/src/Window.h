@@ -21,6 +21,7 @@ public:
 	bool ShouldClose();
 	void ProcessFrame();
 	void HandleResize(int width, int height);
+	WindowUserPointerData data;
 private:
 	std::string title;
 	GLFWwindow* handle;

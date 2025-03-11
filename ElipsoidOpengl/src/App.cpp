@@ -10,6 +10,13 @@ App::App()
 {
     InitImgui(window.GetWindowPointer());
     ellipsoid.Translate(-100.f / 100.f, 0.f, 0.f);
+    window.data.app = this;
+
+    glfwSetFramebufferSizeCallback(window.GetWindowPointer(), [](GLFWwindow* window, int w, int h) {
+        WindowUserPointerData* windowData = static_cast<WindowUserPointerData*>(glfwGetWindowUserPointer(window));
+        windowData->window->HandleResize(w, h);
+        windowData->app->raycaster.ForceRerender(true);
+        });
 }
 
 App::~App()
@@ -67,6 +74,7 @@ void App::HandleInput()
         ellipsoid.Translate(delta.x / 100.f, -delta.y / 100.f, 0.f);
 
         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+        raycaster.ForceRerender();
     }
 
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
@@ -89,6 +97,7 @@ void App::HandleInput()
         auto rotation = Algebra::Matrix4::Identity() + sinf(theta) * tempMat + ((1.f - cosf(theta)) * tempMat * tempMat);
         draggingPoint = q;
         ellipsoid.AddRotation(rotation);
+        raycaster.ForceRerender();
     }
 }
 
