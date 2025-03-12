@@ -127,6 +127,12 @@ Vector4 Algebra::operator/(const Vector4& vector, const float& scale)
 	return 1.f / scale * vector;
 }
 
+std::ostream& Algebra::operator<<(std::ostream& os, const Vector4& vector)
+{
+	os << '[' << vector.x << ' ' << vector.y << vector.z << vector.w << ']';
+	return os;
+}
+
 Vector4 Algebra::operator*(const float& scale, const Vector4& vector)
 {
 	return vector * scale;

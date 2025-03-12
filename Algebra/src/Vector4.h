@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <vector>
+#include <ostream>
 
 namespace Algebra
 {
@@ -37,6 +38,8 @@ namespace Algebra
 		friend Vector4 operator*(const Vector4& vector, const float& scale);
 		friend Vector4 operator*(const float& scale, const Vector4& vector);
 		friend Vector4 operator/(const Vector4& vector, const float& scale);
+
+		friend std::ostream& operator<<(std::ostream& os, const Vector4& vector);
 	};
 }
 
