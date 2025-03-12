@@ -57,10 +57,10 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Raycaster.cpp">
+    <ClCompile Include="src\deprecated_ellipsoid\Raycaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RaycastableEllipsoid.cpp">
+    <ClCompile Include="src\deprecated_ellipsoid\RaycastableEllipsoid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,10 +110,10 @@
     <ClInclude Include="src\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Raycaster.h">
+    <ClInclude Include="src\deprecated_ellipsoid\Raycaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\RaycastableEllipsoid.h">
+    <ClInclude Include="src\deprecated_ellipsoid\RaycastableEllipsoid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

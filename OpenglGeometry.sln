@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Algebra", "Algebra\Algebra.vcxproj", "{243CE632-0C8F-4EE6-94BD-9D8902728EEF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ElipsoidOpengl", "ElipsoidOpengl\ElipsoidOpengl.vcxproj", "{2E2EBC52-F67E-4D10-9EC5-34BA9924E37C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenglGeometry", "OpenglGeometry\OpenglGeometry.vcxproj", "{2E2EBC52-F67E-4D10-9EC5-34BA9924E37C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,7 +2,7 @@
 #include "utils/Initialization.h"
 #include <string>
 #include "Window.h"
-#include "Raycaster.h"
+#include "deprecated_ellipsoid/Raycaster.h"
 
 class App {
 public:
