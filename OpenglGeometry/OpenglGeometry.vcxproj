@@ -164,7 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -186,7 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Globals.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\engine\Shader.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />
@@ -203,6 +203,7 @@
     <ClInclude Include="src\core\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\temp.shader" />
     <None Include="vendor\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>

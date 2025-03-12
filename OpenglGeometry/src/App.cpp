@@ -1,7 +1,7 @@
 #include "App.h"
 #include <string>
 #include <stdexcept>
-#include "Shader.h"
+#include "engine/Shader.h"
 #include <iostream>
 #include "core/Globals.h"
 
@@ -106,8 +106,8 @@ void App::DisplayParameters()
     window_flags |= ImGuiWindowFlags_NoCollapse;
     window_flags |= ImGuiWindowFlags_NoDocking;
 
-    ImGui::SetNextWindowPos(ImVec2(window.GetWidth() - Globals::rightInterfaceWidth, 0.f));
-    ImGui::SetNextWindowSize(ImVec2(Globals::rightInterfaceWidth, window.GetHeight()));
+    ImGui::SetNextWindowPos(ImVec2(static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth), 0.f));
+    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(Globals::rightInterfaceWidth), static_cast<float>(window.GetHeight())));
 
     ImGui::Begin("Main Menu", nullptr, window_flags);
 
@@ -116,8 +116,8 @@ void App::DisplayParameters()
 
 Algebra::Vector4 App::GetMousePoint(float x, float y)
 {
-    float screenWidth = window.GetWidth();
-    float screenHeight = window.GetHeight();
+    float screenWidth = static_cast<float>(window.GetWidth());
+    float screenHeight = static_cast<float>(window.GetHeight());
     float scale = fminf(screenHeight, screenWidth) - 1.f;
 
     x = (2.f * x - screenWidth + 1.f) / scale;
