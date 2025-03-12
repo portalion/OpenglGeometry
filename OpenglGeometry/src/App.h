@@ -1,7 +1,7 @@
 #pragma once
 #include "utils/Initialization.h"
 #include <string>
-#include "Window.h"
+#include "core/Window.h"
 #include "Algebra.h"
 
 class App {

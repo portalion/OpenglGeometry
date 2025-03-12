@@ -164,8 +164,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\deprecated_ellipsoid\RaycastableEllipsoid.cpp" />
-    <ClCompile Include="src\deprecated_ellipsoid\Raycaster.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -179,7 +177,7 @@
     <ClCompile Include="vendor\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Algebra\Algebra.vcxproj">
@@ -188,8 +186,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Globals.h" />
-    <ClInclude Include="src\deprecated_ellipsoid\RaycastableEllipsoid.h" />
-    <ClInclude Include="src\deprecated_ellipsoid\Raycaster.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
@@ -204,7 +200,7 @@
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\core\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="vendor\imgui\imgui.natstepfilter" />
