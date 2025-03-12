@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Algebra.h" />
     <ClInclude Include="src\Matrix4.h" />
     <ClInclude Include="src\Vector4.h" />
     <ClInclude Include="src\Utils.h" />
