@@ -44,5 +44,6 @@ namespace Algebra
 		static Matrix4 RotationYDegree(float angle);
 		static Matrix4 RotationZDegree(float angle);
 		static Matrix4 DiagonalScaling(float x, float y, float z, float w = 1);
+		static Matrix4 Projection(float aspect, float lastZ, float firstZ, float fov);
 	};
 }

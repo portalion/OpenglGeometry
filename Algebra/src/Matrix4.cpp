@@ -193,3 +193,14 @@ Matrix4 Algebra::Matrix4::DiagonalScaling(float x, float y, float z, float w)
 {
 	return Matrix4(x, y, z, w);
 }
+
+Matrix4 Algebra::Matrix4::Projection(float aspect, float lastZ, float firstZ, float fov)
+{
+	float ctgFov = cosf(fov / 2.f) / sinf(fov / 2.f);
+	auto result = Matrix4(ctgFov / aspect, ctgFov, (lastZ + firstZ) / (lastZ - firstZ), 0.f);
+
+	result[3][2] = 1.f;
+	result[2][3] = (- 2.f * firstZ * lastZ) / (lastZ - firstZ);
+
+	return result;
+}
