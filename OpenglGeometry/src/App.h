@@ -2,7 +2,7 @@
 #include "utils/Initialization.h"
 #include <string>
 #include "Window.h"
-#include "deprecated_ellipsoid/Raycaster.h"
+#include "Algebra.h"
 
 class App {
 public:
@@ -12,14 +12,12 @@ public:
 	void Run();
 	void Render();
 	void HandleInput();
+	void HandleResize();
 	void Update();
 	void DisplayParameters();
 private:
 	bool running;
 	Window window;
-
-	RaycastableEllipsoid ellipsoid;
-	Raycaster raycaster;
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;

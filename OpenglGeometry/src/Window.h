@@ -21,10 +21,11 @@ public:
 	bool ShouldClose();
 	void ProcessFrame();
 	void HandleResize(int width, int height);
-	WindowUserPointerData data;
+	void SetAppPointerData(App* app);
 private:
 	std::string title;
 	GLFWwindow* handle;
+	WindowUserPointerData data;
 	int width;
 	int height;
 };

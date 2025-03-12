@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "utils/GlCall.h"
 #include <stdexcept>
+#include "App.h"
 
 Window::Window(int width, int height, std::string title)
 	:width{ width }, height{ height }, title{title}
@@ -20,9 +21,13 @@ Window::Window(int width, int height, std::string title)
     glfwSetWindowUserPointer(handle, static_cast<void*>(&data));
     glfwMakeContextCurrent(handle);
 
-
     HandleResize(width, height);
 
+    glfwSetFramebufferSizeCallback(handle, [](GLFWwindow* window, int w, int h) {
+        WindowUserPointerData* windowData = static_cast<WindowUserPointerData*>(glfwGetWindowUserPointer(window));
+        windowData->window->HandleResize(w, h);
+        windowData->app->HandleResize();
+        });
 
     if (!InitGLEW())
     {
@@ -46,4 +51,9 @@ void Window::HandleResize(int width, int height)
     this->width = width;
     this->height = height;
     GLCall(glViewport(0, 0, width, height));
+}
+
+void Window::SetAppPointerData(App* app)
+{
+    data.app = app;
 }

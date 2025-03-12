@@ -3,20 +3,13 @@
 #include <stdexcept>
 #include "Shader.h"
 #include <iostream>
+#include "core/Globals.h"
 
 App::App()
-    : window{640 + 200, 480, "Elipsoid"}, running{true},
-    raycaster(ellipsoid)
+    : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, running{true}
 {
     InitImgui(window.GetWindowPointer());
-    ellipsoid.Translate(-100.f / 100.f, 0.f, 0.f);
-    window.data.app = this;
-
-    glfwSetFramebufferSizeCallback(window.GetWindowPointer(), [](GLFWwindow* window, int w, int h) {
-        WindowUserPointerData* windowData = static_cast<WindowUserPointerData*>(glfwGetWindowUserPointer(window));
-        windowData->window->HandleResize(w, h);
-        windowData->app->raycaster.ForceRerender(true);
-        });
+    window.SetAppPointerData(this);
 }
 
 App::~App()
@@ -71,10 +64,7 @@ void App::HandleInput()
     {
         ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
 
-        ellipsoid.Translate(delta.x / 100.f, -delta.y / 100.f, 0.f);
-
         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
-        raycaster.ForceRerender();
     }
 
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
@@ -96,14 +86,15 @@ void App::HandleInput()
         tempMat[1][2] = -w.x;
         auto rotation = Algebra::Matrix4::Identity() + sinf(theta) * tempMat + ((1.f - cosf(theta)) * tempMat * tempMat);
         draggingPoint = q;
-        ellipsoid.AddRotation(rotation);
-        raycaster.ForceRerender();
     }
+}
+
+void App::HandleResize()
+{
 }
 
 void App::Update()
 {
-    raycaster.RayCast(&window);
 }
 
 void App::DisplayParameters()
@@ -115,12 +106,10 @@ void App::DisplayParameters()
     window_flags |= ImGuiWindowFlags_NoCollapse;
     window_flags |= ImGuiWindowFlags_NoDocking;
 
-    ImGui::SetNextWindowPos(ImVec2(window.GetWidth() - 200, 0.f));
-    ImGui::SetNextWindowSize(ImVec2(200, window.GetHeight()));
+    ImGui::SetNextWindowPos(ImVec2(window.GetWidth() - Globals::rightInterfaceWidth, 0.f));
+    ImGui::SetNextWindowSize(ImVec2(Globals::rightInterfaceWidth, window.GetHeight()));
 
     ImGui::Begin("Main Menu", nullptr, window_flags);
-
-    raycaster.RenderMenu();
 
     ImGui::End();
 }
@@ -150,5 +139,4 @@ Algebra::Vector4 App::GetMousePoint(float x, float y)
 
 void App::Render()
 {
-    raycaster.RenderResult();
 }
