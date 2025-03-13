@@ -9,7 +9,7 @@ struct ShaderProgramSource
 	std::string VertexSource;
 	std::string FragmentSource;
 };
-//TODO: Change it into custom one
+
 class Shader
 {
 private:
