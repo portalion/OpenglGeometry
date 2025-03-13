@@ -6,8 +6,8 @@
 struct Globals
 {
 	//Scene / window / interface sizes
-	static const int startingSceneWidth = 640;
-	static const int startingSceneHeight = 480;
+	static const int startingSceneWidth = 1280;
+	static const int startingSceneHeight = 960;
 	static const int rightInterfaceWidth = 200;
 
 

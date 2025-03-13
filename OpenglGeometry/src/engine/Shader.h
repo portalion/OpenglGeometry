@@ -21,11 +21,12 @@ public:
 	Shader(const std::string& filepath);
 	~Shader();
 
-	void bind() const;
-	void unBind() const;
+	void Bind() const;
+	void UnBind() const;
 private:
-	ShaderProgramSource parseShader(const std::string& filepath);
-	unsigned int compileShader(unsigned int type, const std::string& source);
-	unsigned int createShader(const std::string& vertexShader, const std::string& fragmentShader);
-	int getUniformLocation(const std::string& name);
+	std::stringstream ParseShader(const std::string& filepath);
+	ShaderProgramSource GetShaderFromFiles(const std::string& filepath);
+	unsigned int CompileShader(unsigned int type, const std::string& source);
+	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
+	int GetUniformLocation(const std::string& name);
 };

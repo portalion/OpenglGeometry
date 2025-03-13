@@ -203,7 +203,8 @@
     <ClInclude Include="src\core\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\temp.shader" />
+    <None Include="resources\basic.frag" />
+    <None Include="resources\basic.vert" />
     <None Include="vendor\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>
