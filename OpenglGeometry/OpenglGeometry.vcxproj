@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\engine\VertexLayout.cpp" />
     <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -178,6 +179,8 @@
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
+    <ClCompile Include="src\engine\VertexBuffer.cpp" />
+    <ClCompile Include="src\engine\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Algebra\Algebra.vcxproj">
@@ -185,6 +188,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\engine\Shader.h" />
     <ClInclude Include="src\utils\GlCall.h" />
@@ -201,6 +205,8 @@
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\core\Window.h" />
+    <ClInclude Include="src\engine\VertexBuffer.h" />
+    <ClInclude Include="src\engine\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\basic.frag" />
