@@ -16,7 +16,7 @@ namespace Algebra
 		float w;
 
 		Vector4();
-		Vector4(float x, float y, float z, float w);
+		Vector4(float x, float y, float z, float w = 0.f);
 
 		float Length() const;
 		float Sum() const;
