@@ -5,6 +5,11 @@ VertexBuffer::VertexBuffer()
 	GLCall(glGenBuffers(1, &id));
 }
 
+VertexBuffer::~VertexBuffer()
+{
+	glDeleteBuffers(1, &id);
+}
+
 void VertexBuffer::Bind() const
 {
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, id));

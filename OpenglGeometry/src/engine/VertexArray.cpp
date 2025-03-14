@@ -33,8 +33,8 @@ void EnableAttribArrays(VertexDataType dataType)
 }
 
 
-VertexArray::VertexArray(VertexBuffer vbo, VertexDataType dataType)
-	: id{ 0 }, vbo{ vbo }
+VertexArray::VertexArray(const VertexBuffer& vbo, VertexDataType dataType)
+	: id{ 0 }
 {
 	GLCall(glGenVertexArrays(1, &id));
 	Bind();
@@ -42,6 +42,24 @@ VertexArray::VertexArray(VertexBuffer vbo, VertexDataType dataType)
 	EnableAttribArrays(dataType);
 	UnBind();
 	vbo.UnBind();
+}
+
+VertexArray::VertexArray(const VertexBuffer& vbo, VertexDataType dataType, const IndexBuffer& ibo)
+	: id{ 0 }
+{
+	GLCall(glGenVertexArrays(1, &id));
+	Bind();
+	vbo.Bind();
+	ibo.Bind();
+	EnableAttribArrays(dataType);
+	UnBind();
+	vbo.UnBind();
+	ibo.UnBind();
+}
+
+VertexArray::~VertexArray()
+{
+	glDeleteVertexArrays(1, &id);
 }
 
 void VertexArray::Bind() const

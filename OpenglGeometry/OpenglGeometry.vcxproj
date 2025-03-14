@@ -176,6 +176,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\engine\IndexBuffer.cpp" />
     <ClCompile Include="src\engine\VertexLayout.cpp" />
     <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
@@ -200,6 +201,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\IndexBuffer.h" />
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\engine\Shader.h" />

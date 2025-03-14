@@ -7,6 +7,8 @@ class VertexBuffer
 {
 public:
 	VertexBuffer();
+	~VertexBuffer();
+
 	template<class T> VertexBuffer(std::vector<T> vertices);
 	void Bind() const;
 	void UnBind() const;
