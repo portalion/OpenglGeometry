@@ -1,8 +1,8 @@
 #pragma once
-#pragma once
 
 #include <string>
 #include <unordered_map>
+#include "Algebra.h"
 
 struct ShaderProgramSource
 {
@@ -21,6 +21,8 @@ public:
 	Shader(const std::string& filepath);
 	Shader(const std::string& vsFilepath, const std::string& fsFilepath);
 	~Shader();
+
+	void SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix);
 
 	void Bind() const;
 	void UnBind() const;

@@ -36,6 +36,11 @@ Shader::~Shader()
     glDeleteProgram(m_RendererID);
 }
 
+void Shader::SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix)
+{
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix[0][0]));
+}
+
 std::stringstream Shader::ParseShader(const std::string& filepath)
 {
     std::ifstream stream(filepath);
