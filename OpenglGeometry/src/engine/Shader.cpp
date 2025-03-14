@@ -6,9 +6,28 @@
 #include "utils/GlCall.h"
 
 Shader::Shader(const std::string& filepath)
-    : m_FilePath(filepath), m_RendererID(0)
+    : m_RendererID(0)
 {
     ShaderProgramSource source = GetShaderFromFiles(filepath);
+    m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+}
+
+Shader::Shader(const std::string& vsFilepath, const std::string& fsFilepath)
+{
+    ShaderProgramSource source;
+    std::string vertexShaderSource = ParseShader(vsFilepath).str();
+    std::string fragmentShaderSource = ParseShader(fsFilepath).str();
+
+    if (vertexShaderSource.empty())
+    {
+        std::cerr << "WARNING: Vertex shader (" << vsFilepath << ") is empty\n";
+    }
+
+    if (fragmentShaderSource.empty())
+    {
+        std::cerr << "WARNING: Fragment shader (" << fsFilepath << ") is empty\n";
+    }
+
     m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
 }
 
@@ -43,7 +62,7 @@ ShaderProgramSource Shader::GetShaderFromFiles(const std::string& filepath)
 
     if (fragmentShaderSource.str().empty())
     {
-        std::cerr << "WARNING: Fragment shader (" << filepath + ".vert" << ") is empty\n";
+        std::cerr << "WARNING: Fragment shader (" << filepath + ".frag" << ") is empty\n";
     }
 
     return { vertexShaderSource.str(), fragmentShaderSource.str() };

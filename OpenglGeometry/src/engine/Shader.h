@@ -19,6 +19,7 @@ private:
 	// caching for uniforms
 public:
 	Shader(const std::string& filepath);
+	Shader(const std::string& vsFilepath, const std::string& fsFilepath);
 	~Shader();
 
 	void Bind() const;
