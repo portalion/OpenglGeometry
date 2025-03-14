@@ -4,7 +4,7 @@
 class VertexArray
 {
 public:
-	VertexArray(VertexBuffer vbo, const VertexLayout& layout);
+	VertexArray(VertexBuffer vbo, VertexDataType dataType);
 
 	void Bind() const;
 	void UnBind() const;
