@@ -2,6 +2,7 @@
 #include "utils/GlCall.h"
 #include <stdexcept>
 #include "App.h"
+#include "Globals.h"
 
 Window::Window(int width, int height, std::string title)
 	:width{ width }, height{ height }, title{title}
@@ -50,7 +51,7 @@ void Window::HandleResize(int width, int height)
 {
     this->width = width;
     this->height = height;
-    GLCall(glViewport(0, 0, width, height));
+    GLCall(glViewport(0, 0, width - Globals::rightInterfaceWidth, height));
 }
 
 void Window::SetAppPointerData(App* app)

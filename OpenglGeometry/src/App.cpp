@@ -94,7 +94,10 @@ void App::HandleInput()
 
 void App::HandleResize()
 {
-    projectionMatrix = Algebra::Matrix4::Projection(window.GetWidth() / window.GetHeight(), 0.1f, 100.0f, 3.14f / 2.f);
+	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
+	float newHeight = static_cast<float>(window.GetHeight());
+	float aspect = newWidth / newHeight;
+    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 100.0f, 3.14f / 2.f);
 }
 
 void App::Update()
