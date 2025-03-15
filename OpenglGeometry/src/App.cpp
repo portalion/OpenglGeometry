@@ -10,6 +10,9 @@ App::App()
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
+	viewMatrix = Algebra::Matrix4::Identity();
+
+    HandleResize();
 }
 
 App::~App()
@@ -91,6 +94,7 @@ void App::HandleInput()
 
 void App::HandleResize()
 {
+    projectionMatrix = Algebra::Matrix4::Projection(window.GetWidth() / window.GetHeight(), 0.1f, 100.0f, 3.14f / 2.f);
 }
 
 void App::Update()

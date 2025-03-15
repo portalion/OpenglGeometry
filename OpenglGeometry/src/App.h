@@ -21,4 +21,7 @@ private:
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;
+
+	Algebra::Matrix4 projectionMatrix;
+	Algebra::Matrix4 viewMatrix;
 };
