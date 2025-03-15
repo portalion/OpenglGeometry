@@ -1,7 +1,7 @@
 #include "IndexBuffer.h"
 
 IndexBuffer::IndexBuffer()
-	:id{ 0 }
+	:id{ 0 }, length{ 0 }
 {
 	GLCall(glGenBuffers(1, &id));
 }
@@ -17,8 +17,9 @@ IndexBuffer::~IndexBuffer()
 	glDeleteBuffers(1, &id);
 }
 
-void IndexBuffer::AssignIndices(std::vector<unsigned int> indices) const
+void IndexBuffer::AssignIndices(std::vector<unsigned int> indices)
 {
+	length = indices.size();
 	Bind();
 	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW));
 	UnBind();

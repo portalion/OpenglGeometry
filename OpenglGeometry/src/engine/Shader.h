@@ -16,7 +16,6 @@ private:
 	std::string m_FilePath;
 	unsigned int m_RendererID;
 	std::unordered_map<std::string, int> m_UniformLocationCache;
-	// caching for uniforms
 public:
 	Shader(const std::string& filepath);
 	Shader(const std::string& vsFilepath, const std::string& fsFilepath);
