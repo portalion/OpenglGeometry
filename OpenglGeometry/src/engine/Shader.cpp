@@ -41,6 +41,11 @@ void Shader::SetUniformMat4f(const std::string& name, const Algebra::Matrix4& ma
     GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &matrix[0][0]));
 }
 
+void Shader::SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector)
+{
+    GLCall(glUniform4f(GetUniformLocation(name), vector.x, vector.y, vector.z, vector.w));
+}
+
 std::stringstream Shader::ParseShader(const std::string& filepath)
 {
     std::ifstream stream(filepath);
