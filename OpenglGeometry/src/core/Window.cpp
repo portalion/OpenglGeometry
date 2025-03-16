@@ -34,6 +34,8 @@ Window::Window(int width, int height, std::string title)
     {
         throw std::runtime_error("Cannot inititate glew");
     }
+
+    SetupGLFWFunctions();
 }
 
 bool Window::ShouldClose()
@@ -51,10 +53,16 @@ void Window::HandleResize(int width, int height)
 {
     this->width = width;
     this->height = height;
-    GLCall(glViewport(0, 0, width - Globals::rightInterfaceWidth, height));
+    GLCall(glViewport(0, 0, std::max(width - Globals::rightInterfaceWidth, 0), height));
 }
 
 void Window::SetAppPointerData(App* app)
 {
     data.app = app;
+}
+
+void Window::SetupGLFWFunctions()
+{
+    GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }

@@ -28,5 +28,7 @@ private:
 	WindowUserPointerData data;
 	int width;
 	int height;
+
+	void SetupGLFWFunctions();
 };
 
