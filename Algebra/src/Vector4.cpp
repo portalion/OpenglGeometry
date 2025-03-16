@@ -32,6 +32,10 @@ const Vector4 Algebra::Vector4::Scale(const Vector4& scalingVector) const
 
 Vector4 Algebra::Vector4::Normalize() const
 {
+	if (Length() == 0)
+	{
+		return *this;
+	}
 	return *this / Length();
 }
 
@@ -110,6 +114,16 @@ const Vector4 Algebra::Vector4::operator*(const Matrix4& matrix) const
 const bool Algebra::Vector4::operator==(const Vector4& v2) const
 {
 	return x == v2.x && y == v2.y && z == v2.z && w == v2.w;
+}
+
+Vector4& Algebra::Vector4::operator+=(const Vector4& add)
+{
+	x += add.x;
+	y += add.y;
+	z += add.z;
+	w += add.w;
+
+	return *this;
 }
 
 Vector4 Algebra::operator*(const Vector4& vector, const float& scale)

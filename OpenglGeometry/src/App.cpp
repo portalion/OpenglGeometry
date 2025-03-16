@@ -4,9 +4,13 @@
 #include "engine/Shader.h"
 #include <iostream>
 #include "core/Globals.h"
+#include <engine/Renderer.h>
+#include <core/InfiniteGrid.h>
 
 App::App()
-    : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, running{true}
+    : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
+    running{true},
+	camera{ Algebra::Vector4(0.f, 2.f, 0.f, 1.f), 1.f }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
@@ -56,6 +60,8 @@ void App::HandleInput()
         return;
     }
 
+    camera.HandleInput();
+
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
         auto mousePos = ImGui::GetMousePos();
@@ -97,7 +103,7 @@ void App::HandleResize()
 	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
 	float newHeight = static_cast<float>(window.GetHeight());
 	float aspect = newWidth / newHeight;
-    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 100.0f, 3.14f / 2.f);
+    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
 }
 
 void App::Update()
@@ -146,4 +152,5 @@ Algebra::Vector4 App::GetMousePoint(float x, float y)
 
 void App::Render()
 {
+	grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
 }

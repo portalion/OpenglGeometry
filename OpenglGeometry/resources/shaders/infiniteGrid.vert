@@ -8,7 +8,7 @@ uniform mat4 u_projectionMatrix;
 uniform mat4 u_viewMatrix;
 uniform vec4 u_CameraWorldPosition;
 
-uniform float u_GridSize = 100.f;
+uniform float u_GridSize = 10000.f;
 
 void main()
 {

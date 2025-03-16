@@ -1,8 +1,10 @@
 #pragma once
-#include "utils/Initialization.h"
 #include <string>
-#include "core/Window.h"
+#include "utils/Initialization.h"
 #include "Algebra.h"
+#include "core/Window.h"
+#include "core/Camera.h"
+#include "core/InfiniteGrid.h"
 
 class App {
 public:
@@ -18,6 +20,8 @@ public:
 private:
 	bool running;
 	Window window;
+	Camera camera;
+	InfiniteGrid grid;
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;
