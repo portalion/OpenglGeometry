@@ -14,7 +14,7 @@ Algebra::Matrix4 Camera::GetZoomMatrix()
 
 Algebra::Matrix4 Camera::GetRotationMatrix()
 {
-	return Algebra::Matrix4::RotationXDegree(xAngle) * Algebra::Matrix4::RotationYDegree(yAngle);
+	return Algebra::Matrix4::RotationXDegree(xAngle) * Algebra::Matrix4::RotationYDegree(yAngle) * Algebra::Matrix4::RotationZDegree(zAngle);
 }
 
 void Camera::HandleTranslation(const float& dt)
@@ -46,13 +46,22 @@ void Camera::HandleRotations(const float& dt)
 {
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
-		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-		yAngle += delta.x / 10.f;
-		xAngle += delta.y / 10.f;
+		if (ImGui::GetIO().KeyShift)
+		{
+			ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+			zAngle += delta.x / 10.f;
+		}
+		else
+		{
+			ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+			yAngle += delta.x / 10.f;
+			xAngle += delta.y / 10.f;
+		}
 		
 		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 
 		xAngle = std::clamp(xAngle, -90.f, 90.f);
+		zAngle = std::clamp(zAngle, -90.f, 90.f);
 		if (yAngle > 360)
 		{
 			yAngle = 0;
@@ -61,11 +70,12 @@ void Camera::HandleRotations(const float& dt)
 		{
 			yAngle = 360;
 		}
+		
 	}
 }
 
 Camera::Camera(Algebra::Vector4 position, float zoom)
-	:position{ position }, zoom{ zoom }, yAngle{ 0 }, xAngle{ 0 }
+	:position{ position }, zoom{ zoom }, yAngle{ 0 }, xAngle{ 0 }, zAngle{ 0 }
 {
 }
 

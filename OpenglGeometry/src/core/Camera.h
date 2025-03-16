@@ -7,6 +7,7 @@ private:
 	float zoom;
 	float yAngle;
 	float xAngle;
+	float zAngle;
 	
 	Algebra::Vector4 position;
 	Algebra::Matrix4 GetTranslationMatrix();
