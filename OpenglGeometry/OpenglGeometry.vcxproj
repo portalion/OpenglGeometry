@@ -176,6 +176,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\InfiniteGrid.cpp" />
     <ClCompile Include="src\engine\IndexBuffer.cpp" />
     <ClCompile Include="src\engine\Renderer.ipp" />
     <ClCompile Include="src\engine\VertexLayout.cpp" />
@@ -203,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\Renderer.h" />
+    <ClInclude Include="src\core\InfiniteGrid.h" />
     <ClInclude Include="src\engine\IndexBuffer.h" />
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
@@ -227,6 +229,8 @@
   <ItemGroup>
     <None Include="resources\basic.frag" />
     <None Include="resources\basic.vert" />
+    <None Include="resources\shaders\infiniteGrid.frag" />
+    <None Include="resources\shaders\infiniteGrid.vert" />
     <None Include="vendor\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>
