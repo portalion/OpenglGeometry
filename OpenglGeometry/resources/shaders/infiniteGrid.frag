@@ -5,7 +5,7 @@ layout(location = 0) in vec3 in_worldPosition;
 layout(location = 0) out vec4 FragColor;
 
 uniform float u_GridMinPixelsBetweenCells = 2.0;
-uniform float u_gridCellSize = 0.025;
+uniform float u_gridCellSize = 0.1;
 uniform vec4 u_gridColorThin = vec4(0.2, 0.2, 0.2, 1.0);
 uniform vec4 u_gridColorThick = vec4(0.4, 0.4, 0.4, 1.0);
 uniform vec4 u_CameraWorldPosition;
