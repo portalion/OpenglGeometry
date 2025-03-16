@@ -1,4 +1,5 @@
 #include "Torus.h"
+#include <imgui/imgui.h>
 
 Algebra::Vector4 Torus::GetPoint(float angleTube, float angleRadius)
 {
@@ -42,6 +43,24 @@ Torus::Torus()
 	:renderer{ VertexDataType::PositionVertexData }
 {
 	GenerateAndSaveMesh();
+}
+
+void Torus::HandleInput()
+{
+	uint32_t min_value = 3;
+	uint32_t max_value = 100;
+
+	bool somethingChanged = false;
+
+	somethingChanged |= ImGui::SliderFloat("Radius", &radius, 1.f, 100.f);
+	somethingChanged |= ImGui::SliderFloat("Tube Radius", &tubeRadius, 1.f, 50.f);
+	somethingChanged |= ImGui::SliderScalar("Segments", ImGuiDataType_U32,  &radiusSegments, &min_value, &max_value);
+	somethingChanged |= ImGui::SliderScalar("Circle Segments", ImGuiDataType_U32,  &tubeSegments, &min_value, &max_value);
+
+	if (somethingChanged)
+	{
+		GenerateAndSaveMesh();
+	}
 }
 
 void Torus::Render()

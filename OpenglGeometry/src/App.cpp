@@ -10,7 +10,8 @@
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Algebra::Vector4(0.f, 2.f, 0.f, 1.f), 1.f }
+	camera{ Algebra::Vector4(0.f, 20.f, -50.f, 1.f), 1.f },
+	defaultShader{ "resources/shaders/default" }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
@@ -123,7 +124,15 @@ void App::DisplayParameters()
     ImGui::SetNextWindowSize(ImVec2(static_cast<float>(Globals::rightInterfaceWidth), static_cast<float>(window.GetHeight())));
 
     ImGui::Begin("Main Menu", nullptr, window_flags);
+    if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
+    {
+		ImGui::Checkbox("Show grid", &showGrid);
+    }
 
+    if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
+    {
+        torus.HandleInput();
+    }
     ImGui::End();
 }
 
@@ -152,5 +161,14 @@ Algebra::Vector4 App::GetMousePoint(float x, float y)
 
 void App::Render()
 {
-	grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
+    if (showGrid)
+    {
+	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
+    }
+
+	defaultShader.Bind();
+    defaultShader.SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
+    defaultShader.SetUniformMat4f("u_projectionMatrix", projectionMatrix);
+    torus.Render();
+	defaultShader.UnBind();
 }

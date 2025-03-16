@@ -5,6 +5,8 @@
 #include "core/Window.h"
 #include "core/Camera.h"
 #include "core/InfiniteGrid.h"
+#include "objects/Torus.h"
+
 
 class App {
 public:
@@ -19,9 +21,12 @@ public:
 	void DisplayParameters();
 private:
 	bool running;
+	bool showGrid = true;
 	Window window;
 	Camera camera;
+	Torus torus;
 	InfiniteGrid grid;
+	Shader defaultShader;
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;
