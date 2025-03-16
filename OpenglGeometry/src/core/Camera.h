@@ -20,7 +20,7 @@ public:
 	Camera(Algebra::Vector4 position = Algebra::Vector4(0.f, 0.f, 0.f, 1.f), float zoom = 1.f);
 	
 	inline Algebra::Vector4 GetPosition() { return position; }
-	inline Algebra::Matrix4 GetViewMatrix() { return GetTranslationMatrix() * GetRotationMatrix() * GetZoomMatrix(); }
+	inline Algebra::Matrix4 GetViewMatrix() { return GetRotationMatrix() * GetTranslationMatrix() * GetZoomMatrix(); }
 
 	void HandleInput();
 };

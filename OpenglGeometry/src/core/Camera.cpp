@@ -29,7 +29,7 @@ void Camera::HandleTranslation(const float& dt)
 			direction = direction.Normalize();
 		}
 
-		position += direction * 1000.f * dt * GetZoomMatrix();
+		position += direction * 10.f * dt * GetRotationMatrix() * GetZoomMatrix();
 	}
 }
 
@@ -52,7 +52,7 @@ void Camera::HandleRotations(const float& dt)
 		
 		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 
-		xAngle = std::clamp(xAngle, 0.f, 180.f);
+		xAngle = std::clamp(xAngle, -90.f, 90.f);
 		if (yAngle > 360)
 		{
 			yAngle = 0;
