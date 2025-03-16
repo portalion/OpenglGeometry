@@ -186,6 +186,7 @@
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\Initialization.cpp" />
+    <ClCompile Include="src\objects\Torus.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />
+    <ClInclude Include="src\objects\Torus.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
@@ -229,8 +231,8 @@
     <ClInclude Include="src\engine\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\basic.frag" />
-    <None Include="resources\basic.vert" />
+    <None Include="resources\shaders\default.frag" />
+    <None Include="resources\shaders\default.vert" />
     <None Include="resources\shaders\infiniteGrid.frag" />
     <None Include="resources\shaders\infiniteGrid.vert" />
     <None Include="vendor\imgui\imgui.natstepfilter" />

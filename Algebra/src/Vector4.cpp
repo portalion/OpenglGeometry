@@ -105,12 +105,6 @@ const float Algebra::Vector4::operator*(const Vector4& rightVector) const
 	return Scale(rightVector).Sum();
 }
 
-const Vector4 Algebra::Vector4::operator*(const Matrix4& matrix) const
-{
-	return Vector4((*this)*matrix.Column(0), (*this) * matrix.Column(1),
-		(*this) * matrix.Column(2), (*this) * matrix.Column(3));
-}
-
 const bool Algebra::Vector4::operator==(const Vector4& v2) const
 {
 	return x == v2.x && y == v2.y && z == v2.z && w == v2.w;
@@ -124,6 +118,18 @@ Vector4& Algebra::Vector4::operator+=(const Vector4& add)
 	w += add.w;
 
 	return *this;
+}
+
+Vector4 Algebra::operator*(const Vector4& vector, const Matrix4& matrix)
+{
+	return Vector4(vector * matrix.Column(0), vector * matrix.Column(1),
+		vector * matrix.Column(2), vector * matrix.Column(3));
+}
+
+Vector4 Algebra::operator*(const Matrix4& matrix, const Vector4& vector)
+{
+	return Vector4(matrix[0] * vector, matrix[1] * vector,
+		matrix[2] * vector, matrix[3] * vector);
 }
 
 Vector4 Algebra::operator*(const Vector4& vector, const float& scale)
