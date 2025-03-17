@@ -1,4 +1,5 @@
 #pragma once
+#include <Vector4.h>
 
 /// <summary>
 /// struct for configuration constants, or global constants
@@ -6,9 +7,10 @@
 struct Globals
 {
 	//Scene / window / interface sizes
-	static const int startingSceneWidth = 1280;
-	static const int startingSceneHeight = 960;
-	static const int rightInterfaceWidth = 400;
+	static const int startingSceneWidth;
+	static const int startingSceneHeight;
+	static const int rightInterfaceWidth;
 
-
+	static const Algebra::Vector4 startingCameraPosition;
 };
+
