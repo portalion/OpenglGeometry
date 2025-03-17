@@ -176,6 +176,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\RenderableOnScene.cpp" />
+    <ClCompile Include="src\core\Globals.cpp" />
     <ClCompile Include="src\core\InfiniteGrid.cpp" />
     <ClCompile Include="src\core\Camera.cpp" />
     <ClCompile Include="src\engine\IndexBuffer.cpp" />
@@ -205,6 +207,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\RenderableOnScene.h" />
     <ClInclude Include="src\engine\Renderer.h" />
     <ClInclude Include="src\core\InfiniteGrid.h" />
     <ClInclude Include="src\core\Camera.h" />

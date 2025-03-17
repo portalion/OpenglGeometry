@@ -10,7 +10,7 @@
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Algebra::Vector4(0.f, 20.f, -50.f, 1.f), 1.f },
+	camera{ Globals::startingCameraPosition, 1.f},
 	defaultShader{ "resources/shaders/default" }
 {
     InitImgui(window.GetWindowPointer());
