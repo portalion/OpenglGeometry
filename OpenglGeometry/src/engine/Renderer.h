@@ -16,7 +16,7 @@ public:
 	void AssignIndices(std::vector<unsigned int> indices);
 	void AssignVertices(std::vector<T> vertices);
 
-	void Render(GLenum mode = GL_TRIANGLES);
+	void Render(GLenum mode = GL_TRIANGLES) const;
 };
 
 #include "Renderer.ipp"

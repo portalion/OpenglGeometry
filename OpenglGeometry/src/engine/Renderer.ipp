@@ -38,7 +38,7 @@ inline void Renderer<T>::AssignVertices(std::vector<T> vertices)
 }
 
 template<class T>
-inline void Renderer<T>::Render(GLenum mode)
+inline void Renderer<T>::Render(GLenum mode) const
 {
 	vao.Bind();
 	if (ibo.GetLength() > 0)
