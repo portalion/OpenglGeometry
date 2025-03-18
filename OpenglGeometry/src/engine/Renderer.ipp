@@ -38,16 +38,17 @@ inline void Renderer<T>::AssignVertices(std::vector<T> vertices)
 }
 
 template<class T>
-inline void Renderer<T>::Render(GLenum mode) const
+inline void Renderer<T>::Render(RenderingMode mode) const
 {
+	GLenum modeInEnum = static_cast<GLenum>(mode);
 	vao.Bind();
 	if (ibo.GetLength() > 0)
 	{
-		GLCall(glDrawElements(mode, static_cast<unsigned int>(ibo.GetLength()), GL_UNSIGNED_INT, nullptr));
+		GLCall(glDrawElements(modeInEnum, static_cast<unsigned int>(ibo.GetLength()), GL_UNSIGNED_INT, nullptr));
 	}
 	else
 	{
-		GLCall(glDrawArrays(mode, 0, static_cast<unsigned int>(vbo.GetLength())));
+		GLCall(glDrawArrays(modeInEnum, 0, static_cast<unsigned int>(vbo.GetLength())));
 	}
 	vao.UnBind();
 }

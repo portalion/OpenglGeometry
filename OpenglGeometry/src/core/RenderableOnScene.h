@@ -18,6 +18,7 @@ private:
 	void SaveMesh();
 protected:
 	std::string name;
+	RenderingMode renderingMode;
 
 	virtual std::string GetTypeName() const = 0;
 	virtual RenderableOnSceneMesh GenerateMesh() = 0;

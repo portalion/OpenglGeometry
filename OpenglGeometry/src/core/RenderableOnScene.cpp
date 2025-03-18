@@ -15,6 +15,7 @@ void RenderableOnScene::SaveMesh()
 RenderableOnScene::RenderableOnScene()
 	:renderer{ VertexDataType::PositionVertexData }
 {
+	renderingMode = RenderingMode::LINES;
 	somethingChanged = true;
 }
 
@@ -28,7 +29,7 @@ void RenderableOnScene::Update()
 
 void RenderableOnScene::Render() const
 {
-	renderer.Render(GL_LINES);
+	renderer.Render(renderingMode);
 }
 
 void RenderableOnScene::DisplayMenu()

@@ -1,6 +1,12 @@
 #pragma once
 #include "VertexArray.h"
 
+enum class RenderingMode
+{
+	LINES = GL_LINES,
+	TRIANGLES = GL_TRIANGLES
+};
+
 template <class T> class Renderer
 {
 private:
@@ -16,7 +22,7 @@ public:
 	void AssignIndices(std::vector<unsigned int> indices);
 	void AssignVertices(std::vector<T> vertices);
 
-	void Render(GLenum mode = GL_TRIANGLES) const;
+	void Render(RenderingMode mode = RenderingMode::TRIANGLES) const;
 };
 
 #include "Renderer.ipp"

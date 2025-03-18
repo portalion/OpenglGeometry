@@ -11,9 +11,9 @@ RenderableOnSceneMesh Torus::GenerateMesh()
 {
 	RenderableOnSceneMesh result;
 
-	for (int i = 0; i < radiusSegments; i++)
+	for (unsigned int i = 0; i < radiusSegments; i++)
 	{
-		for (int j = 0; j < tubeSegments; j++)
+		for (unsigned int j = 0; j < tubeSegments; j++)
 		{
 			PositionVertexData vertex;
 			vertex.Position = GetPoint(2 * 3.14f * j / tubeSegments, 2 * 3.14f * i / radiusSegments);
@@ -21,10 +21,10 @@ RenderableOnSceneMesh Torus::GenerateMesh()
 		}
 	}
 
-	for (int i = 0; i < radiusSegments; i++)
+	for (unsigned int i = 0; i < radiusSegments; i++)
 	{
 		int iNext = (i + 1) % radiusSegments;
-		for (int j = 0; j < tubeSegments; j++)
+		for (unsigned int j = 0; j < tubeSegments; j++)
 		{
 			int jNext = (j + 1) % tubeSegments;
 			result.indices.push_back(tubeSegments * i + j);
