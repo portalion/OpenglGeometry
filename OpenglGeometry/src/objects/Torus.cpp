@@ -7,11 +7,6 @@ Algebra::Vector4 Torus::GetPoint(float angleTube, float angleRadius)
 		Algebra::Vector4(radius + tubeRadius * cosf(angleTube), tubeRadius * sinf(angleTube), 0.f, 1.f);
 }
 
-std::string Torus::GetTypeName() const
-{
-	return "Torus";
-}
-
 RenderableOnSceneMesh Torus::GenerateMesh()
 {
 	RenderableOnSceneMesh result;

@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include "core/RenderableOnScene.h"
 
 class Torus : public RenderableOnScene
@@ -11,8 +11,8 @@ private:
 
 	Algebra::Vector4 GetPoint(float angleTube, float angleRadius);
 
-	std::string GetTypeName() const override;
-	virtual RenderableOnSceneMesh GenerateMesh() override;
-	virtual bool DisplayParameters() override;
+	inline std::string GetTypeName() const override { return "Torus"; }
+	RenderableOnSceneMesh GenerateMesh() override;
+	bool DisplayParameters() override;
 };
 

@@ -24,6 +24,7 @@ protected:
 	virtual bool DisplayParameters() = 0;
 public:
 	RenderableOnScene();
+	virtual ~RenderableOnScene() = default;
 	
 	void InitName();
 	void Update();
