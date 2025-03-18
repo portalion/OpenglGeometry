@@ -7,10 +7,14 @@ Algebra::Vector4 Torus::GetPoint(float angleTube, float angleRadius)
 		Algebra::Vector4(radius + tubeRadius * cosf(angleTube), tubeRadius * sinf(angleTube), 0.f, 1.f);
 }
 
-void Torus::GenerateAndSaveMesh()
+std::string Torus::GetTypeName() const
 {
-	std::vector<PositionVertexData> vertices;
-	std::vector<unsigned int> indices;
+	return "Torus";
+}
+
+RenderableOnSceneMesh Torus::GenerateMesh()
+{
+	RenderableOnSceneMesh result;
 
 	for (int i = 0; i < radiusSegments; i++)
 	{
@@ -18,7 +22,7 @@ void Torus::GenerateAndSaveMesh()
 		{
 			PositionVertexData vertex;
 			vertex.Position = GetPoint(2 * 3.14f * j / tubeSegments, 2 * 3.14f * i / radiusSegments);
-			vertices.push_back(vertex);
+			result.vertices.push_back(vertex);
 		}
 	}
 
@@ -28,24 +32,17 @@ void Torus::GenerateAndSaveMesh()
 		for (int j = 0; j < tubeSegments; j++)
 		{
 			int jNext = (j + 1) % tubeSegments;
-			indices.push_back(tubeSegments * i + j);
-			indices.push_back(tubeSegments * i + jNext);
-			indices.push_back(tubeSegments * i + j);
-			indices.push_back((tubeSegments * iNext) + j);
+			result.indices.push_back(tubeSegments * i + j);
+			result.indices.push_back(tubeSegments * i + jNext);
+			result.indices.push_back(tubeSegments * i + j);
+			result.indices.push_back((tubeSegments * iNext) + j);
 		}
 	}
 
-	renderer.AssignVertices(vertices);
-	renderer.AssignIndices(indices);
+	return result;
 }
 
-Torus::Torus()
-	:renderer{ VertexDataType::PositionVertexData }
-{
-	GenerateAndSaveMesh();
-}
-
-void Torus::HandleInput()
+bool Torus::DisplayParameters()
 {
 	uint32_t min_value = 3;
 	uint32_t max_value = 100;
@@ -54,16 +51,8 @@ void Torus::HandleInput()
 
 	somethingChanged |= ImGui::SliderFloat("Radius", &radius, 1.f, 100.f);
 	somethingChanged |= ImGui::SliderFloat("Tube Radius", &tubeRadius, 1.f, 50.f);
-	somethingChanged |= ImGui::SliderScalar("Segments", ImGuiDataType_U32,  &radiusSegments, &min_value, &max_value);
-	somethingChanged |= ImGui::SliderScalar("Circle Segments", ImGuiDataType_U32,  &tubeSegments, &min_value, &max_value);
+	somethingChanged |= ImGui::SliderScalar("Segments", ImGuiDataType_U32, &radiusSegments, &min_value, &max_value);
+	somethingChanged |= ImGui::SliderScalar("Circle Segments", ImGuiDataType_U32, &tubeSegments, &min_value, &max_value);
 
-	if (somethingChanged)
-	{
-		GenerateAndSaveMesh();
-	}
-}
-
-void Torus::Render()
-{
-	renderer.Render(GL_LINES);
+	return somethingChanged;
 }

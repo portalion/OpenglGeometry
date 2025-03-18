@@ -24,7 +24,7 @@ private:
 	bool showGrid = true;
 	Window window;
 	Camera camera;
-	Torus torus;
+	RenderableOnScene* torus;
 	InfiniteGrid grid;
 	Shader defaultShader;
 

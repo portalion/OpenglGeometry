@@ -18,10 +18,15 @@ App::App()
 	viewMatrix = Algebra::Matrix4::Identity();
 
     HandleResize();
+
+	torus = new Torus();
+    torus->InitName();
 }
 
 App::~App()
 {
+    delete torus;
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -109,6 +114,7 @@ void App::HandleResize()
 
 void App::Update()
 {
+    torus->Update();
 }
 
 void App::DisplayParameters()
@@ -131,7 +137,7 @@ void App::DisplayParameters()
 
     if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
     {
-        torus.HandleInput();
+        torus->DisplayMenu();
     }
     ImGui::End();
 }
@@ -169,6 +175,6 @@ void App::Render()
 	defaultShader.Bind();
     defaultShader.SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader.SetUniformMat4f("u_projectionMatrix", projectionMatrix);
-    torus.Render();
+    torus->Render();
 	defaultShader.UnBind();
 }

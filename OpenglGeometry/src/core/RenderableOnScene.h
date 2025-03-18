@@ -14,7 +14,6 @@ class RenderableOnScene
 private:
 	Renderer<PositionVertexData> renderer;
 	bool somethingChanged = false;
-	void InitName();
 
 	void SaveMesh();
 protected:
@@ -25,7 +24,8 @@ protected:
 	virtual bool DisplayParameters() = 0;
 public:
 	RenderableOnScene();
-
+	
+	void InitName();
 	void Update();
 	void DisplayMenu();
 	void Render() const;

@@ -16,7 +16,6 @@ RenderableOnScene::RenderableOnScene()
 	:renderer{ VertexDataType::PositionVertexData }
 {
 	somethingChanged = true;
-	InitName();
 }
 
 void RenderableOnScene::Update()
@@ -29,10 +28,10 @@ void RenderableOnScene::Update()
 
 void RenderableOnScene::Render() const
 {
-	renderer.Render();
+	renderer.Render(GL_LINES);
 }
 
 void RenderableOnScene::DisplayMenu()
 {
-	somethingChanged &= DisplayParameters();
+	somethingChanged |= DisplayParameters();
 }
