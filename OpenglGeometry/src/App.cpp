@@ -10,14 +10,14 @@
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Globals::startingCameraPosition, 1.f},
-	defaultShader{ "resources/shaders/default" }
+	camera{ Globals::startingCameraPosition, 1.f}
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
 	viewMatrix = Algebra::Matrix4::Identity();
 
     HandleResize();
+    defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
 	torus = new Torus();
     torus->InitName();
@@ -172,9 +172,9 @@ void App::Render()
 	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
     }
 
-	defaultShader.Bind();
-    defaultShader.SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-    defaultShader.SetUniformMat4f("u_projectionMatrix", projectionMatrix);
+	defaultShader->Bind();
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
+    defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
     torus->Render();
-	defaultShader.UnBind();
+	defaultShader->UnBind();
 }

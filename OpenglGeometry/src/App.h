@@ -26,7 +26,7 @@ private:
 	Camera camera;
 	RenderableOnScene* torus;
 	InfiniteGrid grid;
-	Shader defaultShader;
+	Shader* defaultShader;
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;
