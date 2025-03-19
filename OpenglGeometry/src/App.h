@@ -6,6 +6,8 @@
 #include "core/Camera.h"
 #include "core/InfiniteGrid.h"
 #include "objects/Torus.h"
+#include "objects/AxisCursor.h"
+#include <objects/Point.h>
 
 
 class App {
@@ -25,6 +27,8 @@ private:
 	Window window;
 	Camera camera;
 	RenderableOnScene* torus;
+	AxisCursor axis;
+	Point point;
 	InfiniteGrid grid;
 	Shader* defaultShader;
 

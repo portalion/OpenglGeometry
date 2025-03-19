@@ -115,6 +115,8 @@ void App::HandleResize()
 void App::Update()
 {
     torus->Update();
+    axis.Update();
+    point.Update();
 }
 
 void App::DisplayParameters()
@@ -138,6 +140,8 @@ void App::DisplayParameters()
     if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
     {
         torus->DisplayMenu();
+        axis.DisplayMenu();
+        point.DisplayMenu();
     }
     ImGui::End();
 }
@@ -176,5 +180,7 @@ void App::Render()
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
     torus->Render();
+    axis.Render();
+    point.Render();
 	defaultShader->UnBind();
 }
