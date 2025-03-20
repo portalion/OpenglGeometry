@@ -14,38 +14,33 @@ ShaderManager& ShaderManager::GetInstance()
 	return instance;
 }
 
-Shader* ShaderManager::GetShader(AvailableShaders name)
+std::shared_ptr<Shader> ShaderManager::GetShader(AvailableShaders name)
 {
 	return shaders[name];
 }
 
-Shader* ShaderManager::AddShader(AvailableShaders name, std::string filename)
+std::shared_ptr<Shader> ShaderManager::AddShader(AvailableShaders name, std::string filename)
 {
 	if (shaders.find(name) != shaders.end())
 	{
 		std::cerr << "WARNING: shader with name: " << static_cast<int>(name) << " already existing\n";
 		return shaders[name];
 	}
-	shaders[name] = new Shader(filename);
+	shaders[name] = std::make_shared<Shader>(filename);
 	return shaders[name];
 }
 
-Shader* ShaderManager::AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader)
+std::shared_ptr<Shader> ShaderManager::AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader)
 {
 	if (shaders.find(name) != shaders.end())
 	{
 		std::cerr << "WARNING: shader with name: " << static_cast<int>(name) << " already existing\n";
 		return shaders[name];
 	}
-	shaders[name] = new Shader(vertexShader, fragmentShader);
+	shaders[name] = std::make_shared<Shader>(vertexShader, fragmentShader);
 	return shaders[name];
 }
 
 ShaderManager::~ShaderManager()
 {
-	for (auto shader : shaders)
-	{
-		delete shader.second;
-	}
-	shaders.clear();
 }

@@ -26,11 +26,11 @@ private:
 	bool showGrid = true;
 	Window window;
 	Camera camera;
-	RenderableOnScene* torus;
+	std::unique_ptr<RenderableOnScene> torus;
 	AxisCursor axis;
 	Point point;
 	InfiniteGrid grid;
-	Shader* defaultShader;
+	std::shared_ptr<Shader> defaultShader;
 
 	Algebra::Vector4 GetMousePoint(float x, float y);
 	Algebra::Vector4 draggingPoint;

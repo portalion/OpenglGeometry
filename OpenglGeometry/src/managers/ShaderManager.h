@@ -14,10 +14,10 @@ class ShaderManager
 private:
 	ShaderManager();
 
-	std::unordered_map<AvailableShaders, Shader*> shaders;
+	std::unordered_map<AvailableShaders, std::shared_ptr<Shader>> shaders;
 
-	Shader* AddShader(AvailableShaders name, std::string filename);
-	Shader* AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader);
+	std::shared_ptr<Shader> AddShader(AvailableShaders name, std::string filename);
+	std::shared_ptr<Shader> AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader);
 public:
 	~ShaderManager();
 	ShaderManager(ShaderManager& other) = delete;
@@ -25,6 +25,6 @@ public:
 	
 	static ShaderManager& GetInstance();
 
-	Shader* GetShader(AvailableShaders name);
+	std::shared_ptr<Shader> GetShader(AvailableShaders name);
 };
 

@@ -19,14 +19,12 @@ App::App()
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
-	torus = new Torus();
+	torus = std::make_unique<Torus>();
     torus->InitName();
 }
 
 App::~App()
 {
-    delete torus;
-
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
