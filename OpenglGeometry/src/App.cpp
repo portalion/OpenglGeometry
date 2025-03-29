@@ -19,8 +19,12 @@ App::App()
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
-	torus = std::make_unique<Torus>();
-    torus->InitName();
+    sceneRenderables.push_back(std::make_shared<Torus>());
+    sceneRenderables.push_back(std::make_shared<Point>());
+    for (auto& renderable : sceneRenderables)
+    {
+        renderable->InitName();
+    }
 }
 
 App::~App()
@@ -112,9 +116,11 @@ void App::HandleResize()
 
 void App::Update()
 {
-    torus->Update();
+    for (auto& renderable : sceneRenderables)
+    {
+        renderable->Update();
+    }
     axis.Update();
-    point.Update();
 }
 
 void App::DisplayParameters()
@@ -135,13 +141,75 @@ void App::DisplayParameters()
 		ImGui::Checkbox("Show grid", &showGrid);
     }
 
+    this->CreateShape();
+
     if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
     {
-        torus->DisplayMenu();
+        for (auto& renderable : sceneRenderables)
+        {
+            renderable->DisplayMenu();
+        }
         axis.DisplayMenu();
-        point.DisplayMenu();
     }
     ImGui::End();
+}
+
+void App::CreateShape()
+{
+    if(ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))
+    {
+        const int ITEMS_COUNT = sceneRenderables.size();
+        static ImGuiSelectionBasicStorage selection;
+
+        // The BeginChild() has no purpose for selection logic, other that offering a scrolling region.
+        if (ImGui::BeginChild("##Basket", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 10), ImGuiChildFlags_FrameStyle))
+        {
+            ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
+            ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, ITEMS_COUNT);
+            selection.ApplyRequests(ms_io);
+
+            for (int n = 0; n < ITEMS_COUNT; n++)
+            {
+                auto id = sceneRenderables[n]->GetId();
+                bool item_is_selected = selection.Contains(id);
+                ImGui::SetNextItemSelectionUserData(id);
+                ImGui::Selectable(sceneRenderables[n]->GetName().c_str(), item_is_selected);
+            }
+            ms_io = ImGui::EndMultiSelect();
+            selection.ApplyRequests(ms_io);
+        }
+        ImGui::EndChild();
+        std::string buffer;
+        ImGui::InputText("Shape name", &buffer);
+        
+        if (ImGui::Button("Create shape"))
+        {
+            sceneRenderables.push_back(std::make_shared<Torus>());
+            sceneRenderables[sceneRenderables.size() - 1]->InitName();
+        }
+        ImGui::SameLine();
+        ImGui::BeginDisabled(selection.Size == 0);
+        if (ImGui::Button("Remove shape"))
+        {
+            sceneRenderables.erase(
+                std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
+                    [&](const std::shared_ptr<RenderableOnScene>& shape) {
+                        auto name = shape->GetName();
+                        auto id = shape->GetId();
+                        auto id2 = ImGui::GetID(name.c_str());
+                        bool shouldRemove = selection.Contains(id);
+                        return shouldRemove; // Assuming 'id' is an identifier for shapes
+                    }),
+                sceneRenderables.end()
+            );
+        }
+        
+        ImGui::SameLine();
+        if (ImGui::Button("Rename shape"))
+        {
+        }
+        ImGui::EndDisabled();
+    }
 }
 
 Algebra::Vector4 App::GetMousePoint(float x, float y)
@@ -177,8 +245,10 @@ void App::Render()
 	defaultShader->Bind();
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
-    torus->Render();
+    for (auto& renderable : sceneRenderables)
+    {
+        renderable->Render();
+    }
     axis.Render();
-    point.Render();
 	defaultShader->UnBind();
 }

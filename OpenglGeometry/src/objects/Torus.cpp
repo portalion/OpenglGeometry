@@ -44,10 +44,10 @@ bool Torus::DisplayParameters()
 
 	bool somethingChanged = false;
 
-	somethingChanged |= ImGui::SliderFloat("Radius", &radius, 1.f, 100.f);
-	somethingChanged |= ImGui::SliderFloat("Tube Radius", &tubeRadius, 1.f, 50.f);
-	somethingChanged |= ImGui::SliderScalar("Segments", ImGuiDataType_U32, &radiusSegments, &min_value, &max_value);
-	somethingChanged |= ImGui::SliderScalar("Circle Segments", ImGuiDataType_U32, &tubeSegments, &min_value, &max_value);
+	somethingChanged |= ImGui::SliderFloat(("Radius##" + GetName()).c_str(), &radius, 1.f, 100.f);
+	somethingChanged |= ImGui::SliderFloat(("Tube Radius##" + GetName()).c_str(), &tubeRadius, 1.f, 50.f);
+	somethingChanged |= ImGui::SliderScalar(("Segments##" + GetName()).c_str(), ImGuiDataType_U32, &radiusSegments, &min_value, &max_value);
+	somethingChanged |= ImGui::SliderScalar(("Circle Segments##" + GetName()).c_str(), ImGuiDataType_U32, &tubeSegments, &min_value, &max_value);
 
 	return somethingChanged;
 }

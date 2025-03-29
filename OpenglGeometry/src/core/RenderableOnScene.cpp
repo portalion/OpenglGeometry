@@ -1,8 +1,11 @@
 #include "RenderableOnScene.h"
+#include <managers/IdManager.h>
 
 void RenderableOnScene::InitName()
 {
-	name = GetTypeName();
+	auto typeName = GetTypeName();
+	id = IdManager::GetInstance().GetNewId(typeName);
+	name = GetTypeName() + ' ' + std::to_string(id);
 }
 
 void RenderableOnScene::SaveMesh()

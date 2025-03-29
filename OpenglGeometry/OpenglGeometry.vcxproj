@@ -180,6 +180,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\managers\IdManager.cpp" />
+    <ClCompile Include="src\objects\Polyline.cpp" />
     <ClCompile Include="src\objects\Point.cpp" />
     <ClCompile Include="src\objects\AxisCursor.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
@@ -214,6 +216,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\managers\IdManager.h" />
+    <ClInclude Include="src\objects\Polyline.h" />
     <ClInclude Include="src\objects\Point.h" />
     <ClInclude Include="src\objects\AxisCursor.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <engine/Renderer.h>
+#include <managers/ShaderManager.h>
+#include <imgui/imgui.h>
 
 struct RenderableOnSceneMesh
 {
@@ -14,6 +16,7 @@ class RenderableOnScene
 private:
 	Renderer<PositionVertexData> renderer;
 	bool somethingChanged = false;
+	unsigned int id;
 
 	void SaveMesh();
 protected:
@@ -33,5 +36,6 @@ public:
 	void Render() const;
 
 	inline std::string GetName() const { return name; }
+	inline ImGuiID GetId() const { return ImGui::GetID(name.c_str()); }
 };
 

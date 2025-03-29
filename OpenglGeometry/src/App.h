@@ -21,14 +21,14 @@ public:
 	void HandleResize();
 	void Update();
 	void DisplayParameters();
+	void CreateShape();
 private:
 	bool running;
 	bool showGrid = true;
 	Window window;
 	Camera camera;
-	std::unique_ptr<RenderableOnScene> torus;
+	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;
 	AxisCursor axis;
-	Point point;
 	InfiniteGrid grid;
 	std::shared_ptr<Shader> defaultShader;
 
