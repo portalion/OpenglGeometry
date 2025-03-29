@@ -35,6 +35,7 @@ namespace Algebra
 		//Static
 		static Matrix4 Identity();
 		static Matrix4 Translation(float x, float y, float z);
+		static Matrix4 Translation(Algebra::Vector4 translation);
 		static Matrix4 Rotation(float x, float y, float z);
 		static Matrix4 RotationX(float angle);
 		static Matrix4 RotationY(float angle);

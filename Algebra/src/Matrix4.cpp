@@ -122,6 +122,11 @@ Matrix4 Algebra::Matrix4::Translation(float x, float y, float z)
 	return result;
 }
 
+Matrix4 Algebra::Matrix4::Translation(Algebra::Vector4 translation)
+{
+	return Matrix4::Translation(translation.x, translation.y, translation.z);
+}
+
 Matrix4 Algebra::Matrix4::Rotation(float x, float y, float z)
 {
 	return RotationX(x) * RotationY(y) * RotationZ(z);

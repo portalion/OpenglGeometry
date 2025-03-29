@@ -139,17 +139,16 @@ void App::DisplayParameters()
     if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
     {
 		ImGui::Checkbox("Show grid", &showGrid);
+        axis.DisplayMenu();
     }
 
     this->CreateShape();
-
     if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
     {
         for (auto& renderable : sceneRenderables)
         {
             renderable->DisplayMenu();
         }
-        axis.DisplayMenu();
     }
     ImGui::End();
 }
@@ -247,8 +246,10 @@ void App::Render()
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
     for (auto& renderable : sceneRenderables)
     {
+        defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
         renderable->Render();
     }
+    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
     axis.Render();
 	defaultShader->UnBind();
 }

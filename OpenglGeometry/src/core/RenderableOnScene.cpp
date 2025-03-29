@@ -1,6 +1,11 @@
 #include "RenderableOnScene.h"
 #include <managers/IdManager.h>
 
+void RenderableOnScene::Move(Algebra::Vector4 translation)
+{
+	position += translation;
+}
+
 void RenderableOnScene::InitName()
 {
 	auto typeName = GetTypeName();
@@ -37,5 +42,6 @@ void RenderableOnScene::Render() const
 
 void RenderableOnScene::DisplayMenu()
 {
+	ImGui::InputFloat3(("Position##" + GetName()).c_str(), &position[0]);
 	somethingChanged |= DisplayParameters();
 }

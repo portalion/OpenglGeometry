@@ -18,6 +18,7 @@ private:
 	bool somethingChanged = false;
 	unsigned int id;
 
+	Algebra::Vector4 position;
 	void SaveMesh();
 protected:
 	std::string name;
@@ -30,6 +31,8 @@ public:
 	RenderableOnScene();
 	virtual ~RenderableOnScene() = default;
 	
+	inline Algebra::Matrix4 GetModelMatrix() { return Algebra::Matrix4::Translation(position); };
+	void Move(Algebra::Vector4 translation);
 	void InitName();
 	void Update();
 	void DisplayMenu();
