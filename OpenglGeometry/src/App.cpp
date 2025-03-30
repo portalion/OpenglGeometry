@@ -183,8 +183,10 @@ void App::CreateShape()
         
         if (ImGui::Button("Create shape"))
         {
-            sceneRenderables.push_back(std::make_shared<Torus>());
-            sceneRenderables[sceneRenderables.size() - 1]->InitName();
+            auto newShape = std::make_shared<Torus>();
+            newShape->InitName();
+            newShape->Move(axis.GetPosition());
+            sceneRenderables.push_back(newShape);
         }
         ImGui::SameLine();
         ImGui::BeginDisabled(selection.Size == 0);

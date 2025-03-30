@@ -17,12 +17,12 @@ private:
 	Renderer<PositionVertexData> renderer;
 	bool somethingChanged = false;
 	unsigned int id;
-
-	Algebra::Vector4 position;
+	
 	void SaveMesh();
 protected:
 	std::string name;
 	RenderingMode renderingMode;
+	Algebra::Vector4 position;
 
 	virtual std::string GetTypeName() const = 0;
 	virtual RenderableOnSceneMesh GenerateMesh() = 0;
