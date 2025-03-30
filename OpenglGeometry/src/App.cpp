@@ -65,7 +65,7 @@ void App::Run()
 
 void App::HandleInput()
 {
-    currentInputMode->HandleInput(sceneRenderables);
+    currentInputMode->HandleInput(selectedRenderables);
 }
 
 void App::HandleResize()
@@ -132,21 +132,21 @@ void App::CreateShape()
             for (const auto& renderable : sceneRenderables)
             {
                 std::shared_ptr<RenderableOnScene> shapePtr = renderable;
-                bool isSelected = selectedShapes.count(shapePtr) > 0;
+                bool isSelected = selectedRenderables.count(shapePtr) > 0;
 
                 if (ImGui::Selectable(shapePtr->GetName().c_str(), isSelected))
                 {
                     if (ctrlPressed)
                     {
                         if (isSelected)
-                            selectedShapes.erase(shapePtr);
+                            selectedRenderables.erase(shapePtr);
                         else
-                            selectedShapes.insert(shapePtr);
+                            selectedRenderables.insert(shapePtr);
                     }
                     else
                     {
-                        selectedShapes.clear();
-                        selectedShapes.insert(shapePtr);
+                        selectedRenderables.clear();
+                        selectedRenderables.insert(shapePtr);
                     }
                 }
             }
@@ -164,14 +164,14 @@ void App::CreateShape()
             sceneRenderables.push_back(newShape);
         }
         ImGui::SameLine();
-        ImGui::BeginDisabled(selectedShapes.size() == 0);
+        ImGui::BeginDisabled(selectedRenderables.size() == 0);
         if (ImGui::Button("Remove shape"))
         {
             sceneRenderables.erase(
                 std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
                     [&](const std::shared_ptr<RenderableOnScene>& shape) {
-                        bool shouldRemove = selectedShapes.find(shape) != selectedShapes.end();
-                        return shouldRemove; // Assuming 'id' is an identifier for shapes
+                        bool shouldRemove = selectedRenderables.find(shape) != selectedRenderables.end();
+                        return shouldRemove; 
                     }),
                 sceneRenderables.end()
             );

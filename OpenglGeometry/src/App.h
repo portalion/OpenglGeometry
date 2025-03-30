@@ -31,7 +31,7 @@ private:
 	Camera camera;
 	std::unique_ptr<InputMode> currentInputMode;
 
-	std::unordered_set<std::shared_ptr<RenderableOnScene>> selectedShapes;
+	std::unordered_set<std::shared_ptr<RenderableOnScene>> selectedRenderables;
 	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;
 	AxisCursor axis;
 	InfiniteGrid grid;

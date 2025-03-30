@@ -8,6 +8,6 @@ private:
 	Algebra::Vector4 GetMousePoint(float x, float y);
 public:
 	DefaultInputMode(Window* window, Camera* camera);
-	void HandleInput(const std::vector<std::shared_ptr<RenderableOnScene>>& selectedItems) override;
+	void HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems) override;
 };
 

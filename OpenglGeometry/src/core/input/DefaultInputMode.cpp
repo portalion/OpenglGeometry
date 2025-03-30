@@ -5,7 +5,7 @@ DefaultInputMode::DefaultInputMode(Window* window, Camera* camera)
 {
 }
 
-void DefaultInputMode::HandleInput(const std::vector<std::shared_ptr<RenderableOnScene>>& selectedItems)
+void DefaultInputMode::HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems)
 {
     if (ImGui::IsAnyItemActive() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
     {

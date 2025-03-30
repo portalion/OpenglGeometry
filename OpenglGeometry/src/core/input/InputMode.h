@@ -4,6 +4,7 @@
 #include <core/RenderableOnScene.h>
 #include <core/Camera.h>
 #include <core/Window.h>
+#include <unordered_set>
 
 enum class InputModeEnum
 {
@@ -18,7 +19,7 @@ protected:
 public:
 	InputMode(Window* window, Camera* camera);
 	virtual ~InputMode() = default;
-	virtual void HandleInput(const std::vector<std::shared_ptr<RenderableOnScene>>& selectedItems) = 0;
+	virtual void HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems) = 0;
 
 	static std::unique_ptr<InputMode> CreateInputMode(InputModeEnum mode, Window* window, Camera* camera);
 };
