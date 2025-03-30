@@ -25,6 +25,8 @@ App::App()
     {
         renderable->InitName();
     }
+    
+    currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera);
 }
 
 App::~App()
@@ -63,47 +65,7 @@ void App::Run()
 
 void App::HandleInput()
 {
-    if (ImGui::IsAnyItemActive() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
-    {
-        return;
-    }
-
-    camera.HandleInput();
-
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-    {
-        auto mousePos = ImGui::GetMousePos();
-        draggingPoint = GetMousePoint(mousePos.x, mousePos.y).Normalize();
-        return;
-    }
-
-    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
-    {
-        ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-
-        ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
-    }
-
-    if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-    {
-        auto mousePos = ImGui::GetMousePos();
-        Algebra::Vector4 q = GetMousePoint(mousePos.x, mousePos.y).Normalize();
-        if (q == draggingPoint)
-        {
-            return;
-        }
-        float theta = acosf(draggingPoint * q);
-        auto w = q.Cross(draggingPoint).Normalize();
-        auto tempMat = Algebra::Matrix4(0, 0, 0, 0);
-        tempMat[1][0] = w.z;
-        tempMat[0][1] = -w.z;
-        tempMat[0][2] = -w.y;
-        tempMat[2][0] = w.y;
-        tempMat[2][1] = w.x;
-        tempMat[1][2] = -w.x;
-        auto rotation = Algebra::Matrix4::Identity() + sinf(theta) * tempMat + ((1.f - cosf(theta)) * tempMat * tempMat);
-        draggingPoint = q;
-    }
+    currentInputMode->HandleInput(sceneRenderables);
 }
 
 void App::HandleResize()
@@ -157,26 +119,39 @@ void App::CreateShape()
 {
     if(ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))
     {
-        const int ITEMS_COUNT = sceneRenderables.size();
-        static ImGuiSelectionBasicStorage selection;
+        ImGui::BeginChild("ShapeList", ImVec2(0, 150), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-        // The BeginChild() has no purpose for selection logic, other that offering a scrolling region.
-        if (ImGui::BeginChild("##Basket", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 10), ImGuiChildFlags_FrameStyle))
+        if (sceneRenderables.empty())
         {
-            ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
-            ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, ITEMS_COUNT);
-            selection.ApplyRequests(ms_io);
-
-            for (int n = 0; n < ITEMS_COUNT; n++)
-            {
-                auto id = sceneRenderables[n]->GetId();
-                bool item_is_selected = selection.Contains(id);
-                ImGui::SetNextItemSelectionUserData(id);
-                ImGui::Selectable(sceneRenderables[n]->GetName().c_str(), item_is_selected);
-            }
-            ms_io = ImGui::EndMultiSelect();
-            selection.ApplyRequests(ms_io);
+            ImGui::Text("No shapes available.");
         }
+        else
+        {
+            bool ctrlPressed = ImGui::GetIO().KeyCtrl;
+
+            for (const auto& renderable : sceneRenderables)
+            {
+                std::shared_ptr<RenderableOnScene> shapePtr = renderable;
+                bool isSelected = selectedShapes.count(shapePtr) > 0;
+
+                if (ImGui::Selectable(shapePtr->GetName().c_str(), isSelected))
+                {
+                    if (ctrlPressed)
+                    {
+                        if (isSelected)
+                            selectedShapes.erase(shapePtr);
+                        else
+                            selectedShapes.insert(shapePtr);
+                    }
+                    else
+                    {
+                        selectedShapes.clear();
+                        selectedShapes.insert(shapePtr);
+                    }
+                }
+            }
+        }
+
         ImGui::EndChild();
         std::string buffer;
         ImGui::InputText("Shape name", &buffer);
@@ -189,16 +164,13 @@ void App::CreateShape()
             sceneRenderables.push_back(newShape);
         }
         ImGui::SameLine();
-        ImGui::BeginDisabled(selection.Size == 0);
+        ImGui::BeginDisabled(selectedShapes.size() == 0);
         if (ImGui::Button("Remove shape"))
         {
             sceneRenderables.erase(
                 std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
                     [&](const std::shared_ptr<RenderableOnScene>& shape) {
-                        auto name = shape->GetName();
-                        auto id = shape->GetId();
-                        auto id2 = ImGui::GetID(name.c_str());
-                        bool shouldRemove = selection.Contains(id);
+                        bool shouldRemove = selectedShapes.find(shape) != selectedShapes.end();
                         return shouldRemove; // Assuming 'id' is an identifier for shapes
                     }),
                 sceneRenderables.end()
@@ -211,29 +183,6 @@ void App::CreateShape()
         }
         ImGui::EndDisabled();
     }
-}
-
-Algebra::Vector4 App::GetMousePoint(float x, float y)
-{
-    float screenWidth = static_cast<float>(window.GetWidth());
-    float screenHeight = static_cast<float>(window.GetHeight());
-    float scale = fminf(screenHeight, screenWidth) - 1.f;
-
-    x = (2.f * x - screenWidth + 1.f) / scale;
-    y = (2.f * y - screenHeight + 1.f) / -scale;
-
-    float z = 0;
-    float d = x * x + y * y;
-    if (d <= 1.f / 2.f)
-    {
-        z = sqrtf(1 - d);
-    }
-    else
-    {
-        z = 1.f / 2.f / sqrtf(d);
-    }
-
-    return Algebra::Vector4(x, y, z, 0);
 }
 
 void App::Render()

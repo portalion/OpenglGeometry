@@ -180,6 +180,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\input\DefaultInputMode.cpp" />
+    <ClCompile Include="src\core\input\InputMode.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\objects\Polyline.cpp" />
     <ClCompile Include="src\objects\Point.cpp" />
@@ -216,6 +218,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\input\DefaultInputMode.h" />
+    <ClInclude Include="src\core\input\InputMode.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\objects\Polyline.h" />
     <ClInclude Include="src\objects\Point.h" />

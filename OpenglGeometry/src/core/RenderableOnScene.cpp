@@ -21,7 +21,8 @@ void RenderableOnScene::SaveMesh()
 }
 
 RenderableOnScene::RenderableOnScene()
-	:renderer{ VertexDataType::PositionVertexData }
+	:renderer{ VertexDataType::PositionVertexData },
+	id{ 0 }
 {
 	renderingMode = RenderingMode::LINES;
 	somethingChanged = true;

@@ -8,6 +8,8 @@
 #include "objects/Torus.h"
 #include "objects/AxisCursor.h"
 #include <objects/Point.h>
+#include <core/input/InputMode.h>
+#include <unordered_set>
 
 
 class App {
@@ -27,13 +29,14 @@ private:
 	bool showGrid = true;
 	Window window;
 	Camera camera;
+	std::unique_ptr<InputMode> currentInputMode;
+
+	std::unordered_set<std::shared_ptr<RenderableOnScene>> selectedShapes;
 	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;
 	AxisCursor axis;
 	InfiniteGrid grid;
-	std::shared_ptr<Shader> defaultShader;
 
-	Algebra::Vector4 GetMousePoint(float x, float y);
-	Algebra::Vector4 draggingPoint;
+	std::shared_ptr<Shader> defaultShader;
 
 	Algebra::Matrix4 projectionMatrix;
 	Algebra::Matrix4 viewMatrix;
