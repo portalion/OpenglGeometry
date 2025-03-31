@@ -149,7 +149,7 @@ Vector4 Algebra::operator/(const Vector4& vector, const float& scale)
 
 std::ostream& Algebra::operator<<(std::ostream& os, const Vector4& vector)
 {
-	os << '[' << vector.x << ' ' << vector.y << vector.z << vector.w << ']';
+	os << '[' << vector.x << ' ' << vector.y << ' ' << vector.z << ' ' << vector.w << ']';
 	return os;
 }
 

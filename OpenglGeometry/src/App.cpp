@@ -53,7 +53,7 @@ void App::Run()
 {
     while (running && !window.ShouldClose())
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -242,11 +242,17 @@ void App::Render()
 	defaultShader->Bind();
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
+    defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
     for (auto& renderable : sceneRenderables)
     {
         defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
         renderable->Render();
     }
+
+    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
+    axis.Render();
+    
+    defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
 
     if (selectedRenderables.size() != 0)
     {
@@ -254,7 +260,5 @@ void App::Render()
         middleSelectionPoint.Render();
     }
 
-    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
-    axis.Render();
     defaultShader->UnBind();
 }
