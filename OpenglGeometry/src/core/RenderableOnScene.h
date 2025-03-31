@@ -32,7 +32,10 @@ public:
 	RenderableOnScene();
 	virtual ~RenderableOnScene() = default;
 	
+	inline void SetPosition(Algebra::Vector4 pos) { position = pos; }
 	inline Algebra::Matrix4 GetModelMatrix() { return Algebra::Matrix4::Translation(position); };
+	inline Algebra::Vector4 GetPosition() { return position; };
+
 	void Move(Algebra::Vector4 translation);
 	void InitName();
 	void Update();

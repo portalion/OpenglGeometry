@@ -36,6 +36,7 @@ private:
 	bool showGrid = true;
 	Window window;
 	Camera camera;
+	Point middleSelectionPoint;
 	std::unique_ptr<InputMode> currentInputMode;
 
 	std::unordered_set<std::shared_ptr<RenderableOnScene>> selectedRenderables;

@@ -99,6 +99,17 @@ void App::Update()
         renderable->Update();
     }
     axis.Update();
+    middleSelectionPoint.Update();
+    if (!selectedRenderables.empty())
+    {
+        Algebra::Vector4 middlePoint;
+        for (auto& selected : selectedRenderables)
+        {
+            middlePoint += selected->GetPosition();
+        }
+        middlePoint = middlePoint / selectedRenderables.size();
+        middleSelectionPoint.SetPosition(middlePoint);
+    }
 }
 
 void App::DisplayParameters()
@@ -228,7 +239,14 @@ void App::Render()
         defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
         renderable->Render();
     }
+
+    if (!selectedRenderables.empty())
+    {
+        defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
+        middleSelectionPoint.Render();
+    }
+
     defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
     axis.Render();
-	defaultShader->UnBind();
+    defaultShader->UnBind();
 }
