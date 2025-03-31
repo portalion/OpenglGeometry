@@ -10,7 +10,9 @@
 enum class InputModeEnum
 {
 	Default = 0,
-	SelectedTransformation = 1
+	SelectedTransformation = 1,
+	TransformationAroundPoint = 2,
+	TransformationAroundAxis = 3,
 };
 
 class InputMode

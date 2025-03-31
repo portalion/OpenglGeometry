@@ -201,6 +201,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\Initialization.cpp" />
     <ClCompile Include="src\objects\Torus.cpp" />
+    <ClCompile Include="src\core\input\TransformationAroundAxisInputMode.cpp" />
+    <ClCompile Include="src\core\input\TransformationAroundPointInputMode.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
@@ -239,6 +241,8 @@
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />
     <ClInclude Include="src\objects\Torus.h" />
+    <ClInclude Include="src\core\input\TransformationAroundAxisInputMode.h" />
+    <ClInclude Include="src\core\input\TransformationAroundPointInputMode.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
