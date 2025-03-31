@@ -132,17 +132,18 @@ void App::DisplayParameters()
         static int currentModeIndex = 0;
         const auto& modes = InputMode::GetModeList();
 
-        if (ImGui::IsKeyPressed(ImGuiKey_Tab))
-        {
-            currentModeIndex = (currentModeIndex + 1) % static_cast<int>(InputModeEnum::Size);
-        }
-
         std::vector<const char*> modeNames;
         std::vector<InputModeEnum> modeEnums;
 
         for (const auto& [enumVal, modeName] : modes) {
             modeEnums.push_back(enumVal);
             modeNames.push_back(modeName.c_str());
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Tab))
+        {
+            currentModeIndex = (currentModeIndex + 1) % static_cast<int>(InputModeEnum::Size);
+            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
         }
 
         if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
