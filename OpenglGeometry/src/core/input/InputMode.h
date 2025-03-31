@@ -13,6 +13,7 @@ enum class InputModeEnum
 	SelectedTransformation = 1,
 	TransformationAroundPoint = 2,
 	TransformationAroundAxis = 3,
+	Size
 };
 
 class InputMode

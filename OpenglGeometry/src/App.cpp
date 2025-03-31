@@ -81,6 +81,7 @@ void App::HandleInput()
     {
         selectedRenderables.clear();
     }
+
     currentInputMode->HandleInput(selectedRenderables);
 }
 
@@ -130,6 +131,12 @@ void App::DisplayParameters()
 		ImGui::Checkbox("Show grid", &showGrid);
         static int currentModeIndex = 0;
         const auto& modes = InputMode::GetModeList();
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Tab))
+        {
+            currentModeIndex = (currentModeIndex + 1) % static_cast<int>(InputModeEnum::Size);
+        }
+
         std::vector<const char*> modeNames;
         std::vector<InputModeEnum> modeEnums;
 
