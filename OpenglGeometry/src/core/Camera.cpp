@@ -45,9 +45,23 @@ void Camera::HandleZoom(const float& dt)
 
 void Camera::HandleRotations(const float& dt)
 {
-	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
-		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+		if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
+		{
+			ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+			float rollDelta = delta.x / Globals::startingSceneWidth * 3.f;
+
+			Algebra::Vector4 forward = rotation.Rotate(Algebra::Vector4(0, 0, -1, 0));
+
+			Algebra::Quaternion rollQuat = Algebra::Quaternion::CreateFromAxisAngle(forward, rollDelta);
+			rotation = (rollQuat * rotation).Normalize();
+
+			ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+			return;
+		}
+
+		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
 		float yawDelta = delta.x / Globals::startingSceneWidth * 3.f;
 		float pitchDelta = delta.y / Globals::startingSceneHeight * 3.f;
 
@@ -60,19 +74,6 @@ void Camera::HandleRotations(const float& dt)
 		Algebra::Quaternion pitchQuat = Algebra::Quaternion::CreateFromAxisAngle(right, -pitchDelta);
 
 		rotation = (pitchQuat * tempRotation).Normalize();
-
-		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
-	}
-
-	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
-	{
-		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-		float rollDelta = delta.x / Globals::startingSceneWidth * 3.f;
-
-		Algebra::Vector4 forward = rotation.Rotate(Algebra::Vector4(0, 0, -1, 0));
-
-		Algebra::Quaternion rollQuat = Algebra::Quaternion::CreateFromAxisAngle(forward, rollDelta);
-		rotation = (rollQuat * rotation).Normalize();
 
 		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 	}
