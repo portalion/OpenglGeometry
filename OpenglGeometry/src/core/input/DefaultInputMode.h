@@ -7,7 +7,7 @@ private:
 	Algebra::Vector4 draggingPoint;
 	Algebra::Vector4 GetMousePoint(float x, float y);
 public:
-	DefaultInputMode(Window* window, Camera* camera, AxisCursor* cursor);
+	using InputMode::InputMode;
 	void HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems) override;
 };
 

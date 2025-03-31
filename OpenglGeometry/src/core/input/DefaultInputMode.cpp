@@ -1,10 +1,5 @@
 #include "DefaultInputMode.h"
 
-DefaultInputMode::DefaultInputMode(Window* window, Camera* camera, AxisCursor* cursor)
-    :InputMode(window, camera, cursor)
-{
-}
-
 void DefaultInputMode::HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems)
 {
     if (ImGui::IsAnyItemActive() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
