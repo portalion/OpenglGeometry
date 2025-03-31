@@ -77,6 +77,10 @@ void App::Run()
 
 void App::HandleInput()
 {
+    if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+    {
+        selectedRenderables.clear();
+    }
     currentInputMode->HandleInput(selectedRenderables);
 }
 
