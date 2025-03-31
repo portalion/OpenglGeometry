@@ -1,7 +1,7 @@
 #include "DefaultInputMode.h"
 
-DefaultInputMode::DefaultInputMode(Window* window, Camera* camera)
-    :InputMode(window, camera)
+DefaultInputMode::DefaultInputMode(Window* window, Camera* camera, AxisCursor* cursor)
+    :InputMode(window, camera, cursor)
 {
 }
 

@@ -26,7 +26,7 @@ App::App()
         renderable->InitName();
     }
     
-    currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera);
+    currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera, &axis);
 }
 
 App::~App()
@@ -124,7 +124,7 @@ void App::DisplayParameters()
         }
 
         if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
-            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera);
+            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
         }
         axis.DisplayMenu();
     }
