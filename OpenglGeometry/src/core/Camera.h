@@ -5,9 +5,7 @@ class Camera
 {
 private:
 	float zoom;
-	float yAngle;
-	float xAngle;
-	float zAngle;
+	Algebra::Quaternion rotation;
 	
 	Algebra::Vector4 position;
 

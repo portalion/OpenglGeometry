@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include <imgui/imgui.h>
 #include <algorithm>
+#include "Globals.h"
 
 Algebra::Matrix4 Camera::GetTranslationMatrix()
 {
@@ -14,7 +15,7 @@ Algebra::Matrix4 Camera::GetZoomMatrix()
 
 Algebra::Matrix4 Camera::GetRotationMatrix()
 {
-	return Algebra::Matrix4::RotationXDegree(xAngle) * Algebra::Matrix4::RotationYDegree(yAngle) * Algebra::Matrix4::RotationZDegree(zAngle);
+	return rotation.ToMatrix();
 }
 
 void Camera::HandleTranslation(const float& dt)
@@ -44,38 +45,41 @@ void Camera::HandleZoom(const float& dt)
 
 void Camera::HandleRotations(const float& dt)
 {
+	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	{
+		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+		float yawDelta = delta.x / Globals::startingSceneWidth * 3.f;
+		float pitchDelta = delta.y / Globals::startingSceneHeight * 3.f;
+
+		Algebra::Quaternion yawQuat = Algebra::Quaternion::CreateFromAxisAngle(Algebra::Vector4(0, 1, 0, 0), -yawDelta);
+
+		Algebra::Quaternion tempRotation = (yawQuat * rotation).Normalize();
+
+		Algebra::Vector4 right = tempRotation.Rotate(Algebra::Vector4(1, 0, 0, 0));
+
+		Algebra::Quaternion pitchQuat = Algebra::Quaternion::CreateFromAxisAngle(right, -pitchDelta);
+
+		rotation = (pitchQuat * tempRotation).Normalize();
+
+		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+	}
+
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
-		if (ImGui::GetIO().KeyShift)
-		{
-			ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-			zAngle += delta.x / 10.f;
-		}
-		else
-		{
-			ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-			yAngle += delta.x / 10.f;
-			xAngle += delta.y / 10.f;
-		}
-		
-		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+		ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+		float rollDelta = delta.x / Globals::startingSceneWidth * 3.f;
 
-		xAngle = std::clamp(xAngle, -90.f, 90.f);
-		zAngle = std::clamp(zAngle, -90.f, 90.f);
-		if (yAngle > 360)
-		{
-			yAngle = 0;
-		}
-		else if(yAngle < 0)
-		{
-			yAngle = 360;
-		}
-		
+		Algebra::Vector4 forward = rotation.Rotate(Algebra::Vector4(0, 0, -1, 0));
+
+		Algebra::Quaternion rollQuat = Algebra::Quaternion::CreateFromAxisAngle(forward, rollDelta);
+		rotation = (rollQuat * rotation).Normalize();
+
+		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 	}
 }
 
 Camera::Camera(Algebra::Vector4 position, float zoom)
-	:position{ position }, zoom{ zoom }, yAngle{ 0 }, xAngle{ 0 }, zAngle{ 0 }
+	:position{ position }, zoom{ zoom }, rotation{1, 0, 0, 0}
 {
 }
 
