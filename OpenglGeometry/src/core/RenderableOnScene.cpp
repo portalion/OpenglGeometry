@@ -6,6 +6,12 @@ void RenderableOnScene::Move(Algebra::Vector4 translation)
 	position += translation;
 }
 
+void RenderableOnScene::Rotate(Algebra::Quaternion rotation)
+{
+	this->rotation = this->rotation * rotation;
+	this->rotation.Normalize();
+}
+
 void RenderableOnScene::InitName()
 {
 	auto typeName = GetTypeName();
