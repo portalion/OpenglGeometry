@@ -22,5 +22,6 @@ public:
 	virtual void HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems) = 0;
 
 	static std::unique_ptr<InputMode> CreateInputMode(InputModeEnum mode, Window* window, Camera* camera);
+	static const std::vector<std::pair<InputModeEnum, std::string>>& GetModeList();
 };
 

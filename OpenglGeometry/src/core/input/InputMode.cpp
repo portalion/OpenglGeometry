@@ -16,3 +16,11 @@ std::unique_ptr<InputMode> InputMode::CreateInputMode(InputModeEnum mode, Window
 
 	throw std::runtime_error("Invalid InputMode");
 }
+
+const std::vector<std::pair<InputModeEnum, std::string>>& InputMode::GetModeList() 
+{
+	static const std::vector<std::pair<InputModeEnum, std::string>> modeList = {
+		{ InputModeEnum::Default, "Default" },
+	};
+	return modeList;
+}

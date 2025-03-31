@@ -113,6 +113,19 @@ void App::DisplayParameters()
     if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
     {
 		ImGui::Checkbox("Show grid", &showGrid);
+        static int currentModeIndex = 0;
+        const auto& modes = InputMode::GetModeList();
+        std::vector<const char*> modeNames;
+        std::vector<InputModeEnum> modeEnums;
+
+        for (const auto& [enumVal, modeName] : modes) {
+            modeEnums.push_back(enumVal);
+            modeNames.push_back(modeName.c_str());
+        }
+
+        if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
+            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera);
+        }
         axis.DisplayMenu();
     }
 
