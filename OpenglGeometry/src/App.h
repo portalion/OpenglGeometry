@@ -11,11 +11,18 @@
 #include <core/input/InputMode.h>
 #include <unordered_set>
 
+enum class AvailableShapes
+{
+	Point = 0,
+	Torus = 1
+};
 
 class App {
 public:
 	App();
 	~App();
+
+	std::shared_ptr<RenderableOnScene> CreateNewShape(AvailableShapes shape);
 
 	void Run();
 	void Render();

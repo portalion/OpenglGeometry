@@ -3,6 +3,7 @@
 #include <engine/Renderer.h>
 #include <managers/ShaderManager.h>
 #include <imgui/imgui.h>
+#include <imgui/imgui_stdlib.h>
 
 struct RenderableOnSceneMesh
 {

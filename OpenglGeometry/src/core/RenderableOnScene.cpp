@@ -43,6 +43,10 @@ void RenderableOnScene::Render() const
 
 void RenderableOnScene::DisplayMenu()
 {
+	ImGui::SeparatorText(GetName().c_str());
+
+	std::string buffer;
+	ImGui::InputText(("Shape name##" + GetName()).c_str(), &buffer);
 	ImGui::InputFloat3(("Position##" + GetName()).c_str(), &position[0]);
 	somethingChanged |= DisplayParameters();
 }

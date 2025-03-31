@@ -37,6 +37,18 @@ App::~App()
     glfwTerminate();
 }
 
+std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
+{
+    switch (shape)
+    {
+    case AvailableShapes::Point:
+        return std::make_shared<Point>();
+    case AvailableShapes::Torus:
+        return std::make_shared<Torus>();
+    }
+    throw std::runtime_error("Invalid shape");
+}
+
 void App::Run()
 {
     while (running && !window.ShouldClose())
@@ -105,9 +117,9 @@ void App::DisplayParameters()
     }
 
     this->CreateShape();
-    if (ImGui::CollapsingHeader("Selected item parameters", ImGuiTreeNodeFlags_Leaf))
+    if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
     {
-        for (auto& renderable : sceneRenderables)
+        for (auto& renderable : selectedRenderables)
         {
             renderable->DisplayMenu();
         }
@@ -151,21 +163,25 @@ void App::CreateShape()
                 }
             }
         }
-
         ImGui::EndChild();
-        std::string buffer;
-        ImGui::InputText("Shape name", &buffer);
+        const char* items[] = { "Point", "Torus" };
+        static int item = 0;
         
         if (ImGui::Button("Create shape"))
         {
-            auto newShape = std::make_shared<Torus>();
+            AvailableShapes shapeType = static_cast<AvailableShapes>(item);
+            auto newShape = CreateNewShape(shapeType);
             newShape->InitName();
             newShape->Move(axis.GetPosition());
             sceneRenderables.push_back(newShape);
         }
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(Globals::rightInterfaceWidth / 3.f);
+        ImGui::Combo("##shape", &item, items, IM_ARRAYSIZE(items)); 
+        ImGui::SameLine();
+
         ImGui::BeginDisabled(selectedRenderables.size() == 0);
-        if (ImGui::Button("Remove shape"))
+        if (ImGui::Button("Remove shapes"))
         {
             sceneRenderables.erase(
                 std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
@@ -175,11 +191,6 @@ void App::CreateShape()
                     }),
                 sceneRenderables.end()
             );
-        }
-        
-        ImGui::SameLine();
-        if (ImGui::Button("Rename shape"))
-        {
         }
         ImGui::EndDisabled();
     }
