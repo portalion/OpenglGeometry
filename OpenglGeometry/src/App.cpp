@@ -219,6 +219,7 @@ void App::CreateShape()
                     }),
                 sceneRenderables.end()
             );
+            selectedRenderables.clear();
         }
         ImGui::EndDisabled();
     }
@@ -240,7 +241,7 @@ void App::Render()
         renderable->Render();
     }
 
-    if (!selectedRenderables.empty())
+    if (selectedRenderables.size() != 0)
     {
         defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
         middleSelectionPoint.Render();
