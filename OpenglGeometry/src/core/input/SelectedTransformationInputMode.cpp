@@ -3,9 +3,9 @@
 
 const std::vector<std::pair<Algebra::Vector4, ImGuiKey>> SelectedTransformationInputMode::rotationMapping =
 {
-	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(-1, 0, 0, 0), ImGuiKey_X),
-	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(0, -1, 0, 0), ImGuiKey_Y),
-	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(0, 0, -1, 0), ImGuiKey_Z)
+	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(1, 0, 0, 0), ImGuiKey_X),
+	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(0, 1, 0, 0), ImGuiKey_Y),
+	std::make_pair<Algebra::Vector4, ImGuiKey>(Algebra::Vector4(0, 0, 1, 0), ImGuiKey_Z)
 };
 
 Algebra::Vector4 SelectedTransformationInputMode::HandleTranslation()
@@ -59,17 +59,22 @@ Algebra::Quaternion SelectedTransformationInputMode::HandleRotation()
 
 float SelectedTransformationInputMode::HandleScale()
 {
-	return 0.0f;
+	if (ImGui::GetIO().MouseWheel != 0.f)
+	{
+		return ImGui::GetIO().MouseWheel * 0.1f;
+	}
+	return 0.f;
 }
 
 void SelectedTransformationInputMode::HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems)
 {
 	auto direction = HandleTranslation();
 	auto rotation = HandleRotation();
+	auto scale = HandleScale();
+
 	if (selectedItems.empty())
 	{
 		cursor->Move(direction);
-		cursor->Rotate(rotation);
 	}
 	else
 	{
@@ -77,6 +82,7 @@ void SelectedTransformationInputMode::HandleInput(const std::unordered_set<std::
 		{
 			selected->Move(direction);
 			selected->Rotate(rotation);
+			selected->Scale(scale);
 		}
 	}
 }

@@ -26,6 +26,7 @@ protected:
 	RenderingMode renderingMode;
 	Algebra::Vector4 position;
 	Algebra::Quaternion rotation;
+	float scale = 1.f;
 
 	virtual std::string GetTypeName() const = 0;
 	virtual RenderableOnSceneMesh GenerateMesh() = 0;
@@ -35,11 +36,16 @@ public:
 	virtual ~RenderableOnScene() = default;
 	
 	inline void SetPosition(Algebra::Vector4 pos) { position = pos; }
-	inline void SetRotation(Algebra::Quaternion rot) { rotation = rot; }
-	inline Algebra::Matrix4 GetModelMatrix() { return Algebra::Matrix4::Translation(position) * rotation.ToMatrix(); };
+	inline void SetRotation(Algebra::Quaternion rot) { rotation = rot.Normalize(); }
+	inline void SetScale(float scale) { this->scale = scale; }
 	inline Algebra::Vector4 GetPosition() { return position; };
-	inline Algebra::Quaternion GetRotation() { return rotation.Normalize(); }
+	inline Algebra::Quaternion GetRotation() { return rotation; }
+	inline float GetScale() { return scale; }
+	
+	inline Algebra::Matrix4 GetModelMatrix() 
+		{ return Algebra::Matrix4::Translation(position) * rotation.ToMatrix() * Algebra::Matrix4::DiagonalScaling(scale, scale, scale); };
 
+	void Scale(float scale);
 	void Move(Algebra::Vector4 translation);
 	void Rotate(Algebra::Quaternion rotation);
 	void InitName();
