@@ -317,9 +317,11 @@ void App::Render()
         renderable->Render();
     }
 
-    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
+    defaultShader->SetUniformMat4f("u_modelMatrix", Algebra::Matrix4::Translation(axis.GetPosition()));
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
     axis.Render();
     
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
 
     if (selectedRenderables.size() != 0)

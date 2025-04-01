@@ -11,9 +11,9 @@ RenderableOnSceneMesh AxisCursor::GenerateMesh()
     result.vertices = 
     {
         {{ 0.f, 0.f, 0.f, 1.f }},
-        {{ 1.f, 0.f, 0.f, 1.f }},
-        {{ 0.f, 1.f, 0.f, 1.f }},
-        {{ 0.f, 0.f, 1.f, 1.f }}
+        {{ 2.f, 0.f, 0.f, 1.f }},
+        {{ 0.f, 2.f, 0.f, 1.f }},
+        {{ 0.f, 0.f, 2.f, 1.f }}
     };
     result.indices = 
     {
