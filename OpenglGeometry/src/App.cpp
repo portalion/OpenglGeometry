@@ -77,6 +77,10 @@ void App::Run()
 
 void App::HandleInput()
 {
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        GetClickedPoint();
+    }
     if (ImGui::IsKeyPressed(ImGuiKey_Escape))
     {
         selectedRenderables.clear();
@@ -232,6 +236,69 @@ void App::CreateShape()
         ImGui::EndDisabled();
     }
 }
+
+Algebra::Vector4 App::ScreenToNDC(float x, float y)
+{
+    float ndcX = (2.0f * x) / (window.GetWidth() - Globals::rightInterfaceWidth) - 1.0f;
+    float ndcY = 1.0f - (2.0f * y) / window.GetHeight();
+    
+    return Algebra::Vector4(ndcX, ndcY, 0.f, 1.f);
+}
+
+void App::GetClickedPoint()
+{
+    auto screenPos = ImGui::GetMousePos();
+    auto ndcPos = ScreenToNDC(screenPos.x, screenPos.y);
+
+    if (std::abs(ndcPos.x) > 1.f || std::abs(ndcPos.y) > 1.f)
+    {
+        return;
+    }
+
+    const float similarityThreshold = 0.02f;
+    bool isCtrlPressed = ImGui::GetIO().KeyCtrl;
+
+    for (const auto& shape : sceneRenderables)
+    {
+        std::shared_ptr<RenderableOnScene> shapePtr = shape;
+        if (auto point = std::dynamic_pointer_cast<Point>(shape))
+        {
+            Algebra::Vector4 worldPos(0.f, 0.f, 0.f, 1.f);
+            Algebra::Matrix4 MVP = projectionMatrix * camera.GetViewMatrix() * point->GetModelMatrix();
+            Algebra::Vector4 clipPos = MVP * worldPos;
+
+            clipPos.z = 0.f;
+
+            if (clipPos.w != 0.f)
+            {
+                clipPos = clipPos / clipPos.w;
+            }
+
+            if (std::abs(ndcPos.x - clipPos.x) < similarityThreshold &&
+                std::abs(ndcPos.y - clipPos.y) < similarityThreshold)
+            {
+                if (isCtrlPressed)
+                {
+                    auto it = std::find(selectedRenderables.begin(), selectedRenderables.end(), shapePtr);
+                    if (it != selectedRenderables.end())
+                    {
+                        selectedRenderables.erase(it);
+                    }
+                    else
+                    {
+                        selectedRenderables.insert(shapePtr);
+                    }
+                }
+                else
+                {
+                    selectedRenderables.clear();
+                    selectedRenderables.insert(shapePtr);
+                }
+            }
+        }
+    }
+}
+
 
 void App::Render()
 {

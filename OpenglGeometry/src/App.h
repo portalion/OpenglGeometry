@@ -31,6 +31,8 @@ public:
 	void Update();
 	void DisplayParameters();
 	void CreateShape();
+	void GetClickedPoint();
+	Algebra::Vector4 ScreenToNDC(float x, float y);
 private:
 	bool running;
 	bool showGrid = true;
