@@ -186,7 +186,7 @@ void App::CreateShape()
                 std::shared_ptr<RenderableOnScene> shapePtr = renderable;
                 bool isSelected = selectedRenderables.count(shapePtr) > 0;
 
-                if (ImGui::Selectable(shapePtr->GetName().c_str(), isSelected))
+                if (ImGui::Selectable(shapePtr->GenerateLabelWithId(shapePtr->GetName()).c_str(), isSelected))
                 {
                     if (ctrlPressed)
                     {

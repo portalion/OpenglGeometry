@@ -55,5 +55,7 @@ public:
 
 	inline std::string GetName() const { return name; }
 	inline ImGuiID GetId() const { return ImGui::GetID(name.c_str()); }
+
+	std::string GenerateLabelWithId(std::string label);
 };
 

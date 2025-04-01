@@ -35,6 +35,11 @@ void RenderableOnScene::SaveMesh()
 	renderer.AssignIndices(mesh.indices);
 }
 
+std::string RenderableOnScene::GenerateLabelWithId(std::string label)
+{
+	return label + "##" + GetTypeName() + std::to_string(id);
+}
+
 RenderableOnScene::RenderableOnScene()
 	:renderer{ VertexDataType::PositionVertexData },
 	id{ 0 }
@@ -60,8 +65,13 @@ void RenderableOnScene::DisplayMenu()
 {
 	ImGui::SeparatorText(GetName().c_str());
 
-	std::string buffer;
-	ImGui::InputText(("Shape name##" + GetName()).c_str(), &buffer);
-	ImGui::InputFloat3(("Position##" + GetName()).c_str(), &position[0]);
+	char nameBuffer[128];
+	strncpy_s(nameBuffer, name.c_str(), sizeof(nameBuffer));
+	nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+	if (ImGui::InputText(GenerateLabelWithId("Name").c_str(), nameBuffer, sizeof(nameBuffer)))
+	{
+		name = std::string(nameBuffer);
+	}
+	ImGui::InputFloat3(GenerateLabelWithId("Position").c_str(), &position[0]);
 	somethingChanged |= DisplayParameters();
 }
