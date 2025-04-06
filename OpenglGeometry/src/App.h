@@ -14,7 +14,8 @@
 enum class AvailableShapes
 {
 	Point = 0,
-	Torus = 1
+	Torus = 1,
+	Polyline = 2
 };
 
 class App {
@@ -47,6 +48,7 @@ private:
 	InfiniteGrid grid;
 
 	std::shared_ptr<Shader> defaultShader;
+	std::vector<std::shared_ptr<Point>>selectedPoints;
 
 	Algebra::Matrix4 projectionMatrix;
 	Algebra::Matrix4 viewMatrix;

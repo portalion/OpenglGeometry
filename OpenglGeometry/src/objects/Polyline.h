@@ -13,12 +13,10 @@ private:
 	RenderableOnSceneMesh GenerateMesh() override;
 	bool DisplayParameters() override;
 public:
-	//Polyline(std::weak_ptr<Point> p)
-	//{
-	//	p.
-	//}
-	//Polyline(std::vector <std::weak_ptr<Point>> points);
-
-	//AddPoint
+	Polyline(std::vector<std::shared_ptr<Point>> points);
+	inline void AddPoint(std::shared_ptr<Point> point)
+	{
+		points.push_back(point);
+	}
 };
 

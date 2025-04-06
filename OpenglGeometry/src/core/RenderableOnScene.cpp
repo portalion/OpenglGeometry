@@ -3,11 +3,7 @@
 
 void RenderableOnScene::Scale(float scale)
 {
-	this->scale += scale;
-	if (this->scale <= 0.1f)
-	{
-		this->scale = 0.1f;
-	}
+	this->scale *= scale;
 }
 
 void RenderableOnScene::Move(Algebra::Vector4 translation)

@@ -6,6 +6,7 @@
 #include "core/Globals.h"
 #include <engine/Renderer.h>
 #include <core/InfiniteGrid.h>
+#include <objects/Polyline.h>
 
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
@@ -19,8 +20,6 @@ App::App()
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
-    sceneRenderables.push_back(std::make_shared<Torus>());
-    sceneRenderables.push_back(std::make_shared<Point>());
     for (auto& renderable : sceneRenderables)
     {
         renderable->InitName();
@@ -45,6 +44,8 @@ std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
         return std::make_shared<Point>();
     case AvailableShapes::Torus:
         return std::make_shared<Torus>();
+    case AvailableShapes::Polyline:
+        return std::make_shared<Polyline>(selectedPoints);
     }
     throw std::runtime_error("Invalid shape");
 }
@@ -191,20 +192,37 @@ void App::CreateShape()
                     if (ctrlPressed)
                     {
                         if (isSelected)
+                        {
                             selectedRenderables.erase(shapePtr);
+                            if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                            {
+                                std::erase(selectedPoints, point);
+                            }
+                        }
                         else
+                        {
                             selectedRenderables.insert(shapePtr);
+                            if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                            {
+                                selectedPoints.push_back(point);
+                            }
+                        }
                     }
                     else
                     {
                         selectedRenderables.clear();
+                        selectedPoints.clear();
                         selectedRenderables.insert(shapePtr);
+                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                        {
+                            selectedPoints.push_back(point);
+                        }
                     }
                 }
             }
         }
         ImGui::EndChild();
-        const char* items[] = { "Point", "Torus" };
+        const char* items[] = { "Point", "Torus", "Polyline"};
         static int item = 0;
         
         if (ImGui::Button("Create shape"))
@@ -232,6 +250,7 @@ void App::CreateShape()
                 sceneRenderables.end()
             );
             selectedRenderables.clear();
+            selectedPoints.clear();
         }
         ImGui::EndDisabled();
     }
@@ -283,16 +302,29 @@ void App::GetClickedPoint()
                     if (it != selectedRenderables.end())
                     {
                         selectedRenderables.erase(it);
+                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                        {
+                            std::erase(selectedPoints, point);
+                        }
                     }
                     else
                     {
                         selectedRenderables.insert(shapePtr);
+                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                        {
+                            selectedPoints.push_back(point);
+                        }
                     }
                 }
                 else
                 {
                     selectedRenderables.clear();
                     selectedRenderables.insert(shapePtr);
+                    selectedPoints.clear();
+                    if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
+                    {
+                        selectedPoints.push_back(point);
+                    }
                 }
             }
         }

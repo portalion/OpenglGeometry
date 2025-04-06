@@ -61,9 +61,9 @@ float SelectedTransformationInputMode::HandleScale()
 {
 	if (ImGui::GetIO().MouseWheel != 0.f)
 	{
-		return ImGui::GetIO().MouseWheel * 0.1f;
+		return ImGui::GetIO().MouseWheel * 0.1f + 1.f;
 	}
-	return 0.f;
+	return 1.f;
 }
 
 void SelectedTransformationInputMode::HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems)

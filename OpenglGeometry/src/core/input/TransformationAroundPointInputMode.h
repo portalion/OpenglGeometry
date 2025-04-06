@@ -1,10 +1,10 @@
 #pragma once
-#include "InputMode.h"
+#include "SelectedTransformationInputMode.h"
 
-class TransformationAroundPointInputMode : public InputMode
+class TransformationAroundPointInputMode : public SelectedTransformationInputMode
 {
 public:
-	using InputMode::InputMode;
+	using SelectedTransformationInputMode::SelectedTransformationInputMode;
 	void HandleInput(const std::unordered_set<std::shared_ptr<RenderableOnScene>>& selectedItems) override;
 };
 
