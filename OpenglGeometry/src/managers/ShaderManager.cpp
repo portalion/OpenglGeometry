@@ -1,10 +1,18 @@
 #include "ShaderManager.h"
 #include <iostream>
+#include "engine/ShaderBuilder.h"
 
 ShaderManager::ShaderManager()
 {
-	AddShader(AvailableShaders::Default, "resources/shaders/default");
-	AddShader(AvailableShaders::InfiniteGrid, "resources/shaders/infiniteGrid");
+	//TODO: Change into logger
+	std::cout << "INFO: Loading Shaders" << std::endl;
+	AssignShader(AvailableShaders::Default, ShaderBuilder("resources/shaders/")
+		.AddShader(ShaderType::Vertex, "default")
+		.AddShader(ShaderType::Fragment, "default"));
+	AssignShader(AvailableShaders::InfiniteGrid, ShaderBuilder("resources/shaders/")
+		.AddShader(ShaderType::Vertex, "infiniteGrid")
+		.AddShader(ShaderType::Fragment, "infiniteGrid"));
+	std::cout << "INFO: Loaded Shaders" << std::endl;
 }
 
 ShaderManager& ShaderManager::GetInstance()
@@ -19,28 +27,13 @@ std::shared_ptr<Shader> ShaderManager::GetShader(AvailableShaders name)
 	return shaders[name];
 }
 
-std::shared_ptr<Shader> ShaderManager::AddShader(AvailableShaders name, std::string filename)
+std::shared_ptr<Shader> ShaderManager::AssignShader(AvailableShaders name, const ShaderBuilder& builder)
 {
 	if (shaders.find(name) != shaders.end())
 	{
 		std::cerr << "WARNING: shader with name: " << static_cast<int>(name) << " already existing\n";
 		return shaders[name];
 	}
-	shaders[name] = std::make_shared<Shader>(filename);
+	shaders[name] = builder.BuildShared();
 	return shaders[name];
-}
-
-std::shared_ptr<Shader> ShaderManager::AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader)
-{
-	if (shaders.find(name) != shaders.end())
-	{
-		std::cerr << "WARNING: shader with name: " << static_cast<int>(name) << " already existing\n";
-		return shaders[name];
-	}
-	shaders[name] = std::make_shared<Shader>(vertexShader, fragmentShader);
-	return shaders[name];
-}
-
-ShaderManager::~ShaderManager()
-{
 }

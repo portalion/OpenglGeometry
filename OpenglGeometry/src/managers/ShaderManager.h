@@ -9,6 +9,8 @@ enum class AvailableShaders
 	InfiniteGrid = 1,
 };
 
+class ShaderBuilder;
+
 class ShaderManager
 {
 private:
@@ -16,10 +18,9 @@ private:
 
 	std::unordered_map<AvailableShaders, std::shared_ptr<Shader>> shaders;
 
-	std::shared_ptr<Shader> AddShader(AvailableShaders name, std::string filename);
-	std::shared_ptr<Shader> AddShader(AvailableShaders name, std::string vertexShader, std::string fragmentShader);
+	std::shared_ptr<Shader> AssignShader(AvailableShaders name, const ShaderBuilder& builder);
 public:
-	~ShaderManager();
+	~ShaderManager() = default;
 	ShaderManager(ShaderManager& other) = delete;
 	void operator=(const ShaderManager&) = delete;
 	

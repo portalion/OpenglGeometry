@@ -1,34 +1,21 @@
 #include "Shader.h"
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include "utils/GlCall.h"
 
-Shader::Shader(const std::string& filepath)
-    : m_RendererID(0)
+const std::unordered_map<ShaderType, ShaderTypeInfo> Shader::shaderInfoMap =
 {
-    ShaderProgramSource source = GetShaderFromFiles(filepath);
-    m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
-}
+    { ShaderType::Vertex, ShaderTypeInfo{.fileExtension = ".vert", .glShaderId = GL_VERTEX_SHADER }},
+    { ShaderType::Fragment, ShaderTypeInfo{.fileExtension = ".frag", .glShaderId = GL_FRAGMENT_SHADER }},
+    { ShaderType::Geometry, ShaderTypeInfo{.fileExtension = ".geom", .glShaderId = GL_GEOMETRY_SHADER }},
+    { ShaderType::TesselationControl, ShaderTypeInfo{.fileExtension = ".tesc", .glShaderId = GL_TESS_CONTROL_SHADER }},
+    { ShaderType::TesselationEvaluation, ShaderTypeInfo{.fileExtension = ".tese", .glShaderId = GL_TESS_EVALUATION_SHADER }},
+};
 
-Shader::Shader(const std::string& vsFilepath, const std::string& fsFilepath)
+Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes)
+    :m_RendererID{ 0 }
 {
-    ShaderProgramSource source;
-    std::string vertexShaderSource = ParseShader(vsFilepath).str();
-    std::string fragmentShaderSource = ParseShader(fsFilepath).str();
-
-    if (vertexShaderSource.empty())
-    {
-        std::cerr << "WARNING: Vertex shader (" << vsFilepath << ") is empty\n";
-    }
-
-    if (fragmentShaderSource.empty())
-    {
-        std::cerr << "WARNING: Fragment shader (" << fsFilepath << ") is empty\n";
-    }
-
-    m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+    m_RendererID = CreateShader(sourceCodes);
 }
 
 Shader::~Shader()
@@ -44,38 +31,6 @@ void Shader::SetUniformMat4f(const std::string& name, const Algebra::Matrix4& ma
 void Shader::SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector)
 {
     GLCall(glUniform4f(GetUniformLocation(name), vector.x, vector.y, vector.z, vector.w));
-}
-
-std::stringstream Shader::ParseShader(const std::string& filepath)
-{
-    std::ifstream stream(filepath);
-
-    std::string line;
-    std::stringstream ss;
-    while (getline(stream, line))
-    {
-        ss << line << '\n';
-    }
-
-    return ss;
-}
-
-ShaderProgramSource Shader::GetShaderFromFiles(const std::string& filepath)
-{
-    std::stringstream vertexShaderSource = ParseShader(filepath + ".vert");
-    std::stringstream fragmentShaderSource = ParseShader(filepath + ".frag");
-
-    if (vertexShaderSource.str().empty())
-    {
-        std::cerr << "WARNING: Vertex shader (" << filepath + ".vert" << ") is empty\n";
-    }
-
-    if (fragmentShaderSource.str().empty())
-    {
-        std::cerr << "WARNING: Fragment shader (" << filepath + ".frag" << ") is empty\n";
-    }
-
-    return { vertexShaderSource.str(), fragmentShaderSource.str() };
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
@@ -102,19 +57,20 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
     return id;
 }
 
-unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+unsigned int Shader::CreateShader(const std::unordered_map<ShaderType, std::string>& shaderSourceCodes)
 {
     unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
-    GLCall(glAttachShader(program, vs));
-    GLCall(glAttachShader(program, fs));
+    for (auto& shaderSourceCode : shaderSourceCodes)
+    {
+        auto glType = shaderInfoMap.at(shaderSourceCode.first).glShaderId;
+        unsigned int compiledShader = CompileShader(glType, shaderSourceCode.second);
+        GLCall(glAttachShader(program, compiledShader));
+        GLCall(glDeleteShader(compiledShader));
+    }
+
     GLCall(glLinkProgram(program));
     GLCall(glValidateProgram(program));
-
-    GLCall(glDeleteShader(vs));
-    GLCall(glDeleteShader(fs));
 
     return program;
 }
