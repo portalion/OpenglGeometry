@@ -4,7 +4,7 @@
 #include <managers/ShaderManager.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
-#include "Algebra.h"
+#include "Transformable.h"
 
 struct RenderableOnSceneMesh
 {
@@ -13,7 +13,8 @@ struct RenderableOnSceneMesh
 };
 
 //TODO: ADD ID MANAGER
-class RenderableOnScene
+//TODO: Change into smaller classes: Renderable, TransformableRenderable, RenderableDependentOnObserver, ObservableRenderable, RenderableWithOwnInputOnSelection
+class RenderableOnScene : public Transformable
 {
 private:
 	Renderer<PositionVertexData> renderer;
@@ -24,9 +25,6 @@ private:
 protected:
 	std::string name;
 	RenderingMode renderingMode;
-	Algebra::Vector4 position;
-	Algebra::Quaternion rotation;
-	float scale = 1.f;
 
 	virtual std::string GetTypeName() const = 0;
 	virtual RenderableOnSceneMesh GenerateMesh() = 0;
@@ -35,19 +33,6 @@ public:
 	RenderableOnScene();
 	virtual ~RenderableOnScene() = default;
 	
-	inline void SetPosition(Algebra::Vector4 pos) { position = pos; }
-	inline void SetRotation(Algebra::Quaternion rot) { rotation = rot.Normalize(); }
-	inline void SetScale(float scale) { this->scale = scale; }
-	inline Algebra::Vector4 GetPosition() { return position; };
-	inline Algebra::Quaternion GetRotation() { return rotation; }
-	inline float GetScale() { return scale; }
-	
-	inline Algebra::Matrix4 GetModelMatrix() 
-		{ return Algebra::Matrix4::Translation(position) * rotation.ToMatrix() * Algebra::Matrix4::DiagonalScaling(scale, scale, scale); };
-
-	void Scale(float scale);
-	void Move(Algebra::Vector4 translation);
-	void Rotate(Algebra::Quaternion rotation);
 	void InitName();
 	void Update();
 	void DisplayMenu();
@@ -58,4 +43,3 @@ public:
 
 	std::string GenerateLabelWithId(std::string label);
 };
-

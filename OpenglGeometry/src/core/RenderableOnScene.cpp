@@ -1,22 +1,6 @@
 #include "RenderableOnScene.h"
 #include <managers/IdManager.h>
 
-void RenderableOnScene::Scale(float scale)
-{
-	this->scale *= scale;
-}
-
-void RenderableOnScene::Move(Algebra::Vector4 translation)
-{
-	position += translation;
-}
-
-void RenderableOnScene::Rotate(Algebra::Quaternion rotation)
-{
-	this->rotation = this->rotation * rotation;
-	this->rotation.Normalize();
-}
-
 void RenderableOnScene::InitName()
 {
 	auto typeName = GetTypeName();
@@ -68,6 +52,6 @@ void RenderableOnScene::DisplayMenu()
 	{
 		name = std::string(nameBuffer);
 	}
-	ImGui::InputFloat3(GenerateLabelWithId("Position").c_str(), &position[0]);
+	//ImGui::InputFloat3(GenerateLabelWithId("Position").c_str(), &position[0]);
 	somethingChanged |= DisplayParameters();
 }
