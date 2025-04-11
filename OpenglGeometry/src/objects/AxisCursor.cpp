@@ -5,9 +5,9 @@ std::string AxisCursor::GetTypeName() const
     return std::string("AxisCursor");
 }
 
-RenderableOnSceneMesh AxisCursor::GenerateMesh()
+RenderableMesh<PositionVertexData> AxisCursor::GenerateMesh()
 {
-    RenderableOnSceneMesh result;
+    RenderableMesh<PositionVertexData> result;
     result.vertices = 
     {
         {{ 0.f, 0.f, 0.f, 1.f }},

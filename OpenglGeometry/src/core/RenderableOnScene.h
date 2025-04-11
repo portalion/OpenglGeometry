@@ -1,42 +1,32 @@
 #pragma once
 #include <string>
-#include <engine/Renderer.h>
 #include <managers/ShaderManager.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include "Transformable.h"
-
-struct RenderableOnSceneMesh
-{
-	std::vector<PositionVertexData> vertices;
-	std::vector<unsigned int> indices;
-};
+#include "engine/Renderable.h"
 
 //TODO: ADD ID MANAGER
-//TODO: Change into smaller classes: Renderable, TransformableRenderable, RenderableDependentOnObserver, ObservableRenderable, RenderableWithOwnInputOnSelection
-class RenderableOnScene : public Transformable
+//TODO: Move IMGUI / Menus / ID into composition?
+class RenderableOnScene : public Transformable, public Renderable<PositionVertexData>
 {
 private:
-	Renderer<PositionVertexData> renderer;
-	bool somethingChanged = false;
 	unsigned int id;
 	
-	void SaveMesh();
 protected:
 	std::string name;
-	RenderingMode renderingMode;
 
+	bool somethingChanged = false;
+	virtual RenderableMesh<PositionVertexData> GenerateMesh() = 0;
 	virtual std::string GetTypeName() const = 0;
-	virtual RenderableOnSceneMesh GenerateMesh() = 0;
 	virtual bool DisplayParameters() = 0;
 public:
 	RenderableOnScene();
 	virtual ~RenderableOnScene() = default;
-	
 	void InitName();
-	void Update();
+	
 	void DisplayMenu();
-	void Render() const;
+	virtual void Update();
 
 	inline std::string GetName() const { return name; }
 	inline ImGuiID GetId() const { return ImGui::GetID(name.c_str()); }

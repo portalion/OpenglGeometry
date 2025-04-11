@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\engine\Renderable.ipp" />
     <ClCompile Include="src\core\input\SelectedTransformationInputMode.cpp" />
     <ClCompile Include="src\core\input\DefaultInputMode.cpp" />
     <ClCompile Include="src\core\input\InputMode.cpp" />
@@ -223,6 +224,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\Renderable.h" />
     <ClInclude Include="src\core\input\SelectedTransformationInputMode.h" />
     <ClInclude Include="src\core\input\DefaultInputMode.h" />
     <ClInclude Include="src\core\input\InputMode.h" />

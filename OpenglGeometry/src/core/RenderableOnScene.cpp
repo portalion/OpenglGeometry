@@ -1,28 +1,8 @@
 #include "RenderableOnScene.h"
 #include <managers/IdManager.h>
 
-void RenderableOnScene::InitName()
-{
-	auto typeName = GetTypeName();
-	id = IdManager::GetInstance().GetNewId(typeName);
-	name = GetTypeName() + ' ' + std::to_string(id);
-}
-
-void RenderableOnScene::SaveMesh()
-{
-	const auto& mesh = GenerateMesh();
-	renderer.AssignVertices(mesh.vertices);
-	renderer.AssignIndices(mesh.indices);
-}
-
-std::string RenderableOnScene::GenerateLabelWithId(std::string label)
-{
-	return label + "##" + GetTypeName() + std::to_string(id);
-}
-
 RenderableOnScene::RenderableOnScene()
-	:renderer{ VertexDataType::PositionVertexData },
-	id{ 0 }
+	: Renderable<PositionVertexData>(VertexDataType::PositionVertexData)
 {
 	renderingMode = RenderingMode::LINES;
 	somethingChanged = true;
@@ -36,9 +16,16 @@ void RenderableOnScene::Update()
 	}
 }
 
-void RenderableOnScene::Render() const
+void RenderableOnScene::InitName()
 {
-	renderer.Render(renderingMode);
+	auto typeName = GetTypeName();
+	id = IdManager::GetInstance().GetNewId(typeName);
+	name = GetTypeName() + ' ' + std::to_string(id);
+}
+
+std::string RenderableOnScene::GenerateLabelWithId(std::string label)
+{
+	return label + "##" + GetTypeName() + std::to_string(id);
 }
 
 void RenderableOnScene::DisplayMenu()

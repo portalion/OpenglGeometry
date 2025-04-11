@@ -7,9 +7,9 @@ Algebra::Vector4 Torus::GetPoint(float angleTube, float angleRadius)
 		Algebra::Vector4(radius + tubeRadius * cosf(angleTube), tubeRadius * sinf(angleTube), 0.f, 1.f);
 }
 
-RenderableOnSceneMesh Torus::GenerateMesh()
+RenderableMesh<PositionVertexData> Torus::GenerateMesh()
 {
-	RenderableOnSceneMesh result;
+	RenderableMesh<PositionVertexData> result;
 
 	for (unsigned int i = 0; i < radiusSegments; i++)
 	{

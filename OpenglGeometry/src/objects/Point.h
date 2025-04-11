@@ -3,10 +3,10 @@
 
 class Point : public RenderableOnScene
 {
-	const static RenderableOnSceneMesh mesh;
+	const static RenderableMesh<PositionVertexData> mesh;
 
 	inline std::string GetTypeName() const override { return "Point"; }
-	RenderableOnSceneMesh GenerateMesh() override;
+	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	inline bool DisplayParameters() override { return false; }
 
 public:

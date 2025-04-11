@@ -1,8 +1,8 @@
 #include "Polyline.h"
 
-RenderableOnSceneMesh Polyline::GenerateMesh()
+RenderableMesh<PositionVertexData> Polyline::GenerateMesh()
 {
-	RenderableOnSceneMesh result;
+    RenderableMesh<PositionVertexData> result;
 
 	if (points.empty())
 	{

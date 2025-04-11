@@ -12,7 +12,7 @@ private:
 	Algebra::Vector4 GetPoint(float angleTube, float angleRadius);
 
 	inline std::string GetTypeName() const override { return "Torus"; }
-	RenderableOnSceneMesh GenerateMesh() override;
+	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	bool DisplayParameters() override;
 };
 

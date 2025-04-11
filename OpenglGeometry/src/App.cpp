@@ -36,6 +36,7 @@ App::~App()
     glfwTerminate();
 }
 
+//TODO: Add a factory method for creating shapes
 std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
 {
     switch (shape)
@@ -154,7 +155,7 @@ void App::DisplayParameters()
         if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
             currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
         }
-        axis.DisplayMenu();
+        //axis.DisplayMenu();
     }
 
     this->CreateShape();

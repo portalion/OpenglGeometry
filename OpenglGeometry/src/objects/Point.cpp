@@ -1,6 +1,6 @@
 #include "Point.h"
 
-const RenderableOnSceneMesh Point::mesh = RenderableOnSceneMesh
+const RenderableMesh<PositionVertexData> Point::mesh = RenderableMesh<PositionVertexData>
 {
     .vertices =
     {
@@ -24,7 +24,7 @@ const RenderableOnSceneMesh Point::mesh = RenderableOnSceneMesh
     } 
 };
 
-RenderableOnSceneMesh Point::GenerateMesh()
+RenderableMesh<PositionVertexData> Point::GenerateMesh()
 {
     return mesh;
 }

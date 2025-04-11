@@ -1,10 +1,10 @@
 #pragma once
 #include "core/RenderableOnScene.h"
 
-class AxisCursor : public RenderableOnScene
+class AxisCursor : public virtual RenderableOnScene, public virtual PositionComponent
 {
-	std::string GetTypeName() const override;
-	RenderableOnSceneMesh GenerateMesh() override;
-	inline bool DisplayParameters() override { return false; };
+	std::string GetTypeName() const;
+	RenderableMesh<PositionVertexData> GenerateMesh() override;
+	inline bool DisplayParameters() { return false; };
 };
 
