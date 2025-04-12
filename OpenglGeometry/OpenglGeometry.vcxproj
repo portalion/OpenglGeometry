@@ -180,6 +180,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SelectedShapes.cpp" />
+    <ClCompile Include="src\UI\ShapeList.cpp" />
     <ClCompile Include="src\engine\Renderable.ipp" />
     <ClCompile Include="src\core\input\SelectedTransformationInputMode.cpp" />
     <ClCompile Include="src\core\input\DefaultInputMode.cpp" />
@@ -199,6 +201,7 @@
     <ClCompile Include="src\engine\Renderer.ipp" />
     <ClCompile Include="src\engine\VertexLayout.cpp" />
     <ClCompile Include="src\engine\Shader.cpp" />
+    <ClCompile Include="src\UI\ShapeCreator.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -224,6 +227,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SelectedShapes.h" />
+    <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\engine\Renderable.h" />
     <ClInclude Include="src\core\input\SelectedTransformationInputMode.h" />
     <ClInclude Include="src\core\input\DefaultInputMode.h" />
@@ -243,6 +248,7 @@
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\engine\Shader.h" />
+    <ClInclude Include="src\UI\ShapeCreator.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />

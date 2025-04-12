@@ -36,7 +36,6 @@ App::~App()
     glfwTerminate();
 }
 
-//TODO: Add a factory method for creating shapes
 std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
 {
     switch (shape)
@@ -46,10 +45,11 @@ std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
     case AvailableShapes::Torus:
         return std::make_shared<Torus>();
     case AvailableShapes::Polyline:
-        return std::make_shared<Polyline>(selectedPoints);
+        return std::make_shared<Polyline>(selectedShapes.GetSelectedWithType<Point>());
     }
     throw std::runtime_error("Invalid shape");
 }
+
 
 void App::Run()
 {
@@ -85,10 +85,11 @@ void App::HandleInput()
     }
     if (ImGui::IsKeyPressed(ImGuiKey_Escape))
     {
-        selectedRenderables.clear();
+        selectedShapes.Clear();
     }
-
-    currentInputMode->HandleInput(selectedRenderables);
+	//TODO: Add iterator to selectedShapes
+    auto shapes = selectedShapes.GetSelectedWithType<RenderableOnScene>();
+    currentInputMode->HandleInput({shapes.begin(), shapes.end()});
 }
 
 void App::HandleResize()
@@ -107,16 +108,10 @@ void App::Update()
     }
     axis.Update();
     middleSelectionPoint.Update();
-    if (!selectedRenderables.empty())
-    {
-        Algebra::Vector4 middlePoint;
-        for (auto& selected : selectedRenderables)
-        {
-            middlePoint += selected->GetPosition();
-        }
-        middlePoint = middlePoint / selectedRenderables.size();
-        middleSelectionPoint.SetPosition(middlePoint);
-    }
+
+    if(auto middlePoint = selectedShapes.GetAveragePosition())
+        middleSelectionPoint.SetPosition(*middlePoint);
+
 }
 
 void App::DisplayParameters()
@@ -157,11 +152,11 @@ void App::DisplayParameters()
         }
         //axis.DisplayMenu();
     }
-
+    //TODO: Add iterator to selectedShapes
     this->CreateShape();
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
     {
-        for (auto& renderable : selectedRenderables)
+        for (auto& renderable : selectedShapes.GetSelectedWithType<RenderableOnScene>())
         {
             renderable->DisplayMenu();
         }
@@ -185,39 +180,16 @@ void App::CreateShape()
 
             for (const auto& renderable : sceneRenderables)
             {
-                std::shared_ptr<RenderableOnScene> shapePtr = renderable;
-                bool isSelected = selectedRenderables.count(shapePtr) > 0;
-
-                if (ImGui::Selectable(shapePtr->GenerateLabelWithId(shapePtr->GetName()).c_str(), isSelected))
+                if (ImGui::Selectable(renderable->GenerateLabelWithId(renderable->GetName()).c_str(), selectedShapes.IsSelected(renderable)))
                 {
                     if (ctrlPressed)
                     {
-                        if (isSelected)
-                        {
-                            selectedRenderables.erase(shapePtr);
-                            if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                            {
-                                std::erase(selectedPoints, point);
-                            }
-                        }
-                        else
-                        {
-                            selectedRenderables.insert(shapePtr);
-                            if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                            {
-                                selectedPoints.push_back(point);
-                            }
-                        }
+                        selectedShapes.ToggleShape(renderable);
                     }
                     else
                     {
-                        selectedRenderables.clear();
-                        selectedPoints.clear();
-                        selectedRenderables.insert(shapePtr);
-                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                        {
-                            selectedPoints.push_back(point);
-                        }
+                        selectedShapes.Clear();
+						selectedShapes.AddShape(renderable);
                     }
                 }
             }
@@ -239,19 +211,18 @@ void App::CreateShape()
         ImGui::Combo("##shape", &item, items, IM_ARRAYSIZE(items)); 
         ImGui::SameLine();
 
-        ImGui::BeginDisabled(selectedRenderables.size() == 0);
+        ImGui::BeginDisabled(selectedShapes.IsEmpty());
         if (ImGui::Button("Remove shapes"))
         {
             sceneRenderables.erase(
                 std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
                     [&](const std::shared_ptr<RenderableOnScene>& shape) {
-                        bool shouldRemove = selectedRenderables.find(shape) != selectedRenderables.end();
+                        bool shouldRemove = selectedShapes.IsSelected(shape);
                         return shouldRemove; 
                     }),
                 sceneRenderables.end()
             );
-            selectedRenderables.clear();
-            selectedPoints.clear();
+            selectedShapes.Clear();
         }
         ImGui::EndDisabled();
     }
@@ -299,33 +270,12 @@ void App::GetClickedPoint()
             {
                 if (isCtrlPressed)
                 {
-                    auto it = std::find(selectedRenderables.begin(), selectedRenderables.end(), shapePtr);
-                    if (it != selectedRenderables.end())
-                    {
-                        selectedRenderables.erase(it);
-                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                        {
-                            std::erase(selectedPoints, point);
-                        }
-                    }
-                    else
-                    {
-                        selectedRenderables.insert(shapePtr);
-                        if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                        {
-                            selectedPoints.push_back(point);
-                        }
-                    }
+					selectedShapes.ToggleShape(shapePtr);
                 }
                 else
                 {
-                    selectedRenderables.clear();
-                    selectedRenderables.insert(shapePtr);
-                    selectedPoints.clear();
-                    if (auto point = std::dynamic_pointer_cast<Point>(shapePtr))
-                    {
-                        selectedPoints.push_back(point);
-                    }
+                    selectedShapes.Clear();
+                    selectedShapes.AddShape(shapePtr);
                 }
             }
         }
@@ -357,7 +307,7 @@ void App::Render()
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
 
-    if (selectedRenderables.size() != 0)
+    if (!selectedShapes.IsEmpty())
     {
         defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
         middleSelectionPoint.Render();
