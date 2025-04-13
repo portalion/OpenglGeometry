@@ -180,7 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SelectedShapes.cpp" />
+    <ClCompile Include="src\UI\SelectedShapes.cpp" />
     <ClCompile Include="src\UI\ShapeList.cpp" />
     <ClCompile Include="src\engine\Renderable.ipp" />
     <ClCompile Include="src\core\input\SelectedTransformationInputMode.cpp" />
@@ -227,7 +227,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SelectedShapes.h" />
+    <ClInclude Include="src\UI\SelectedShapes.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\engine\Renderable.h" />
     <ClInclude Include="src\core\input\SelectedTransformationInputMode.h" />

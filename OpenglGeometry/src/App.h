@@ -10,21 +10,13 @@
 #include <objects/Point.h>
 #include <core/input/InputMode.h>
 #include <unordered_set>
-#include "../SelectedShapes.h"
-
-enum class AvailableShapes
-{
-	Point = 0,
-	Torus = 1,
-	Polyline = 2
-};
+#include "UI/SelectedShapes.h"
+#include <UI/ShapeCreator.h>
 
 class App {
 public:
 	App();
 	~App();
-
-	std::shared_ptr<RenderableOnScene> CreateNewShape(AvailableShapes shape);
 
 	void Run();
 	void Render();
@@ -47,6 +39,7 @@ private:
 	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;
 	AxisCursor axis;
 	InfiniteGrid grid;
+	ShapeCreator shapeCreator;
 
 	std::shared_ptr<Shader> defaultShader;
 

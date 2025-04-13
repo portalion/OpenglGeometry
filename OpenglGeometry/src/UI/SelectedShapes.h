@@ -18,17 +18,21 @@ public:
 	std::optional<Algebra::Vector4> GetAveragePosition() const;
 
 	template<typename T>
-	inline std::vector<std::shared_ptr<T>> GetSelectedWithType() const
+	inline std::vector<std::shared_ptr<T>> GetSelectedWithType() const;
+};
+
+template<typename T>
+inline std::vector<std::shared_ptr<T>> SelectedShapes::GetSelectedWithType() const
+{
 	{
 		std::vector<std::shared_ptr<T>> selected;
 		for (const auto& shape : selectedShapes)
 		{
-			if (auto castedShape = std::dynamic_pointer_cast<T>(shape))
+			if (std::shared_ptr<T> castedShape = std::dynamic_pointer_cast<T>(shape))
 			{
 				selected.push_back(castedShape);
 			}
 		}
 		return selected;
 	}
-};
-
+}

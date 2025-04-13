@@ -11,7 +11,8 @@
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Globals::startingCameraPosition, 1.f}
+	camera{ Globals::startingCameraPosition, 1.f},
+	shapeCreator{ &selectedShapes, &axis }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
@@ -36,20 +37,6 @@ App::~App()
     glfwTerminate();
 }
 
-std::shared_ptr<RenderableOnScene> App::CreateNewShape(AvailableShapes shape)
-{
-    switch (shape)
-    {
-    case AvailableShapes::Point:
-        return std::make_shared<Point>();
-    case AvailableShapes::Torus:
-        return std::make_shared<Torus>();
-    case AvailableShapes::Polyline:
-        return std::make_shared<Polyline>(selectedShapes.GetSelectedWithType<Point>());
-    }
-    throw std::runtime_error("Invalid shape");
-}
-
 
 void App::Run()
 {
@@ -65,9 +52,9 @@ void App::Run()
 #endif 
 
         HandleInput();
-        Update();
-
         DisplayParameters();
+
+        Update();
         Render();
 
         ImGui::Render();
@@ -195,20 +182,34 @@ void App::CreateShape()
             }
         }
         ImGui::EndChild();
-        const char* items[] = { "Point", "Torus", "Polyline"};
-        static int item = 0;
-        
+        auto availableShapes = ShapeCreator::GetShapeList();
+		static int currentShapeIndex = 0;
+
         if (ImGui::Button("Create shape"))
         {
-            AvailableShapes shapeType = static_cast<AvailableShapes>(item);
-            auto newShape = CreateNewShape(shapeType);
+            auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first);
             newShape->InitName();
             newShape->Move(axis.GetPosition());
             sceneRenderables.push_back(newShape);
         }
         ImGui::SameLine();
         ImGui::SetNextItemWidth(Globals::rightInterfaceWidth / 3.f);
-        ImGui::Combo("##shape", &item, items, IM_ARRAYSIZE(items)); 
+		if (ImGui::BeginCombo("##shape", availableShapes[currentShapeIndex].second.c_str()))
+		{
+			for (int i = 0; i < availableShapes.size(); ++i)
+			{
+				const bool isSelected = (currentShapeIndex == i);
+				if (ImGui::Selectable(availableShapes[i].second.c_str(), isSelected))
+				{
+					currentShapeIndex = i;
+				}
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
         ImGui::SameLine();
 
         ImGui::BeginDisabled(selectedShapes.IsEmpty());
