@@ -1,4 +1,5 @@
 #include "BezierCurve.h"
+#include <algorithm>
 
 RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 {
@@ -34,6 +35,12 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 	return result;
 }
 
+bool BezierCurve::HelperButton(ImGuiDir direction)
+{
+	ImGui::SameLine();
+	return ImGui::ArrowButton(GenerateLabelWithId(std::to_string(static_cast<int>(direction))).c_str(), direction);
+}
+
 bool BezierCurve::DisplayParameters()
 {
 	SetPosition(Algebra::Vector4());
@@ -41,7 +48,33 @@ bool BezierCurve::DisplayParameters()
 	SetScale(1.f);
 
 	ImGui::Checkbox(this->GenerateLabelWithId("Draw Polyline").c_str(), &displayPolyline);
+	if (ImGui::Button(GenerateLabelWithId("Add Selected Points").c_str()))
+	{
 
+		for (const auto& selected : selectedShapes->GetSelectedWithType<Point>())
+		{
+			if (!selected)
+				continue;
+
+			bool alreadyExists = false;
+			for (const auto& weak : points)
+			{
+				if (auto existing = weak.lock())
+				{
+					if (existing == selected)
+					{
+						alreadyExists = true;
+						break;
+					}
+				}
+			}
+
+			if (!alreadyExists)
+			{
+				AddPoint(selected);
+			}
+		}
+	}
     ImGui::Text("Bezier Control Points (%zu)", points.size());
 
     int index = 0;
@@ -52,7 +85,6 @@ bool BezierCurve::DisplayParameters()
             ImGui::PushID(index);
 
             ImGui::Text(point->GetName().c_str());
-
             ImGui::SameLine();
             if (ImGui::Button(GenerateLabelWithId("Remove").c_str()))
             {
@@ -61,9 +93,19 @@ bool BezierCurve::DisplayParameters()
             }
             else
             {
-                ++it;
+				if (index > 0 && HelperButton(ImGuiDir_Up))
+				{
+					std::iter_swap(it, std::prev(it));
+					polyline.SwapPoints(*it, *std::prev(it));
+				}
+				if (index < points.size() - 1 && HelperButton(ImGuiDir_Down))
+				{
+					std::iter_swap(it, std::next(it));
+					polyline.SwapPoints(*it, *std::next(it));
+				}
+				++it;
             }
-
+			
             ImGui::PopID();
             index++;
         }
@@ -78,8 +120,8 @@ bool BezierCurve::DisplayParameters()
     return true;
 }
 
-BezierCurve::BezierCurve(std::vector<std::shared_ptr<Point>> points)
-	:polyline({})
+BezierCurve::BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* selectedShapes)
+	:polyline({}), selectedShapes(selectedShapes)
 {
     for (auto& point : points)
     {

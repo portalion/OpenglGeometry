@@ -3,6 +3,7 @@
 #include "Point.h"
 #include <vector>
 #include "Polyline.h"
+#include <UI/SelectedShapes.h>
 
 class BezierCurve : public RenderableOnScene
 {
@@ -15,8 +16,10 @@ private:
 	bool DisplayParameters() override;
 
 	Polyline polyline;
+	bool HelperButton(ImGuiDir direction);
+	SelectedShapes* selectedShapes = nullptr;
 public:
-	BezierCurve(std::vector<std::shared_ptr<Point>> points);
+	BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
 	inline void AddPoint(std::shared_ptr<Point> point)
 	{
 		polyline.AddPoint(point);

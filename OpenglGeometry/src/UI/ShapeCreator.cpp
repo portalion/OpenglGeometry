@@ -14,7 +14,7 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) co
     case ShapeEnum::Polyline:
         return std::make_shared<Polyline>(selectedShapes->GetSelectedWithType<Point>());
     case ShapeEnum::BezierCurve:
-		return std::make_shared<BezierCurve>(selectedShapes->GetSelectedWithType<Point>());
+		return std::make_shared<BezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     }
     throw std::runtime_error("Invalid shape");
 }
