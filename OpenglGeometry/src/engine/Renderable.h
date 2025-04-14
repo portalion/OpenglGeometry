@@ -19,8 +19,9 @@ protected:
 
 	virtual RenderableMesh<T> GenerateMesh() = 0;
 public:
+	virtual ~Renderable() = default;
 	inline Renderable(VertexDataType dataType);
-	inline void Render() const;
+	inline virtual void Render() const;
 };
 
 #include "Renderable.ipp"
