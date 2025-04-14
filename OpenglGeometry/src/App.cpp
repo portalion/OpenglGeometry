@@ -7,6 +7,7 @@
 #include <engine/Renderer.h>
 #include <core/InfiniteGrid.h>
 #include <objects/Polyline.h>
+#include <objects/BezierCurve.h>
 
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
@@ -191,6 +192,16 @@ void App::CreateShape()
             newShape->InitName();
             newShape->Move(axis.GetPosition());
             sceneRenderables.push_back(newShape);
+
+            if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
+            {
+				auto beziers = selectedShapes.GetSelectedWithType<BezierCurve>();
+                for (auto bezier : beziers)
+                {
+					bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
+                }
+            }
+
         }
         ImGui::SameLine();
         ImGui::SetNextItemWidth(Globals::rightInterfaceWidth / 3.f);
