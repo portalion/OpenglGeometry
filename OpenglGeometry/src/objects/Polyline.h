@@ -4,7 +4,7 @@
 #include "Point.h"
 #include <algorithm>
 
-class Polyline : public RenderableOnScene
+class Polyline : public RenderableOnScene, public IObserver
 {
 private:
 	std::vector<std::weak_ptr<Point>> points;
@@ -14,12 +14,36 @@ private:
 	bool DisplayParameters() override;
 public:
 	Polyline(std::vector<std::shared_ptr<Point>> points);
+	~Polyline()
+	{
+		for (auto& point : points)
+		{
+			if (auto ptr = point.lock())
+			{
+				ptr->Detach(this);
+			}
+		}
+	}
+	virtual void Update() override
+	{
+		RenderableOnScene::Update();
+	}
+	inline void Update(const std::string& m) override
+	{
+		somethingChanged = true;
+	}
 	inline void AddPoint(std::shared_ptr<Point> point)
 	{
+		point->Attach(this);
 		points.push_back(point);
 	}
 	inline void RemovePoint(std::weak_ptr<Point> point)
 	{
+		somethingChanged = true;
+		if (auto ptr = point.lock())
+		{
+			ptr->Detach(this);
+		}
 		points.erase(std::remove_if(points.begin(), points.end(),
 			[&point](const std::weak_ptr<Point>& p) { return p.lock() == point.lock(); }), points.end());
 	}

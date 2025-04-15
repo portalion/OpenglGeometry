@@ -1,14 +1,19 @@
 #include "BezierCurve.h"
 #include <algorithm>
+#include "App.h"
 
 RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 {
-	RenderableMesh<PositionVertexData> result;
-
+	controlPoints.clear();
 	if (points.empty())
 	{
-		return result;
+		return {};
 	}
+
+	float minx = std::numeric_limits<float>::max();
+	float miny = std::numeric_limits<float>::max(); 
+	float maxx = std::numeric_limits<float>::lowest(); 
+	float maxy = std::numeric_limits<float>::lowest(); 
 
 	for (auto it = points.begin(); it != points.end();)
 	{
@@ -17,7 +22,14 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 		{
 			vertex.Position = ptr->GetPosition();
 			vertex.Position.w = 1.f;
-			result.vertices.push_back(vertex);
+			vertex.Position = App::projectionMatrix * App::camera.GetViewMatrix() * vertex.Position;
+			vertex.Position = vertex.Position / vertex.Position.w;
+			controlPoints.push_back(vertex.Position);
+
+			minx = fmin(minx, vertex.Position.x);
+			miny = fmin(miny, vertex.Position.y);
+			maxx = fmax(maxx, vertex.Position.x);
+			maxy = fmax(maxy, vertex.Position.y);
 			++it;
 		}
 		else
@@ -25,14 +37,17 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 			it = points.erase(it);
 		}
 	}
-
-	for (int i = 0; i < result.vertices.size() - 1; i++)
+	
+	return RenderableMesh<PositionVertexData>
 	{
-		result.indices.push_back(i);
-		result.indices.push_back(i + 1);
-	}
-
-	return result;
+		.vertices
+		{
+			PositionVertexData{{minx, miny, 0.f, 1.f}},
+			PositionVertexData{{minx, maxy, 0.f, 1.f}},
+			PositionVertexData{{maxx, miny, 0.f, 1.f}},
+			PositionVertexData{{maxx, maxy, 0.f, 1.f}},
+		}
+	};
 }
 
 bool BezierCurve::HelperButton(ImGuiDir direction)
@@ -50,7 +65,6 @@ bool BezierCurve::DisplayParameters()
 	ImGui::Checkbox(this->GenerateLabelWithId("Draw Polyline").c_str(), &displayPolyline);
 	if (ImGui::Button(GenerateLabelWithId("Add Selected Points").c_str()))
 	{
-
 		for (const auto& selected : selectedShapes->GetSelectedWithType<Point>())
 		{
 			if (!selected)
@@ -74,6 +88,7 @@ bool BezierCurve::DisplayParameters()
 				AddPoint(selected);
 			}
 		}
+		somethingChanged = true;
 	}
     ImGui::Text("Bezier Control Points (%zu)", points.size());
 
@@ -89,7 +104,9 @@ bool BezierCurve::DisplayParameters()
             if (ImGui::Button(GenerateLabelWithId("Remove").c_str()))
             {
 				polyline.RemovePoint(*it);
+				it->lock()->Detach(this);
                 it = points.erase(it);
+				somethingChanged = true;
             }
             else
             {
@@ -97,11 +114,13 @@ bool BezierCurve::DisplayParameters()
 				{
 					std::iter_swap(it, std::prev(it));
 					polyline.SwapPoints(*it, *std::prev(it));
+					somethingChanged = true;
 				}
 				if (index < points.size() - 1 && HelperButton(ImGuiDir_Down))
 				{
 					std::iter_swap(it, std::next(it));
 					polyline.SwapPoints(*it, *std::next(it));
+					somethingChanged = true;
 				}
 				++it;
             }
@@ -114,15 +133,17 @@ bool BezierCurve::DisplayParameters()
 
 			polyline.RemovePoint(*it);
             it = points.erase(it);
+			somethingChanged = true;
         }
     }
 
-    return true;
+	return somethingChanged;
 }
 
 BezierCurve::BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* selectedShapes)
 	:polyline({}), selectedShapes(selectedShapes)
 {
+	renderingMode = RenderingMode::PATCHES;
     for (auto& point : points)
     {
         AddPoint(point);

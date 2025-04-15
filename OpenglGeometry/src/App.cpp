@@ -9,15 +9,15 @@
 #include <objects/Polyline.h>
 #include <objects/BezierCurve.h>
 
+Algebra::Matrix4 App::projectionMatrix;
+Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Globals::startingCameraPosition, 1.f},
 	shapeCreator{ &selectedShapes, &axis }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
-	viewMatrix = Algebra::Matrix4::Identity();
 
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
@@ -85,7 +85,7 @@ void App::HandleResize()
 	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
 	float newHeight = static_cast<float>(window.GetHeight());
 	float aspect = newWidth / newHeight;
-    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
+    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 100.0f, 3.14f / 2.f);
 }
 
 void App::Update()

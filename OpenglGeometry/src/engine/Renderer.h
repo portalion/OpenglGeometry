@@ -4,7 +4,8 @@
 enum class RenderingMode
 {
 	LINES = GL_LINES,
-	TRIANGLES = GL_TRIANGLES
+	TRIANGLES = GL_TRIANGLES,
+	PATCHES = GL_PATCHES
 };
 
 template <class T> class Renderer

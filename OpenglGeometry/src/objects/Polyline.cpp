@@ -55,6 +55,8 @@ bool Polyline::DisplayParameters()
             ImGui::SameLine();
             if (ImGui::Button(GenerateLabelWithId("Remove").c_str()))
             {
+                somethingChanged = true;
+                point->Detach(this);
                 it = points.erase(it);  
             }
             else
@@ -67,12 +69,12 @@ bool Polyline::DisplayParameters()
         }
         else
         {
-            
+            somethingChanged = true;
             it = points.erase(it);
         }
     }
-
-    return true;
+   
+    return somethingChanged;
 }
 
 Polyline::Polyline(std::vector<std::shared_ptr<Point>> points)

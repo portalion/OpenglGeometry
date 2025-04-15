@@ -272,6 +272,10 @@
     <ClInclude Include="src\engine\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\shaders\bezier.frag" />
+    <None Include="resources\shaders\bezier.tesc" />
+    <None Include="resources\shaders\bezier.tese" />
+    <None Include="resources\shaders\bezier.vert" />
     <None Include="resources\shaders\default.frag" />
     <None Include="resources\shaders\default.vert" />
     <None Include="resources\shaders\infiniteGrid.frag" />

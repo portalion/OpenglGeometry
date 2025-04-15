@@ -27,11 +27,13 @@ public:
 	void CreateShape();
 	void GetClickedPoint();
 	Algebra::Vector4 ScreenToNDC(float x, float y);
+	static Algebra::Matrix4 projectionMatrix;
+	static Camera camera;
 private:
 	bool running;
 	bool showGrid = true;
 	Window window;
-	Camera camera;
+
 	Point middleSelectionPoint;
 	std::unique_ptr<InputMode> currentInputMode;
 
@@ -42,7 +44,4 @@ private:
 	ShapeCreator shapeCreator;
 
 	std::shared_ptr<Shader> defaultShader;
-
-	Algebra::Matrix4 projectionMatrix;
-	Algebra::Matrix4 viewMatrix;
 };
