@@ -34,6 +34,7 @@ public:
 	}
 	inline void AddPoint(std::shared_ptr<Point> point)
 	{
+		somethingChanged = true;
 		point->Attach(this);
 		points.push_back(point);
 	}
@@ -57,6 +58,7 @@ public:
 		{
 			std::iter_swap(it1, it2);
 		}
+		somethingChanged = true;
 	}
 };
 

@@ -3,10 +3,17 @@
 #include <stdexcept>
 #include "Matrix4.h"
 #include "Vector4.h"
-
+#include <numbers>
+#include "Utils.h"
 namespace Algebra
 {
-	class Quaternion
+    struct EulerAngles
+    {
+        float pitch;
+        float yaw;
+        float roll;
+    };
+    class Quaternion
 	{
 	public:
         float w, x, y, z;
@@ -20,7 +27,26 @@ namespace Algebra
 
         static Quaternion CreateFromAxisAngle(const Vector4& axis, float angle);
         static Quaternion CreateFromEulerAngles(float yaw, float pitch, float roll);
+        EulerAngles ToEulerAngles(Quaternion q) {
+            EulerAngles angles;
 
+            // roll (x-axis rotation)
+            float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+            float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+            angles.roll = RadiansToDegree(std::atan2(sinr_cosp, cosr_cosp));
+
+            // pitch (y-axis rotation)
+            float sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
+            float cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
+            angles.pitch = RadiansToDegree(2 * std::atan2(sinp, cosp) - std::numbers::pi_v<float> / 2);
+
+            // yaw (z-axis rotation)
+            float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+            float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+            angles.yaw = RadiansToDegree(std::atan2(siny_cosp, cosy_cosp));
+
+            return angles;
+        }
         float Length() const;
         Quaternion Normalize() const;
         Quaternion Conjugate() const;

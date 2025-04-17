@@ -1,10 +1,11 @@
 #include "BezierCurve.h"
 #include <algorithm>
 #include "App.h"
+#include "core/Globals.h"
 
 RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 {
-	controlPoints.clear();
+	RenderableMesh<PositionVertexData> mesh;
 	if (points.empty())
 	{
 		return {};
@@ -15,6 +16,7 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 	float maxx = std::numeric_limits<float>::lowest(); 
 	float maxy = std::numeric_limits<float>::lowest(); 
 
+	int i = 0;
 	for (auto it = points.begin(); it != points.end();)
 	{
 		PositionVertexData vertex;
@@ -22,32 +24,66 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 		{
 			vertex.Position = ptr->GetPosition();
 			vertex.Position.w = 1.f;
+			mesh.vertices.push_back(vertex);
+			if (++i % 4 == 0)
+			{
+				mesh.vertices.push_back(vertex);
+				i++;
+			}
+
 			vertex.Position = App::projectionMatrix * App::camera.GetViewMatrix() * vertex.Position;
 			vertex.Position = vertex.Position / vertex.Position.w;
-			controlPoints.push_back(vertex.Position);
 
 			minx = fmin(minx, vertex.Position.x);
 			miny = fmin(miny, vertex.Position.y);
 			maxx = fmax(maxx, vertex.Position.x);
 			maxy = fmax(maxy, vertex.Position.y);
 			++it;
+
 		}
 		else
 		{
 			it = points.erase(it);
 		}
-	}
 	
-	return RenderableMesh<PositionVertexData>
-	{
-		.vertices
-		{
-			PositionVertexData{{minx, miny, 0.f, 1.f}},
-			PositionVertexData{{minx, maxy, 0.f, 1.f}},
-			PositionVertexData{{maxx, miny, 0.f, 1.f}},
-			PositionVertexData{{maxx, maxy, 0.f, 1.f}},
-		}
-	};
+	}
+	int fix = mesh.vertices.size() % 4;
+	if (fix == 1) {
+		// Duplicate the single point to create a degenerate cubic
+		auto p = mesh.vertices[mesh.vertices.size() - 1];
+		mesh.vertices.pop_back();
+		mesh.vertices.push_back(p);
+		mesh.vertices.push_back(p);
+		mesh.vertices.push_back(p);
+		mesh.vertices.push_back(p);
+	}
+	else if (fix == 2) {
+		// Create a straight line cubic: start and end duplicated
+		auto p0 = mesh.vertices[mesh.vertices.size() - 2];
+		auto p1 = mesh.vertices[mesh.vertices.size() - 1];
+		mesh.vertices.pop_back();
+		mesh.vertices.pop_back();
+		mesh.vertices.push_back(p0);
+		mesh.vertices.push_back(p0);
+		mesh.vertices.push_back(p1);
+		mesh.vertices.push_back(p1);
+	}
+	else if (fix == 3) {
+		// Upgrade quadratic to cubic
+		auto p0 = mesh.vertices[mesh.vertices.size() - 3];
+		auto p1 = mesh.vertices[mesh.vertices.size() - 2];
+		auto p2 = mesh.vertices[mesh.vertices.size() - 1];
+		mesh.vertices.pop_back();
+		mesh.vertices.pop_back();
+		mesh.vertices.pop_back();
+		mesh.vertices.push_back(p0);
+		mesh.vertices.push_back(PositionVertexData{ .Position {(1.0f / 3.0f) * p0.Position + (2.0f / 3.0f) * p1.Position} });
+		mesh.vertices.push_back(PositionVertexData{ .Position {(2.0f / 3.0f) * p1.Position + (1.0f / 3.0f) * p2.Position} });
+		mesh.vertices.push_back(p2);
+	}
+	sizeInPixels = static_cast<int>(static_cast<float>(Globals::startingSceneWidth) * (maxx - minx) + static_cast<float>(Globals::startingSceneHeight) * (maxy - miny)) * points.size();
+	
+	return mesh;
 }
 
 bool BezierCurve::HelperButton(ImGuiDir direction)

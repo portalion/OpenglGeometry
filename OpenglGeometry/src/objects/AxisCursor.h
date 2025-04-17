@@ -5,6 +5,9 @@ class AxisCursor : public virtual RenderableOnScene, public virtual PositionComp
 {
 	std::string GetTypeName() const;
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
-	inline bool DisplayParameters() { return false; };
+	inline bool DisplayParameters() 
+	{ 
+		return false; 
+	};
 };
 

@@ -2,7 +2,7 @@
 
 void ScaleComponent::Scale(float scale)
 {
-	this->scale *= scale;
+//	this->scale *= scale;
 }
 
 void PositionComponent::Move(Algebra::Vector4 translation)
@@ -12,6 +12,6 @@ void PositionComponent::Move(Algebra::Vector4 translation)
 
 void RotationComponent::Rotate(Algebra::Quaternion rotation)
 {
-	this->rotation = this->rotation * rotation;
+//	this->rotation = this->rotation * rotation;
 	this->rotation.Normalize();
 }

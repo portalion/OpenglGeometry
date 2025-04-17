@@ -85,7 +85,7 @@ void App::HandleResize()
 	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
 	float newHeight = static_cast<float>(window.GetHeight());
 	float aspect = newWidth / newHeight;
-    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 100.0f, 3.14f / 2.f);
+    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
 }
 
 void App::Update()
@@ -138,7 +138,7 @@ void App::DisplayParameters()
         if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
             currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
         }
-        //axis.DisplayMenu();
+        axis.DisplayMenu();
     }
     //TODO: Add iterator to selectedShapes
     this->CreateShape();

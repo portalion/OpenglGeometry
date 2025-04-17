@@ -38,8 +38,7 @@ void Camera::HandleZoom(const float& dt)
 {
 	if (ImGui::GetIO().MouseWheel != 0.f)
 	{
-		zoom += ImGui::GetIO().MouseWheel * 0.1f;
-		zoom = std::clamp(zoom, 0.1f, 5.0f);
+		zoom *= ImGui::GetIO().MouseWheel > 0 ? 1.1f : 1.f/1.1f;
 	}
 }
 

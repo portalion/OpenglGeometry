@@ -19,8 +19,8 @@ private:
 	Polyline polyline;
 	bool HelperButton(ImGuiDir direction);
 	SelectedShapes* selectedShapes = nullptr;
-	std::vector<Algebra::Vector4> controlPoints;
 	Algebra::Matrix4 lastView = Algebra::Matrix4::Identity();
+	int sizeInPixels;
 public:
 	BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
 	~BezierCurve()
@@ -58,7 +58,9 @@ public:
 	{
 		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::Bezier);
 		shader->Bind();
-		shader->SetUniformVec1i("pointCount", controlPoints.size());
+		shader->SetUniformVec1i("segments", sizeInPixels);
+		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
+		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
 		RenderableOnScene::Render();
 		ShaderManager::GetInstance().GetShader(AvailableShaders::Default)->Bind();
 		if (displayPolyline)

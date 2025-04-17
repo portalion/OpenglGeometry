@@ -18,7 +18,7 @@ class Point : public RenderableOnScene
 	Algebra::Matrix4 lastModel = Algebra::Matrix4::Identity();
 public:
 	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
-
+	~Point() { Notify("Destructor"); }
 	void Attach(IObserver* observer) {
 		observers.push_back(observer);
 	}
