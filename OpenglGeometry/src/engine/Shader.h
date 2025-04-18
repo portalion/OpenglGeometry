@@ -32,8 +32,9 @@ public:
 	~Shader();
 
 	void SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix);
-	void SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector);
 	void SetUniformVec1i(const std::string& name, const int& value);
+	void SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector);
+	void SetUniformVec2f(const std::string& name, const Algebra::Vector4& vector);
 
 	void Bind() const;
 	void UnBind() const;

@@ -33,6 +33,11 @@ void Shader::SetUniformVec4f(const std::string& name, const Algebra::Vector4& ve
     GLCall(glUniform4f(GetUniformLocation(name), vector.x, vector.y, vector.z, vector.w));
 }
 
+void Shader::SetUniformVec2f(const std::string& name, const Algebra::Vector4& vector)
+{
+    GLCall(glUniform2f(GetUniformLocation(name), vector.x, vector.y));
+}
+
 void Shader::SetUniformVec1i(const std::string& name, const int& value)
 {
     GLCall(glUniform1i(GetUniformLocation(name), value));

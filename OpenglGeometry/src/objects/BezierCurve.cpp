@@ -11,11 +11,6 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 		return {};
 	}
 
-	float minx = std::numeric_limits<float>::max();
-	float miny = std::numeric_limits<float>::max(); 
-	float maxx = std::numeric_limits<float>::lowest(); 
-	float maxy = std::numeric_limits<float>::lowest(); 
-
 	int i = 0;
 	for (auto it = points.begin(); it != points.end();)
 	{
@@ -30,16 +25,7 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 				mesh.vertices.push_back(vertex);
 				i++;
 			}
-
-			vertex.Position = App::projectionMatrix * App::camera.GetViewMatrix() * vertex.Position;
-			vertex.Position = vertex.Position / vertex.Position.w;
-
-			minx = fmin(minx, vertex.Position.x);
-			miny = fmin(miny, vertex.Position.y);
-			maxx = fmax(maxx, vertex.Position.x);
-			maxy = fmax(maxy, vertex.Position.y);
 			++it;
-
 		}
 		else
 		{
@@ -81,7 +67,6 @@ RenderableMesh<PositionVertexData> BezierCurve::GenerateMesh()
 		mesh.vertices.push_back(PositionVertexData{ .Position {(2.0f / 3.0f) * p1.Position + (1.0f / 3.0f) * p2.Position} });
 		mesh.vertices.push_back(p2);
 	}
-	sizeInPixels = static_cast<int>(static_cast<float>(Globals::startingSceneWidth) * (maxx - minx) + static_cast<float>(Globals::startingSceneHeight) * (maxy - miny)) * points.size();
 	
 	return mesh;
 }

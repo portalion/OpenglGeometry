@@ -5,6 +5,7 @@
 #include "Polyline.h"
 #include <UI/SelectedShapes.h>
 #include "App.h"
+#include "core/Globals.h"
 
 class BezierCurve : public RenderableOnScene, public IObserver
 {
@@ -19,8 +20,6 @@ private:
 	Polyline polyline;
 	bool HelperButton(ImGuiDir direction);
 	SelectedShapes* selectedShapes = nullptr;
-	Algebra::Matrix4 lastView = Algebra::Matrix4::Identity();
-	int sizeInPixels;
 public:
 	BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
 	~BezierCurve()
@@ -58,9 +57,9 @@ public:
 	{
 		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::Bezier);
 		shader->Bind();
-		shader->SetUniformVec1i("segments", sizeInPixels);
 		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
 		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
+		shader->SetUniformVec2f("u_screenSize", Algebra::Vector4(Globals::startingSceneWidth, Globals::startingSceneHeight, 0));
 		RenderableOnScene::Render();
 		ShaderManager::GetInstance().GetShader(AvailableShaders::Default)->Bind();
 		if (displayPolyline)
@@ -68,19 +67,9 @@ public:
 			polyline.Render();
 		}
 	}
+	
 	void Update() override
 	{
-		bool isEqual = true;
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				if (std::abs(App::camera.GetViewMatrix()[i][j] - lastView[i][j]) > 0.0001f)
-					isEqual = false;
-			}
-		}
-		lastView = App::camera.GetViewMatrix();
-		somethingChanged |= !isEqual;
 		RenderableOnScene::Update();
 		polyline.Update();
 	}
