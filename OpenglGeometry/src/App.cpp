@@ -98,7 +98,7 @@ void App::Update()
     middleSelectionPoint.Update();
 
     if(auto middlePoint = selectedShapes.GetAveragePosition())
-        middleSelectionPoint.SetPosition(*middlePoint);
+        middleSelectionPoint.GetPositionComponent()->SetPosition(*middlePoint);
 
 }
 
@@ -190,7 +190,7 @@ void App::CreateShape()
         {
             auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first);
             newShape->InitName();
-            newShape->Move(axis.GetPosition());
+            newShape->GetPositionComponent()->Move(axis.GetPositionComponent()->GetPosition());
             sceneRenderables.push_back(newShape);
 
             if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
@@ -312,7 +312,7 @@ void App::Render()
         renderable->Render();
     }
 
-    defaultShader->SetUniformMat4f("u_modelMatrix", Algebra::Matrix4::Translation(axis.GetPosition()));
+    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
     axis.Render();
     

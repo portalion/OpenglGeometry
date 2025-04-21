@@ -14,7 +14,7 @@ RenderableMesh<PositionVertexData> Polyline::GenerateMesh()
 		PositionVertexData vertex;
 		if (auto ptr = it->lock())
 		{
-			vertex.Position = ptr->GetPosition();
+			vertex.Position = ptr->GetPositionComponent()->GetPosition();
 			vertex.Position.w = 1.f;
 			result.vertices.push_back(vertex);
 			++it;
@@ -36,10 +36,6 @@ RenderableMesh<PositionVertexData> Polyline::GenerateMesh()
 
 bool Polyline::DisplayParameters()
 {
-	SetPosition(Algebra::Vector4());
-	SetRotation(Algebra::Quaternion());
-	SetScale(1.f);
-
     ImGui::Text("Polyline Points (%zu)", points.size());
 
     int index = 0;

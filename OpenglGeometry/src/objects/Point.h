@@ -1,8 +1,11 @@
 #pragma once
 #include "core/RenderableOnScene.h"
+#include <core/transformations/TransformationComponents.h>
 
 class Point : public RenderableOnScene
 {
+private:
+	PositionComponent positionComponent;
 	const static RenderableMesh<PositionVertexData> mesh;
 
 	inline std::string GetTypeName() const override { return "Point"; }
@@ -11,5 +14,7 @@ class Point : public RenderableOnScene
 
 public:
 	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
+
+	inline IPositionComponent* GetPositionComponent() override { return &positionComponent; }
 };
 

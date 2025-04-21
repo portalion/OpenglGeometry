@@ -28,6 +28,13 @@ std::string RenderableOnScene::GenerateLabelWithId(std::string label)
 	return label + "##" + GetTypeName() + std::to_string(id);
 }
 
+Algebra::Matrix4 RenderableOnScene::GetModelMatrix() 
+{
+	return	GetPositionComponent()->GetModelMatrix() *
+			GetRotationComponent()->GetModelMatrix() *
+			GetScaleComponent()->GetModelMatrix();
+}
+
 void RenderableOnScene::DisplayMenu()
 {
 	ImGui::SeparatorText(GetName().c_str());

@@ -8,14 +8,14 @@ void TransformationAroundAxisInputMode::HandleInput(const std::unordered_set<std
 
 	for (auto& selected : selectedItems)
 	{
-		selected->Move(direction);
+		selected->GetPositionComponent()->Move(direction);
 
-		auto translation = selected->GetPosition() - cursor->GetPosition();
+		auto translation = selected->GetPositionComponent()->GetPosition() - cursor->GetPositionComponent()->GetPosition();
 		auto translationAfterRotation = rotation.Rotate(translation);
-		selected->SetPosition(translationAfterRotation + cursor->GetPosition());
-		selected->Rotate(rotation.Conjugate());
+		selected->GetPositionComponent()->SetPosition(translationAfterRotation + cursor->GetPositionComponent()->GetPosition());
+		selected->GetRotationComponent()->Rotate(rotation.Conjugate());
 
-		selected->SetPosition(cursor->GetPosition()  + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
-		selected->Scale(scale);
+		selected->GetPositionComponent()->SetPosition(cursor->GetPositionComponent()->GetPosition()  + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
+		selected->GetScaleComponent()->Scale(scale);
 	}
 }

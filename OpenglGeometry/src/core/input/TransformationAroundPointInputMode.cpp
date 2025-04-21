@@ -11,21 +11,21 @@ void TransformationAroundPointInputMode::HandleInput(const std::unordered_set<st
 	{
 		for (auto& selected : selectedItems)
 		{
-			middlePoint += selected->GetPosition();
+			middlePoint += selected->GetPositionComponent()->GetPosition();
 		}
 		middlePoint = middlePoint / selectedItems.size();
 	}
 
 	for (auto& selected : selectedItems)
 	{
-		selected->Move(direction);
+		selected->GetPositionComponent()->Move(direction);
 
-		auto translation = selected->GetPosition() - middlePoint;
+		auto translation = selected->GetPositionComponent()->GetPosition() - middlePoint;
 		auto translationAfterRotation = rotation.Rotate(translation);
-		selected->SetPosition(translationAfterRotation + middlePoint);
-		selected->Rotate(rotation.Conjugate());
+		selected->GetPositionComponent()->SetPosition(translationAfterRotation + middlePoint);
+		selected->GetRotationComponent()->Rotate(rotation.Conjugate());
 
-		selected->SetPosition(middlePoint + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
-		selected->Scale(scale);
+		selected->GetPositionComponent()->SetPosition(middlePoint + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
+		selected->GetScaleComponent()->Scale(scale);
 	}
 }

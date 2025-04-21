@@ -74,15 +74,14 @@ void SelectedTransformationInputMode::HandleInput(const std::unordered_set<std::
 
 	if (selectedItems.empty())
 	{
-		cursor->Move(direction);
+		cursor->GetPositionComponent()->Move(direction);
+		return;
 	}
-	else
+
+	for (auto& selected : selectedItems)
 	{
-		for (auto& selected : selectedItems)
-		{
-			selected->Move(direction);
-			selected->Rotate(rotation);
-			selected->Scale(scale);
-		}
+		selected->GetPositionComponent()->Move(direction);
+		selected->GetRotationComponent()->Rotate(rotation);
+		selected->GetScaleComponent()->Scale(scale);
 	}
 }

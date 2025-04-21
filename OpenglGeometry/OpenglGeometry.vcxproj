@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\transformations\ITransformationComponents.h" />
     <ClCompile Include="src\objects\BezierCurve.cpp" />
     <ClCompile Include="src\UI\SelectedShapes.cpp" />
     <ClCompile Include="src\UI\ShapeList.cpp" />
@@ -187,7 +188,6 @@
     <ClCompile Include="src\core\input\SelectedTransformationInputMode.cpp" />
     <ClCompile Include="src\core\input\DefaultInputMode.cpp" />
     <ClCompile Include="src\core\input\InputMode.cpp" />
-    <ClCompile Include="src\core\Transformable.cpp" />
     <ClCompile Include="src\engine\ShaderBuilder.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\objects\Polyline.cpp" />
@@ -228,6 +228,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\transformations\EmptyTransformationComponents.h" />
+    <ClInclude Include="src\core\transformations\IExposesTransformationComponents.h" />
     <ClInclude Include="src\objects\BezierCurve.h" />
     <ClInclude Include="src\UI\SelectedShapes.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
@@ -235,7 +237,7 @@
     <ClInclude Include="src\core\input\SelectedTransformationInputMode.h" />
     <ClInclude Include="src\core\input\DefaultInputMode.h" />
     <ClInclude Include="src\core\input\InputMode.h" />
-    <ClInclude Include="src\core\Transformable.h" />
+    <ClInclude Include="src\core\transformations\TransformationComponents.h" />
     <ClInclude Include="src\engine\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\objects\Polyline.h" />

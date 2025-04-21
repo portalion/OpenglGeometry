@@ -1,5 +1,5 @@
 #include "SelectedShapes.h"
-#include "core/Transformable.h"
+#include "core/transformations/ITransformationComponents.h"
 
 void SelectedShapes::Clear()
 {
@@ -45,11 +45,11 @@ std::optional<Algebra::Vector4> SelectedShapes::GetAveragePosition() const
 	}
 
 	Algebra::Vector4 result;
-	auto selectedWithPosition = GetSelectedWithType<PositionComponent>();
-	for (auto& selected : selectedWithPosition)
+
+	for (auto& selected : selectedShapes)
 	{
-		result += selected->GetPosition();
+		result += selected->GetPositionComponent()->GetPosition();
 	}
-	result = result / selectedWithPosition.size();
+	result = result / selectedShapes.size();
 	return result;
 }
