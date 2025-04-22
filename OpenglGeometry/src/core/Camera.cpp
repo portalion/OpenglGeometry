@@ -30,7 +30,7 @@ void Camera::HandleTranslation(const float& dt)
 			direction = direction.Normalize();
 		}
 
-		position += direction * 100.f * dt * GetRotationMatrix() * GetZoomMatrix();
+		position += direction * 10.f * dt * GetRotationMatrix() * GetZoomMatrix();
 	}
 }
 

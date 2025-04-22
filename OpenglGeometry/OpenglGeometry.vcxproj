@@ -274,6 +274,7 @@
   <ItemGroup>
     <None Include="resources\shaders\bezier.frag" />
     <None Include="resources\shaders\bezier.tesc" />
+    <None Include="resources\shaders\bezier2.tesc" />
     <None Include="resources\shaders\bezier.tese" />
     <None Include="resources\shaders\bezier.vert" />
     <None Include="resources\shaders\default.frag" />

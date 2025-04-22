@@ -1,43 +1,57 @@
 #version 460 core
 
 layout(vertices = 4) out;
+
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
-uniform vec2 u_screenSize;
+uniform vec4 u_cameraPos;
 
-vec3 toNDC(vec4 worldPos) {
-    vec4 clip = u_projectionMatrix * u_viewMatrix * worldPos;
-    return clip.xyz / clip.w;
+float screenDistance(vec4 a, vec4 b)
+{
+    vec4 clipA = u_projectionMatrix * u_viewMatrix * a;
+    vec4 clipB = u_projectionMatrix * u_viewMatrix * b;
+
+    vec3 ndcA = clipA.xyz / clipA.w;
+    vec3 ndcB = clipB.xyz / clipB.w;
+
+    return length(ndcA.xy - ndcB.xy);
 }
 
-float estimateScreenSpaceTess(vec4 p0, vec4 p1, vec4 p2, vec4 p3) {
-    vec3 ndc0 = toNDC(p0);
-    vec3 ndc1 = toNDC(p1);
-    vec3 ndc2 = toNDC(p2);
-    vec3 ndc3 = toNDC(p3);
+float averageDistanceToCamera()
+{
+    vec3 worldPos0 = gl_in[0].gl_Position.xyz;
+    vec3 worldPos1 = gl_in[1].gl_Position.xyz;
+    vec3 worldPos2 = gl_in[2].gl_Position.xyz;
+    vec3 worldPos3 = gl_in[3].gl_Position.xyz;
 
-    vec3 mini = min(min(min(ndc0, ndc1), ndc2), ndc3); 
-    vec3 maxi = max(max(max(ndc0, ndc1), ndc2), ndc3); 
-    
-    float sizeX = abs((maxi.x - mini.x) * u_screenSize.x);
-    float sizeY = abs((maxi.y - mini.y) * u_screenSize.y);
+    vec3 camPos = u_cameraPos.xyz;
 
-    return (sizeX * sizeY) * 4;
+    float d0 = distance(worldPos0, camPos);
+    float d1 = distance(worldPos1, camPos);
+    float d2 = distance(worldPos2, camPos);
+    float d3 = distance(worldPos3, camPos);
+
+    return (d0 + d1 + d2 + d3) * 0.25;
 }
-
 
 void main()
 {
-    // Pass control points to evaluation shader
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
-    vec4 p0 = gl_in[0].gl_Position;
-    vec4 p1 = gl_in[1].gl_Position;
-    vec4 p2 = gl_in[2].gl_Position;
-    vec4 p3 = gl_in[3].gl_Position;
+    float d0 = screenDistance(gl_in[0].gl_Position, gl_in[1].gl_Position);
+    float d1 = screenDistance(gl_in[1].gl_Position, gl_in[2].gl_Position);
+    float d2 = screenDistance(gl_in[2].gl_Position, gl_in[3].gl_Position);
+    float d3 = screenDistance(gl_in[3].gl_Position, gl_in[0].gl_Position);
 
-    float tessLevel = ceil(estimateScreenSpaceTess(p0, p1, p2, p3));
+    float baseScale = 32.0;
     
-    gl_TessLevelOuter[0] = 1.0; 
-    gl_TessLevelOuter[1] = tessLevel;      
+    float distToCamera = averageDistanceToCamera();
+    
+    float distanceFactor = clamp(100.0 / distToCamera, 0.5, 2.0);
+
+    float scale = baseScale * distanceFactor;
+
+    gl_TessLevelOuter[0] = 1.0;
+    gl_TessLevelOuter[1] = clamp(d1 * scale, 32.0, 64.0);
+
 }
