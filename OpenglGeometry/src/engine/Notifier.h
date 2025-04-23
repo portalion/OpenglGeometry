@@ -15,5 +15,5 @@ private:
 public:
 	void AddObserver(IObserver* observer);
 	void RemoveObserver(IObserver* observer);
-	void Notify();
-}
+	void Notify() const;
+};

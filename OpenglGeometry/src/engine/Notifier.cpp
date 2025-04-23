@@ -8,7 +8,7 @@ void Notifier::RemoveObserver(IObserver* observer)
 {
 	observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
-void Notifier::Notify()
+void Notifier::Notify() const
 {
 	for (IObserver* observer : observers)
 	{
