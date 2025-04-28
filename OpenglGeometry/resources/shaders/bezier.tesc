@@ -6,6 +6,8 @@ uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
 uniform vec4 u_cameraPos;
 
+out patch float maxU;
+
 float screenDistance(vec4 a, vec4 b)
 {
     vec4 clipA = u_projectionMatrix * u_viewMatrix * a;
@@ -50,8 +52,8 @@ void main()
     float distanceFactor = clamp(100.0 / distToCamera, 0.5, 2.0);
 
     float scale = baseScale * distanceFactor;
+    gl_TessLevelOuter[0] = ceil(sqrt(d1 * scale)); 
+    gl_TessLevelOuter[1] = ceil(sqrt(d1 * scale));  
 
-    gl_TessLevelOuter[0] = 1.0;
-    gl_TessLevelOuter[1] = clamp(d1 * scale, 32.0, 64.0);
-
+    maxU = gl_TessLevelOuter[0];
 }

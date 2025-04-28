@@ -5,6 +5,8 @@ layout(isolines, equal_spacing, ccw) in;
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
 
+in patch float maxU;
+
 vec4 Bezier(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
 {
     float u = 1.0 - t;
@@ -21,12 +23,13 @@ vec4 Bezier(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
 
 void main()
 {
-    float t = gl_TessCoord.x;
+    float u = gl_TessCoord.x;
+    float v = gl_TessCoord.y;
 
     vec4 p0 = gl_in[0].gl_Position;
     vec4 p1 = gl_in[1].gl_Position;
     vec4 p2 = gl_in[2].gl_Position;
     vec4 p3 = gl_in[3].gl_Position;
 
-    gl_Position = u_projectionMatrix * u_viewMatrix * Bezier(p0, p1, p2, p3, t);
+    gl_Position = u_projectionMatrix * u_viewMatrix * Bezier(p0, p1, p2, p3, u / maxU + v);
 }
