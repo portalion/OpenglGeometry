@@ -43,11 +43,52 @@ public:
 		somethingChanged = true;
 		polyline.AddPoint(point);
 		points.push_back(point);
+		if (points.size() >= 4)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				bezierPoints.push_back(std::make_shared<BernPoint>(bezierPoints.size()));
+				bernsteinPolyline.AddPoint(bezierPoints.back());
+				bezierPoints.back()->Attach(&observer);
+			}
+		}
 	}
-	void Update(const std::string&) override
+	inline void Update(const std::string&) override
 	{
 		somethingChanged = true;
+		for (auto it = points.begin(); it != points.end();)
+		{
+			if (auto point = it->lock())
+			{
+				++it;
+			}
+			else
+			{
+				it = RemovePoint(it);
+			}
 	}
+	}
+
+	inline std::vector<std::weak_ptr<Point>>::iterator RemovePoint(std::vector<std::weak_ptr<Point>>::iterator it)
+	{
+		somethingChanged = true;
+		if (auto ptr = it->lock())
+		{
+			ptr->Detach(this);
+		}
+		polyline.RemovePoint(*it);
+		auto result = points.erase(it);
+		if (points.size() >= 3)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				bernsteinPolyline.RemovePoint(bezierPoints.back());
+				bezierPoints.pop_back();
+	}
+		}
+		return result;
+	}
+
 	inline void RemovePoint(std::weak_ptr<Point> point)
 	{
 		somethingChanged = true;
@@ -57,7 +98,17 @@ public:
 		}
 		points.erase(std::remove_if(points.begin(), points.end(),
 			[&point](const std::weak_ptr<Point>& p) { return p.lock() == point.lock(); }), points.end());
+
+		if (points.size() >= 4)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				bernsteinPolyline.RemovePoint(bezierPoints.back());
+				bezierPoints.pop_back();
+			}
+		}
 	}
+
 	inline void Render() const override
 	{
 		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::Bezier);
@@ -91,14 +142,8 @@ public:
 		}
 	}
 
-	void Update() override
-	{
-		RenderableOnScene::Update();
-		polyline.Update();
-		for (const auto& pt : bezierPoints)
-		{
-			pt->Update();
-		}
-		bernsteinPolyline.Update();
-	}
+	void GetClickedPoint();
+	void Update() override;
+	void UpdateBasedOnDeBoor();
+	void UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector4 moved);
 };

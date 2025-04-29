@@ -29,6 +29,7 @@ public:
 	Algebra::Vector4 ScreenToNDC(float x, float y);
 	static Algebra::Matrix4 projectionMatrix;
 	static Camera camera;
+	static Window* windowStatic;
 private:
 	bool running;
 	bool showGrid = true;

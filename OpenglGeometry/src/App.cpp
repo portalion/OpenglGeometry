@@ -12,6 +12,7 @@
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);
+Window* App::windowStatic = nullptr;
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
@@ -19,7 +20,7 @@ App::App()
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
-
+	windowStatic = &window;
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
