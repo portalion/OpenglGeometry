@@ -20,7 +20,7 @@ protected:
 	Algebra::Vector4 movedPos;
 public:
 	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
-	~Point() { Notify("Destructor"); }
+	virtual ~Point() { Notify("Destructor"); }
 	void Attach(IObserver* observer) {
 		observers.push_back(observer);
 	}
@@ -69,6 +69,7 @@ class BernPoint : public Point
 	int idx;
 public:
 	BernPoint(int i) : idx(i) {};
+	virtual ~BernPoint() override { Notify(std::to_string(-1)); }
 	Algebra::Vector4 GetMoved() {
 		return movedPos;
 	}
@@ -80,11 +81,13 @@ public:
 	{
 		Point::SetPosition(pos);
 		lastPos = Point::GetPosition();
+		Point::Notify(std::to_string(-1));
 	}
 
 	void Move(Algebra::Vector4 delta)
 	{
 		Point::Move(delta);
 		lastPos = Point::GetPosition();
+		Point::Notify(std::to_string(-1));
 	}
 };

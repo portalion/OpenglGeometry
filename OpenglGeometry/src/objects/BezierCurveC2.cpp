@@ -7,7 +7,9 @@ RenderableMesh<PositionVertexData> BezierCurveC2::GenerateMesh()
 {
 	if (refreshBernstein)
 	{
-		UpdateBasedOnBernstein(movedIndex, bezierPoints[movedIndex]->GetMoved());
+		if (movedIndex < bezierPoints.size() && movedIndex >= 0)
+			UpdateBasedOnBernstein(movedIndex, bezierPoints[movedIndex]->GetMoved());
+			
 		refreshBernstein = false;
 	}
 	UpdateBasedOnDeBoor();
@@ -244,7 +246,7 @@ void BezierCurveC2::UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector
 		D1->Move(1.f * deltaB);
 		D2->Move(2.f * deltaB);
 	}
-	if (modulo == 3)
+	else if (modulo == 3)
 	{
 		D3->Move(6.f * deltaB);
 	}

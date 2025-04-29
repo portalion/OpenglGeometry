@@ -14,10 +14,25 @@ public:
 	int* moved;
 	inline void Update(const std::string& v) override
 	{
+		int idx;
+		try {
+			idx =  std::stoi(v);
+		}
+		catch (const std::invalid_argument& e) {
+			// v is not a number
+			idx = -1;
+		}
+		catch (const std::out_of_range& e) {
+			// number out of int range
+			idx = -1;
+		}
+		if (idx == -1)
+			return;
+
 		if (somethingChanged && moved)
 		{
 			*somethingChanged = true;
-			*moved = std::stoi(v);
+			*moved = idx;
 		}
 	}
 };
@@ -53,6 +68,10 @@ public:
 			{
 				ptr->Detach(this);
 			}
+		}
+		for (auto& point : bezierPoints)
+		{
+			point->Detach(&observer);
 		}
 	}
 	inline void AddPoint(std::shared_ptr<Point> point)
