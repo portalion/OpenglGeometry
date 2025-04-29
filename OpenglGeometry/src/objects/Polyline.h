@@ -60,5 +60,18 @@ public:
 		}
 		somethingChanged = true;
 	}
+
+	inline void ClearPoints()
+	{
+		somethingChanged = true;
+		for (auto& point : points)
+		{
+			if (auto ptr = point.lock())
+			{
+				ptr->Detach(this);
+			}
+		}
+		points.clear();
+	}
 };
 

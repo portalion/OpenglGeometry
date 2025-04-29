@@ -181,6 +181,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\objects\BezierCurve.cpp" />
+    <ClCompile Include="src\objects\BezierCurveC2.cpp" />
     <ClCompile Include="src\UI\SelectedShapes.cpp" />
     <ClCompile Include="src\UI\ShapeList.cpp" />
     <ClCompile Include="src\engine\Renderable.ipp" />
@@ -229,6 +230,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\objects\BezierCurve.h" />
+    <ClInclude Include="src\objects\BezierCurveC2.h" />
     <ClInclude Include="src\UI\SelectedShapes.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\engine\Renderable.h" />

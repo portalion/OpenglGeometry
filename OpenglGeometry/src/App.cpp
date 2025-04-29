@@ -8,6 +8,7 @@
 #include <core/InfiniteGrid.h>
 #include <objects/Polyline.h>
 #include <objects/BezierCurve.h>
+#include <objects/BezierCurveC2.h>
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);
@@ -199,6 +200,11 @@ void App::CreateShape()
                 for (auto bezier : beziers)
                 {
 					bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
+                }
+                auto beziers2 = selectedShapes.GetSelectedWithType<BezierCurveC2>();
+                for (auto bezier : beziers2)
+                {
+                    bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
                 }
             }
 

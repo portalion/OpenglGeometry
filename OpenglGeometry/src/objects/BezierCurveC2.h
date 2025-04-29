@@ -7,22 +7,27 @@
 #include "App.h"
 #include "core/Globals.h"
 
-class BezierCurve : public RenderableOnScene, public IObserver
+class BezierCurveC2 : public RenderableOnScene, public IObserver
 {
 private:
 	bool displayPolyline = false;
+	bool displayBezierPoints = false;
+	bool displayBezierPolyline = false;
 	std::vector<std::weak_ptr<Point>> points;
+	std::vector<std::shared_ptr<Point>> bezierPoints;
 
-	inline std::string GetTypeName() const override { return "Bezier Curve C0"; }
+	inline std::string GetTypeName() const override { return "Bezier Curve C2"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
+	RenderableMesh<PositionVertexData> GenerateMeshFromBezier();
 	bool DisplayParameters() override;
 
 	Polyline polyline;
+	Polyline bernsteinPolyline;
 	bool HelperButton(ImGuiDir direction);
 	SelectedShapes* selectedShapes = nullptr;
 public:
-	BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
-	~BezierCurve()
+	BezierCurveC2(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
+	~BezierCurveC2()
 	{
 		for (auto& point : points)
 		{
@@ -61,17 +66,39 @@ public:
 		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
 		shader->SetUniformVec4f("u_cameraPos", App::camera.GetPosition());
 		RenderableOnScene::Render();
-		ShaderManager::GetInstance().GetShader(AvailableShaders::Default)->Bind();
+		auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
+		defShader->Bind();
 		if (displayPolyline)
 		{
 			polyline.Render();
 		}
+		if (displayBezierPoints)
+		{
+			defShader->SetUniformVec4f("u_color", Globals::defaultVirtualPointColor);
+			for (const auto& pt : bezierPoints)
+			{
+				defShader->SetUniformMat4f("u_modelMatrix", pt->GetModelMatrix());
+				pt->Render();
+			}
+			defShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
+		}
+		if (displayBezierPolyline)
+		{
+			defShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
+			defShader->SetUniformMat4f("u_modelMatrix", bernsteinPolyline.GetModelMatrix());
+			bernsteinPolyline.Render();
+			defShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
+		}
 	}
-	
+
 	void Update() override
 	{
 		RenderableOnScene::Update();
 		polyline.Update();
+		for (const auto& pt : bezierPoints)
+		{
+			pt->Update();
+		}
+		bernsteinPolyline.Update();
 	}
 };
-

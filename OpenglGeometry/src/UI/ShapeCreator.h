@@ -9,7 +9,8 @@ enum class ShapeEnum
 	Point = 0,
 	Torus = 1,
 	Polyline = 2,
-	BezierCurve = 3,
+	BezierCurveC0 = 3,
+	BezierCurveC2 = 4,
 };
 
 class ShapeCreator

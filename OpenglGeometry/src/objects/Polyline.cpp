@@ -24,8 +24,8 @@ RenderableMesh<PositionVertexData> Polyline::GenerateMesh()
 			it = points.erase(it);
 		}
     }
-
-	for (int i = 0; i < result.vertices.size() - 1; i++)
+	
+	for (int i = 0; i < static_cast<int>(result.vertices.size()) - 1; i++)
 	{
 		result.indices.push_back(i);
 		result.indices.push_back(i + 1);

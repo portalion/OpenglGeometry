@@ -15,5 +15,6 @@ struct Globals
 
 	static const Algebra::Vector4 defaultPointsColor;
 	static const Algebra::Vector4 defaultMiddlePointColor;
+	static const Algebra::Vector4 defaultVirtualPointColor;
 };
 
