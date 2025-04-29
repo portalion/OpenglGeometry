@@ -9,13 +9,15 @@ public:
 
 class Point : public RenderableOnScene
 {
+protected:
 	const static RenderableMesh<PositionVertexData> mesh;
 
 	inline std::string GetTypeName() const override { return "Point"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	inline bool DisplayParameters() override { return false; }
 	std::vector<IObserver*> observers;
-	Algebra::Matrix4 lastModel = Algebra::Matrix4::Identity();
+	Algebra::Vector4 lastPos;
+	Algebra::Vector4 movedPos;
 public:
 	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
 	~Point() { Notify("Destructor"); }
@@ -27,7 +29,7 @@ public:
 		if (toRemove != observers.end())
 			observers.erase(toRemove);
 	}
-	void Notify(std::string message) 
+	virtual void Notify(std::string message)
 	{
 		auto it = observers.begin();
 
@@ -41,22 +43,48 @@ public:
 			++it;
 		}
 	}
-	void Update() override
+	inline void Update() override
 	{
 		RenderableOnScene::Update();
 		bool isEqual = true;
 		for (int i = 0; i < 4; i++)
 		{
-			for (int j = 0; j < 4; j++)
+			if (std::abs(GetPosition()[i] - lastPos[i]) > 0.0001f)
 			{
-				if (std::abs(GetModelMatrix()[i][j] - lastModel[i][j]) > 0.0001f)
-					isEqual = false;
+				isEqual = false;
+				break;
 			}
 		}
 		if (isEqual)
 			return;
-		lastModel = GetModelMatrix();
 		Notify("Update");
+		movedPos = GetPosition() - lastPos;
+		lastPos = GetPosition();
 	}
 };
 
+
+class BernPoint : public Point
+{
+	int idx;
+public:
+	BernPoint(int i) : idx(i) {};
+	Algebra::Vector4 GetMoved() {
+		return movedPos;
+	}
+	void Notify(std::string message) override
+	{
+		Point::Notify(std::to_string(idx));
+	}
+	void SetPosition(Algebra::Vector4 pos, bool v)
+	{
+		Point::SetPosition(pos);
+		lastPos = Point::GetPosition();
+	}
+
+	void Move(Algebra::Vector4 delta)
+	{
+		Point::Move(delta);
+		lastPos = Point::GetPosition();
+	}
+};

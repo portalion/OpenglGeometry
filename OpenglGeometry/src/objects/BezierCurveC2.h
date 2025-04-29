@@ -7,24 +7,42 @@
 #include "App.h"
 #include "core/Globals.h"
 
+class BernsteinObserver : public IObserver
+{
+public:
+	bool* somethingChanged;
+	int* moved;
+	inline void Update(const std::string& v) override
+	{
+		if (somethingChanged && moved)
+		{
+			*somethingChanged = true;
+			*moved = std::stoi(v);
+		}
+	}
+};
+
 class BezierCurveC2 : public RenderableOnScene, public IObserver
 {
 private:
+	bool refreshBernstein = false;
+	int movedIndex = -1;
+
 	bool displayPolyline = false;
 	bool displayBezierPoints = false;
 	bool displayBezierPolyline = false;
 	std::vector<std::weak_ptr<Point>> points;
-	std::vector<std::shared_ptr<Point>> bezierPoints;
+	std::vector<std::shared_ptr<BernPoint>> bezierPoints;
 
 	inline std::string GetTypeName() const override { return "Bezier Curve C2"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
-	RenderableMesh<PositionVertexData> GenerateMeshFromBezier();
 	bool DisplayParameters() override;
 
 	Polyline polyline;
 	Polyline bernsteinPolyline;
 	bool HelperButton(ImGuiDir direction);
 	SelectedShapes* selectedShapes = nullptr;
+	BernsteinObserver observer;
 public:
 	BezierCurveC2(std::vector<std::shared_ptr<Point>> points, SelectedShapes* shapes);
 	~BezierCurveC2()
@@ -66,7 +84,7 @@ public:
 			{
 				it = RemovePoint(it);
 			}
-	}
+		}
 	}
 
 	inline std::vector<std::weak_ptr<Point>>::iterator RemovePoint(std::vector<std::weak_ptr<Point>>::iterator it)
@@ -84,7 +102,7 @@ public:
 			{
 				bernsteinPolyline.RemovePoint(bezierPoints.back());
 				bezierPoints.pop_back();
-	}
+			}
 		}
 		return result;
 	}

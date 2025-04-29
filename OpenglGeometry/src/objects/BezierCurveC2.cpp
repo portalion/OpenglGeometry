@@ -5,59 +5,20 @@
 
 RenderableMesh<PositionVertexData> BezierCurveC2::GenerateMesh()
 {
-	for (auto it = points.begin(); it != points.end();)
+	if (refreshBernstein)
 	{
-		if (auto point = it->lock())
-		{
-			++it;
-		}
-		else
-		{
-			it = points.erase(it);
-		}
+		UpdateBasedOnBernstein(movedIndex, bezierPoints[movedIndex]->GetMoved());
+		refreshBernstein = false;
 	}
+	UpdateBasedOnDeBoor();
 
-	bezierPoints.clear();
-	bernsteinPolyline.ClearPoints();
-	if (points.size() < 4) return {}; // Need at least 4 points
-
-	for (size_t i = 0; i + 3 < points.size(); ++i) {
-		const Algebra::Vector4& P0 = points[i].lock()->GetPosition();
-		const Algebra::Vector4& P1 = points[i + 1].lock()->GetPosition();
-		const Algebra::Vector4& P2 = points[i + 2].lock()->GetPosition();
-		const Algebra::Vector4& P3 = points[i + 3].lock()->GetPosition();
-
-		Algebra::Vector4 B0 = (P0 + 4.0f * P1 + P2) / 6.0f;
-		Algebra::Vector4 B1 = (4.0f * P1 + 2.0f * P2) / 6.0f;
-		Algebra::Vector4 B2 = (2.0f * P1 + 4.0f * P2) / 6.0f;
-		Algebra::Vector4 B3 = (P1 + 4.0f * P2 + P3) / 6.0f;
-		
-		bezierPoints.push_back(std::make_shared<Point>());
-		bezierPoints.back()->SetPosition(B0);
-		bernsteinPolyline.AddPoint(bezierPoints.back());
-		bezierPoints.push_back(std::make_shared<Point>());
-		bezierPoints.back()->SetPosition(B1);
-		bernsteinPolyline.AddPoint(bezierPoints.back());
-		bezierPoints.push_back(std::make_shared<Point>());
-		bezierPoints.back()->SetPosition(B2);
-		bernsteinPolyline.AddPoint(bezierPoints.back());
-		bezierPoints.push_back(std::make_shared<Point>());
-		bezierPoints.back()->SetPosition(B3);
-		bernsteinPolyline.AddPoint(bezierPoints.back());
-	}
-
-	return GenerateMeshFromBezier();
-}
-
-RenderableMesh<PositionVertexData> BezierCurveC2::GenerateMeshFromBezier()
-{
 	RenderableMesh<PositionVertexData> mesh;
 	if (bezierPoints.empty())
 	{
 		return {};
 	}
 
-	for(const auto& ptr : bezierPoints)
+	for (const auto& ptr : bezierPoints)
 	{
 		PositionVertexData vertex;
 		vertex.Position = ptr->GetPosition();
@@ -123,10 +84,7 @@ bool BezierCurveC2::DisplayParameters()
 			ImGui::SameLine();
 			if (ImGui::Button(GenerateLabelWithId("Remove").c_str()))
 			{
-				polyline.RemovePoint(*it);
-				it->lock()->Detach(this);
-				it = points.erase(it);
-				somethingChanged = true;
+				it = RemovePoint(it);
 			}
 			else
 			{
@@ -150,10 +108,7 @@ bool BezierCurveC2::DisplayParameters()
 		}
 		else
 		{
-
-			polyline.RemovePoint(*it);
-			it = points.erase(it);
-			somethingChanged = true;
+			it = RemovePoint(it);
 		}
 	}
 
@@ -163,10 +118,138 @@ bool BezierCurveC2::DisplayParameters()
 BezierCurveC2::BezierCurveC2(std::vector<std::shared_ptr<Point>> points, SelectedShapes* selectedShapes)
 	:polyline({}), selectedShapes(selectedShapes), bernsteinPolyline({})
 {
+	observer.somethingChanged = &refreshBernstein;
+	observer.moved = &movedIndex;
 	renderingMode = RenderingMode::PATCHES;
 	for (auto& point : points)
 	{
 		AddPoint(point);
+	}
+}
+
+Algebra::Vector4 ScreenToNDC(float x, float y)
+{
+	float ndcX = (2.0f * x) / (App::windowStatic->GetWidth() - Globals::rightInterfaceWidth) - 1.0f;
+	float ndcY = 1.0f - (2.0f * y) / App::windowStatic->GetHeight();
+
+	return Algebra::Vector4(ndcX, ndcY, 0.f, 1.f);
+}
+
+void BezierCurveC2::GetClickedPoint()
+{
+	auto screenPos = ImGui::GetMousePos();
+	auto ndcPos = ScreenToNDC(screenPos.x, screenPos.y);
+
+	if (std::abs(ndcPos.x) > 1.f || std::abs(ndcPos.y) > 1.f)
+	{
+		return;
+	}
+
+	const float similarityThreshold = 0.02f;
+	bool isCtrlPressed = ImGui::GetIO().KeyCtrl;
+
+	for (const auto& shape : bezierPoints)
+	{
+		std::shared_ptr<RenderableOnScene> shapePtr = shape;
+		if (auto point = std::dynamic_pointer_cast<Point>(shape))
+		{
+			Algebra::Vector4 worldPos(0.f, 0.f, 0.f, 1.f);
+			Algebra::Matrix4 MVP = App::projectionMatrix * App::camera.GetViewMatrix() * point->GetModelMatrix();
+			Algebra::Vector4 clipPos = MVP * worldPos;
+
+			clipPos.z = 0.f;
+
+			if (clipPos.w != 0.f)
+			{
+				clipPos = clipPos / clipPos.w;
+			}
+
+			if (std::abs(ndcPos.x - clipPos.x) < similarityThreshold &&
+				std::abs(ndcPos.y - clipPos.y) < similarityThreshold)
+			{
+				if (isCtrlPressed)
+				{
+					selectedShapes->ToggleShape(shapePtr);
+				}
+				else
+				{
+					selectedShapes->Clear();
+					selectedShapes->AddShape(shapePtr);
+				}
+			}
+		}
+	}
+}
+
+void BezierCurveC2::Update()
+{
+	if (displayBezierPoints && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		GetClickedPoint();
+	}
+	for (const auto& pt : bezierPoints)
+	{
+		pt->Update();
+	}
+	if (refreshBernstein)
+		somethingChanged = true;
+	RenderableOnScene::Update();
+	polyline.Update();
+	bernsteinPolyline.Update();
+}
+
+void BezierCurveC2::UpdateBasedOnDeBoor()
+{
+	if (points.size() < 4) return; // Need at least 4 points
+
+	for (size_t i = 0; i + 3 < points.size(); ++i) {
+		const Algebra::Vector4& P0 = points[i].lock()->GetPosition();
+		const Algebra::Vector4& P1 = points[i + 1].lock()->GetPosition();
+		const Algebra::Vector4& P2 = points[i + 2].lock()->GetPosition();
+		const Algebra::Vector4& P3 = points[i + 3].lock()->GetPosition();
+
+		Algebra::Vector4 B0 = (P0 + 4.0f * P1 + P2) / 6.0f;
+		Algebra::Vector4 B1 = (4.0f * P1 + 2.0f * P2) / 6.0f;
+		Algebra::Vector4 B2 = (2.0f * P1 + 4.0f * P2) / 6.0f;
+		Algebra::Vector4 B3 = (P1 + 4.0f * P2 + P3) / 6.0f;
+
+		bezierPoints[i * 4 + 0]->SetPosition(B0, false);
+		bezierPoints[i * 4 + 1]->SetPosition(B1, false);
+		bezierPoints[i * 4 + 2]->SetPosition(B2, false);
+		bezierPoints[i * 4 + 3]->SetPosition(B3, false);
+	}
+}
+
+void BezierCurveC2::UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector4 deltaB)
+{
+	int segment = std::max((movedBezierIndex - 1), 0) / 3;
+
+	std::shared_ptr<Point> D0 = points[segment].lock();
+	std::shared_ptr<Point> D1 = points[segment + 1].lock();
+	std::shared_ptr<Point> D2 = points[segment + 2].lock();
+	std::shared_ptr<Point> D3 = points[segment + 3].lock();
+
+	int modulo = movedBezierIndex % 3;
+	if (modulo == 0)
+	{
+		if (movedBezierIndex == 0)
+		{
+			D0->Move(6.f * deltaB);
+		}
+		else
+		{
+			D3->Move(6.f * deltaB);
+		}
+	}
+	else if (modulo == 1)
+	{
+		D1->Move(2.f * deltaB);
+		D2->Move(1.f * deltaB);
+	}
+	else if (modulo == 2)
+	{
+		D1->Move(1.f * deltaB);
+		D2->Move(2.f * deltaB);
 	}
 }
 
