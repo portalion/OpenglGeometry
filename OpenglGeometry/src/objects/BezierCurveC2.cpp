@@ -222,24 +222,17 @@ void BezierCurveC2::UpdateBasedOnDeBoor()
 
 void BezierCurveC2::UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector4 deltaB)
 {
-	int segment = std::max((movedBezierIndex - 1), 0) / 3;
+	int segment = std::max((movedBezierIndex - 1), 0) / 4;
 
 	std::shared_ptr<Point> D0 = points[segment].lock();
 	std::shared_ptr<Point> D1 = points[segment + 1].lock();
 	std::shared_ptr<Point> D2 = points[segment + 2].lock();
 	std::shared_ptr<Point> D3 = points[segment + 3].lock();
 
-	int modulo = movedBezierIndex % 3;
+	int modulo = movedBezierIndex % 4;
 	if (modulo == 0)
 	{
-		if (movedBezierIndex == 0)
-		{
-			D0->Move(6.f * deltaB);
-		}
-		else
-		{
-			D3->Move(6.f * deltaB);
-		}
+		D0->Move(6.f * deltaB);
 	}
 	else if (modulo == 1)
 	{
@@ -250,6 +243,10 @@ void BezierCurveC2::UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector
 	{
 		D1->Move(1.f * deltaB);
 		D2->Move(2.f * deltaB);
+	}
+	if (modulo == 3)
+	{
+		D3->Move(6.f * deltaB);
 	}
 }
 
