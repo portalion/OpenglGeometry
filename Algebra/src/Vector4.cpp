@@ -142,7 +142,8 @@ Vector4 Algebra::operator/(const Vector4& vector, const float& scale)
 {
 	if (scale == 0)
 	{
-		throw std::runtime_error("length of vector is 0");
+		//throw std::runtime_error("length of vector is 0");
+		return vector;
 	}
 	return 1.f / scale * vector;
 }

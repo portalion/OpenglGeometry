@@ -9,6 +9,7 @@
 #include <objects/Polyline.h>
 #include <objects/BezierCurve.h>
 #include <objects/BezierCurveC2.h>
+#include <objects/InterpolatedBezierCurve.h>
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);
@@ -207,6 +208,11 @@ void App::CreateShape()
                 {
                     bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
                 }
+                auto interpolatedBeziers = selectedShapes.GetSelectedWithType<InterpolatedBezierCurve>();
+                for (auto bezier : interpolatedBeziers)
+                {
+                    bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
+                }
             }
 
         }
@@ -331,6 +337,6 @@ void App::Render()
         defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
         middleSelectionPoint.Render();
     }
-
+  
     defaultShader->UnBind();
 }

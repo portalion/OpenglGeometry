@@ -11,6 +11,7 @@ enum class ShapeEnum
 	Polyline = 2,
 	BezierCurveC0 = 3,
 	BezierCurveC2 = 4,
+	InterpolatedBezierCurve = 5
 };
 
 class ShapeCreator

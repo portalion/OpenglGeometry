@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\objects\InterpolatedBezierCurve.cpp" />
     <ClCompile Include="src\objects\BezierCurve.cpp" />
     <ClCompile Include="src\objects\BezierCurveC2.cpp" />
     <ClCompile Include="src\UI\SelectedShapes.cpp" />
@@ -229,6 +230,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\objects\InterpolatedBezierCurve.h" />
     <ClInclude Include="src\objects\BezierCurve.h" />
     <ClInclude Include="src\objects\BezierCurveC2.h" />
     <ClInclude Include="src\UI\SelectedShapes.h" />
