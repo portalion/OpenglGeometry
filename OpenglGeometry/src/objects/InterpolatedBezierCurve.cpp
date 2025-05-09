@@ -9,6 +9,13 @@ std::vector<Algebra::Vector4> SolveTrilinearMatrix(std::vector<float> alpha, std
 	std::vector<float> gamma(m);
 	std::vector<Algebra::Vector4> delta(m), c(m);
 
+	if (r.size() == 1)
+	{
+		c[0] = r[0] / 2.f;
+		c[0].w = 0.0f;
+		return c;
+	}
+
 	float denom = 2.0f;
 	gamma[0] = beta[0] / denom;
 	delta[0] = r[0] / denom;
@@ -38,10 +45,6 @@ std::vector<Algebra::Vector4> SolveTrilinearMatrix(std::vector<float> alpha, std
 RenderableMesh<PositionVertexData> InterpolatedBezierCurve::GenerateMesh()
 {
 	RenderableMesh<PositionVertexData> mesh;
-	if (points.size() < 4)
-	{
-		return {};
-	}
 
 	std::vector<Algebra::Vector4> positions;
 	std::vector<float> d;
@@ -56,6 +59,16 @@ RenderableMesh<PositionVertexData> InterpolatedBezierCurve::GenerateMesh()
 			positions.push_back(point->GetPosition());
 		}
 	}
+
+	if (positions.size() == 2)
+	{
+		mesh.vertices.push_back(PositionVertexData{ .Position = positions[0] });
+		mesh.vertices.push_back(PositionVertexData{ .Position = positions[0] });
+		mesh.vertices.push_back(PositionVertexData{ .Position = positions[1] });
+		mesh.vertices.push_back(PositionVertexData{ .Position = positions[1] });
+		return mesh;
+	}
+	else if (positions.size() < 2) return {};
 
 	for (int i = 0; i < positions.size() - 1; i++)
 	{
@@ -77,6 +90,12 @@ RenderableMesh<PositionVertexData> InterpolatedBezierCurve::GenerateMesh()
 		r.push_back(3.f * (P1 - P0) / (d0 + d1));
 	}
 
+	for (int i = 0; i < alpha.size(); i++)
+	{
+		if (std::isnan(alpha[i])) alpha[i] = 0.f;
+		if (std::isnan(beta[i])) beta[i] = 0.f;
+	}
+
 	auto c = SolveTrilinearMatrix(alpha, beta, r);
 	c.insert(c.begin(), Algebra::Vector4());
 	c.push_back(Algebra::Vector4());
@@ -84,7 +103,7 @@ RenderableMesh<PositionVertexData> InterpolatedBezierCurve::GenerateMesh()
 	std::vector<Algebra::Vector4> b(c.size());
 	std::vector<Algebra::Vector4> D(c.size());
 
-	for (int i = 0; i < d.size() - 1; i++)
+	for (int i = 0; i < d.size(); i++)
 		D[i] = (c[i + 1] - c[i]) / d[i] / 3.f;
 
 	for (int i = 0; i < a.size(); i++)
