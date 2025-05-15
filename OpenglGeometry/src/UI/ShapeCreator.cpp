@@ -1,9 +1,11 @@
 #include "ShapeCreator.h"
-#include <objects/Polyline.h>
+#include <objects/lines/Polyline.h>
 #include <objects/Torus.h>
-#include <objects/BezierCurve.h>
-#include <objects/BezierCurveC2.h>
-#include <objects/InterpolatedBezierCurve.h>
+#include <objects/lines/BezierCurve.h>
+#include <objects/lines/BezierCurveC2.h>
+#include <objects/lines/InterpolatedBezierCurve.h>
+#include <objects/surfaces/BezierSurface.h>
+#include <objects/surfaces/BezierSurfaceC2.h>
 
 std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) const
 {
@@ -20,7 +22,11 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) co
     case ShapeEnum::BezierCurveC2:
 		return std::make_shared<BezierCurveC2>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::InterpolatedBezierCurve:
-		return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
+        return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
+    case ShapeEnum::BezierSurface:
+		return std::make_shared<BezierSurface>(); 
+    case ShapeEnum::BezierSurfaceC2:
+		return std::make_shared<BezierSurfaceC2>();
     }
     throw std::runtime_error("Invalid shape");
 }
@@ -34,6 +40,8 @@ const std::vector<std::pair<ShapeEnum, std::string>>& ShapeCreator::GetShapeList
 		 { ShapeEnum::BezierCurveC0, "Bezier Curve C0" },
 		 { ShapeEnum::BezierCurveC2, "Bezier Curve C2" },
 		 { ShapeEnum::InterpolatedBezierCurve, "Interpolated Bezier Curve" },
+		 { ShapeEnum::BezierSurface, "Bezier Surface" },
+		 { ShapeEnum::BezierSurfaceC2, "Bezier Surface C2" },
     };
     return shapeList;
 }

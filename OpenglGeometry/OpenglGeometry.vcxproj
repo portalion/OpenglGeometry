@@ -180,9 +180,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\objects\InterpolatedBezierCurve.cpp" />
-    <ClCompile Include="src\objects\BezierCurve.cpp" />
-    <ClCompile Include="src\objects\BezierCurveC2.cpp" />
+    <ClCompile Include="src\objects\surfaces\BezierSurface.cpp" />
+    <ClCompile Include="src\objects\surfaces\BezierSurfaceC2.cpp" />
+    <ClCompile Include="src\objects\lines\InterpolatedBezierCurve.cpp" />
+    <ClCompile Include="src\objects\lines\BezierCurve.cpp" />
+    <ClCompile Include="src\objects\lines\BezierCurveC2.cpp" />
     <ClCompile Include="src\UI\SelectedShapes.cpp" />
     <ClCompile Include="src\UI\ShapeList.cpp" />
     <ClCompile Include="src\engine\Renderable.ipp" />
@@ -192,7 +194,7 @@
     <ClCompile Include="src\core\Transformable.cpp" />
     <ClCompile Include="src\engine\ShaderBuilder.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
-    <ClCompile Include="src\objects\Polyline.cpp" />
+    <ClCompile Include="src\objects\lines\Polyline.cpp" />
     <ClCompile Include="src\objects\Point.cpp" />
     <ClCompile Include="src\objects\AxisCursor.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
@@ -230,9 +232,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\objects\InterpolatedBezierCurve.h" />
-    <ClInclude Include="src\objects\BezierCurve.h" />
-    <ClInclude Include="src\objects\BezierCurveC2.h" />
+    <ClInclude Include="src\objects\surfaces\BezierSurface.h" />
+    <ClInclude Include="src\objects\surfaces\BezierSurfaceC2.h" />
+    <ClInclude Include="src\objects\lines\InterpolatedBezierCurve.h" />
+    <ClInclude Include="src\objects\lines\BezierCurve.h" />
+    <ClInclude Include="src\objects\lines\BezierCurveC2.h" />
     <ClInclude Include="src\UI\SelectedShapes.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\engine\Renderable.h" />
@@ -242,7 +246,7 @@
     <ClInclude Include="src\core\Transformable.h" />
     <ClInclude Include="src\engine\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
-    <ClInclude Include="src\objects\Polyline.h" />
+    <ClInclude Include="src\objects\lines\Polyline.h" />
     <ClInclude Include="src\objects\Point.h" />
     <ClInclude Include="src\objects\AxisCursor.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />

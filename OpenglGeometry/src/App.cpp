@@ -6,10 +6,10 @@
 #include "core/Globals.h"
 #include <engine/Renderer.h>
 #include <core/InfiniteGrid.h>
-#include <objects/Polyline.h>
-#include <objects/BezierCurve.h>
-#include <objects/BezierCurveC2.h>
-#include <objects/InterpolatedBezierCurve.h>
+#include <objects/lines/Polyline.h>
+#include <objects/lines/BezierCurve.h>
+#include <objects/lines/BezierCurveC2.h>
+#include <objects/lines/InterpolatedBezierCurve.h>
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);

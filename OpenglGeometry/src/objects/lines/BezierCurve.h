@@ -1,6 +1,6 @@
 #pragma once
 #include "core/RenderableOnScene.h"
-#include "Point.h"
+#include "objects/Point.h"
 #include <vector>
 #include "Polyline.h"
 #include <UI/SelectedShapes.h>

@@ -1,7 +1,7 @@
 #pragma once
 #include "core/RenderableOnScene.h"
 #include <vector>
-#include "Point.h"
+#include "objects/Point.h"
 #include <algorithm>
 
 class Polyline : public RenderableOnScene, public IObserver
