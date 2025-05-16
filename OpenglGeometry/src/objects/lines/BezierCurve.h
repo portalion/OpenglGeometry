@@ -55,7 +55,7 @@ public:
 	}
 	inline void Render() const override
 	{
-		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::Bezier);
+		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierLine);
 		shader->Bind();
 		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
 		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
