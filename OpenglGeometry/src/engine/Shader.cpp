@@ -12,8 +12,8 @@ const std::unordered_map<ShaderType, ShaderTypeInfo> Shader::shaderInfoMap =
     { ShaderType::TesselationEvaluation, ShaderTypeInfo{.fileExtension = ".tese", .glShaderId = GL_TESS_EVALUATION_SHADER }},
 };
 
-Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes)
-    :m_RendererID{ 0 }
+Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes, unsigned int patchSize)
+	:m_RendererID{ 0 }, patchSize{ patchSize }
 {
     m_RendererID = CreateShader(sourceCodes);
 }
@@ -88,6 +88,7 @@ unsigned int Shader::CreateShader(const std::unordered_map<ShaderType, std::stri
 void Shader::Bind() const
 {
     GLCall(glUseProgram(m_RendererID));
+    GLCall(glPatchParameteri(GL_PATCH_VERTICES, patchSize));
 }
 
 void Shader::UnBind() const
