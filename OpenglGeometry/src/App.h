@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include "UI/SelectedShapes.h"
 #include <UI/ShapeCreator.h>
+#include <UI/ShapeList.h>
 
 class App {
 public:
@@ -24,7 +25,6 @@ public:
 	void HandleResize();
 	void Update();
 	void DisplayParameters();
-	void CreateShape();
 	void GetClickedPoint();
 	Algebra::Vector4 ScreenToNDC(float x, float y);
 	static Algebra::Matrix4 projectionMatrix;
@@ -39,10 +39,9 @@ private:
 	std::unique_ptr<InputMode> currentInputMode;
 
 	SelectedShapes selectedShapes;
-	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;
 	AxisCursor axis;
 	InfiniteGrid grid;
-	ShapeCreator shapeCreator;
+	ShapeList shapeList;
 
 	std::shared_ptr<Shader> defaultShader;
 };

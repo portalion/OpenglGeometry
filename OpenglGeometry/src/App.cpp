@@ -17,7 +17,7 @@ Window* App::windowStatic = nullptr;
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	shapeCreator{ &selectedShapes, &axis }
+    shapeList{ &axis, &selectedShapes }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
@@ -25,11 +25,6 @@ App::App()
     HandleResize();
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
-    for (auto& renderable : sceneRenderables)
-    {
-        renderable->InitName();
-    }
-    
     currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera, &axis);
 }
 
@@ -93,10 +88,7 @@ void App::HandleResize()
 
 void App::Update()
 {
-    for (auto& renderable : sceneRenderables)
-    {
-        renderable->Update();
-    }
+    shapeList.Update();
     axis.Update();
     middleSelectionPoint.Update();
 
@@ -144,7 +136,9 @@ void App::DisplayParameters()
         axis.DisplayMenu();
     }
     //TODO: Add iterator to selectedShapes
-    this->CreateShape();
+    
+    shapeList.DisplayUI();
+
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
     {
         for (auto& renderable : selectedShapes.GetSelectedWithType<RenderableOnScene>())
@@ -153,104 +147,6 @@ void App::DisplayParameters()
         }
     }
     ImGui::End();
-}
-
-void App::CreateShape()
-{
-    if(ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))
-    {
-        ImGui::BeginChild("ShapeList", ImVec2(0, 150), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-        if (sceneRenderables.empty())
-        {
-            ImGui::Text("No shapes available.");
-        }
-        else
-        {
-            bool ctrlPressed = ImGui::GetIO().KeyCtrl;
-
-            for (const auto& renderable : sceneRenderables)
-            {
-                if (ImGui::Selectable(renderable->GenerateLabelWithId(renderable->GetName()).c_str(), selectedShapes.IsSelected(renderable)))
-                {
-                    if (ctrlPressed)
-                    {
-                        selectedShapes.ToggleShape(renderable);
-                    }
-                    else
-                    {
-                        selectedShapes.Clear();
-						selectedShapes.AddShape(renderable);
-                    }
-                }
-            }
-        }
-        ImGui::EndChild();
-        auto availableShapes = ShapeCreator::GetShapeList();
-		static int currentShapeIndex = 0;
-
-        if (ImGui::Button("Create shape"))
-        {
-            auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first);
-            newShape->InitName();
-            newShape->Move(axis.GetPosition());
-            sceneRenderables.push_back(newShape);
-
-            if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
-            {
-				auto beziers = selectedShapes.GetSelectedWithType<BezierCurve>();
-                for (auto bezier : beziers)
-                {
-					bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
-                }
-                auto beziers2 = selectedShapes.GetSelectedWithType<BezierCurveC2>();
-                for (auto bezier : beziers2)
-                {
-                    bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
-                }
-                auto interpolatedBeziers = selectedShapes.GetSelectedWithType<InterpolatedBezierCurve>();
-                for (auto bezier : interpolatedBeziers)
-                {
-                    bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
-                }
-            }
-
-        }
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(Globals::rightInterfaceWidth / 3.f);
-		if (ImGui::BeginCombo("##shape", availableShapes[currentShapeIndex].second.c_str()))
-		{
-			for (int i = 0; i < availableShapes.size(); ++i)
-			{
-				const bool isSelected = (currentShapeIndex == i);
-				if (ImGui::Selectable(availableShapes[i].second.c_str(), isSelected))
-				{
-					currentShapeIndex = i;
-				}
-				if (isSelected)
-				{
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-        ImGui::SameLine();
-
-        ImGui::BeginDisabled(selectedShapes.IsEmpty());
-        if (ImGui::Button("Remove shapes"))
-        {
-            sceneRenderables.erase(
-                std::remove_if(sceneRenderables.begin(), sceneRenderables.end(),
-                    [&](const std::shared_ptr<RenderableOnScene>& shape) {
-                        bool shouldRemove = selectedShapes.IsSelected(shape);
-                        return shouldRemove; 
-                    }),
-                sceneRenderables.end()
-            );
-            selectedShapes.Clear();
-        }
-        ImGui::EndDisabled();
-    }
 }
 
 Algebra::Vector4 App::ScreenToNDC(float x, float y)
@@ -319,11 +215,8 @@ void App::Render()
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
     defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
-    for (auto& renderable : sceneRenderables)
-    {
-        defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
-        renderable->Render();
-    }
+    
+    shapeList.Render();
 
     defaultShader->SetUniformMat4f("u_modelMatrix", Algebra::Matrix4::Translation(axis.GetPosition()));
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
