@@ -59,6 +59,35 @@ ShapeList::ShapeList(AxisCursor* axis, SelectedShapes* selectedShapes)
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 }
 
+std::shared_ptr<Point> ShapeList::GetPointByPosition(Algebra::Matrix4 VP, Algebra::Vector4 position) const
+{
+    const float similarityThreshold = 0.02f;
+    Algebra::Vector4 worldPos(0.f, 0.f, 0.f, 1.f);
+
+    for (const auto& shape : shapes)
+    {
+        if (auto point = std::dynamic_pointer_cast<Point>(shape))
+        {
+            Algebra::Matrix4 MVP = VP * point->GetModelMatrix();
+            Algebra::Vector4 clipPos = MVP * worldPos;
+
+            clipPos.z = 0.f;
+
+            if (clipPos.w != 0.f)
+            {
+                clipPos = clipPos / clipPos.w;
+            }
+
+            if (std::abs(position.x - clipPos.x) < similarityThreshold &&
+                std::abs(position.y - clipPos.y) < similarityThreshold)
+            {
+                return point;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void ShapeList::DisplayUI()
 {
     if (ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <core/RenderableOnScene.h>
+#include <objects/Point.h>
 #include <memory>
 #include "SelectedShapes.h"
 #include "ShapeCreator.h"
@@ -16,6 +17,8 @@ private:
 	void CreateShapeButton();
 public:
 	ShapeList(AxisCursor* axis, SelectedShapes* selectedShapes);
+	
+	std::shared_ptr<Point> GetPointByPosition(Algebra::Matrix4 VP, Algebra::Vector4 position) const;
 
 	void DisplayUI();
 	void Update();

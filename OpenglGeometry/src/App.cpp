@@ -167,39 +167,23 @@ void App::GetClickedPoint()
         return;
     }
 
-    const float similarityThreshold = 0.02f;
+   
     bool isCtrlPressed = ImGui::GetIO().KeyCtrl;
-
-    for (const auto& shape : sceneRenderables)
+    
+    const auto& shape = shapeList.GetPointByPosition(projectionMatrix * camera.GetViewMatrix(), ndcPos);
+    if (!shape)
     {
-        std::shared_ptr<RenderableOnScene> shapePtr = shape;
-        if (auto point = std::dynamic_pointer_cast<Point>(shape))
-        {
-            Algebra::Vector4 worldPos(0.f, 0.f, 0.f, 1.f);
-            Algebra::Matrix4 MVP = projectionMatrix * camera.GetViewMatrix() * point->GetModelMatrix();
-            Algebra::Vector4 clipPos = MVP * worldPos;
+        return;
+    }
 
-            clipPos.z = 0.f;
-
-            if (clipPos.w != 0.f)
-            {
-                clipPos = clipPos / clipPos.w;
-            }
-
-            if (std::abs(ndcPos.x - clipPos.x) < similarityThreshold &&
-                std::abs(ndcPos.y - clipPos.y) < similarityThreshold)
-            {
-                if (isCtrlPressed)
-                {
-					selectedShapes.ToggleShape(shapePtr);
-                }
-                else
-                {
-                    selectedShapes.Clear();
-                    selectedShapes.AddShape(shapePtr);
-                }
-            }
-        }
+    if (isCtrlPressed)
+    {
+	    selectedShapes.ToggleShape(shape);
+    }
+    else
+    {
+        selectedShapes.Clear();
+        selectedShapes.AddShape(shape);
     }
 }
 
