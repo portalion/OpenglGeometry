@@ -7,7 +7,7 @@
 #include <objects/surfaces/BezierSurface.h>
 #include <objects/surfaces/BezierSurfaceC2.h>
 
-std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) const
+std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape) const
 {
     switch (shape)
     {
@@ -18,17 +18,26 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) co
     case ShapeEnum::Polyline:
         return std::make_shared<Polyline>(selectedShapes->GetSelectedWithType<Point>());
     case ShapeEnum::BezierCurveC0:
-		return std::make_shared<BezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
+        return std::make_shared<BezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::BezierCurveC2:
-		return std::make_shared<BezierCurveC2>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
+        return std::make_shared<BezierCurveC2>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::InterpolatedBezierCurve:
         return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::BezierSurface:
-		return std::make_shared<BezierSurface>(); 
+        return std::make_shared<BezierSurface>();
     case ShapeEnum::BezierSurfaceC2:
-		return std::make_shared<BezierSurfaceC2>();
+        return std::make_shared<BezierSurfaceC2>();
     }
     throw std::runtime_error("Invalid shape");
+}
+
+std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) const
+{
+    auto newShape = GetShapeByType(shape);
+    newShape->InitName();
+    newShape->Move(cursor->GetPosition());
+
+    return newShape;
 }
 
 const std::vector<std::pair<ShapeEnum, std::string>>& ShapeCreator::GetShapeList()

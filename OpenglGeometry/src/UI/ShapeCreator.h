@@ -21,6 +21,7 @@ class ShapeCreator
 private:
 	SelectedShapes* selectedShapes;
 	AxisCursor* cursor;
+	std::shared_ptr<RenderableOnScene> GetShapeByType(ShapeEnum shape) const;
 public:
 	ShapeCreator(SelectedShapes* selectedShapes, AxisCursor* cursor) : selectedShapes{ selectedShapes }, cursor{ cursor } {}
 
