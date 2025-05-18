@@ -1,5 +1,6 @@
 #pragma once
 #include "core/RenderableOnScene.h"
+#include "UI/ShapeList.h"
 #include "objects/Point.h"
 #include "App.h"
 
@@ -9,9 +10,10 @@ struct BezierPatchData
 	std::shared_ptr<Point> controlPoints[CONTROL_POINTS_PER_EDGE][CONTROL_POINTS_PER_EDGE];
 };
 
-class BezierSurface : public RenderableOnScene
+class BezierSurface : public RenderableOnScene, public IObserver
 {
 private:
+	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
 	inline std::string GetTypeName() const override { return "Bezier Surface"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
@@ -20,7 +22,8 @@ private:
 	void GeneratePlane(int xPatches = 1, int yPatches = 1, float sizeX = 10.f, float sizeY = 10.f);
 	void GenerateCylinder();
 public:
-	BezierSurface();
+	BezierSurface(ShapeList* shapeList);
+	~BezierSurface();
 
 	inline void Render() const override
 	{
@@ -46,5 +49,7 @@ public:
 		}
 
 	}
+
+	void Update(const std::string& message_from_subject) override;
 };
 

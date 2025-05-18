@@ -23,5 +23,7 @@ public:
 	void DisplayUI();
 	void Update();
 	void Render();
+	void AddPoint(std::shared_ptr<Point> point);
+	void RemovePoint(std::shared_ptr<Point> point);
 };
 

@@ -45,13 +45,18 @@ void BezierSurface::GeneratePlane(int xPatches, int yPatches, float sizeX, float
 			{
 				for (int y = 0; y < BezierPatchData::CONTROL_POINTS_PER_EDGE; y++)
 				{
-					patch.controlPoints[x][y] = std::make_shared<Point>();
-					patch.controlPoints[x][y]->InitName();
-					patch.controlPoints[x][y]->SetPosition({
+					std::shared_ptr<Point> point = std::make_shared<Point>();
+					point->InitName();
+					point->SetPosition({
 						i * sizeXPerPatch + x * sizeXPerPoint,
 						j * sizeYPerPatch + y * sizeXPerPoint,
-						10.f*	(float)x + y });
-					patch.controlPoints[x][y]->Update();
+						10.f * (float)x + y });
+					point->Update();
+
+					point->Attach(this);
+					shapeList->AddPoint(point);
+
+					patch.controlPoints[x][y] = point;
 				}
 			}
 			bezierPatchesData.push_back(patch);
@@ -59,8 +64,29 @@ void BezierSurface::GeneratePlane(int xPatches, int yPatches, float sizeX, float
 	}
 }
 
-BezierSurface::BezierSurface()
+BezierSurface::BezierSurface(ShapeList* shapeList)
+	:shapeList{shapeList}
 {
 	renderingMode = RenderingMode::PATCHES;
 	GeneratePlane(1, 1, 30.f, 30.f);
+}
+
+BezierSurface::~BezierSurface()
+{
+	for (auto patch : bezierPatchesData)
+	{
+		for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+		{
+			for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+			{
+				patch.controlPoints[i][j]->Detach(this);
+				shapeList->RemovePoint(patch.controlPoints[i][j]);
+			}
+		}
+	}
+}
+
+void BezierSurface::Update(const std::string& message_from_subject)
+{
+	somethingChanged = true;
 }

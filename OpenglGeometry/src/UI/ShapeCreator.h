@@ -16,15 +16,17 @@ enum class ShapeEnum
 	BezierSurfaceC2 = 7,
 };
 
+class ShapeList;
+
 class ShapeCreator
 {
 private:
 	SelectedShapes* selectedShapes;
 	AxisCursor* cursor;
-	std::shared_ptr<RenderableOnScene> GetShapeByType(ShapeEnum shape) const;
+	std::shared_ptr<RenderableOnScene> GetShapeByType(ShapeEnum shape, ShapeList* shapeList) const;
 public:
 	ShapeCreator(SelectedShapes* selectedShapes, AxisCursor* cursor) : selectedShapes{ selectedShapes }, cursor{ cursor } {}
 
-	std::shared_ptr<RenderableOnScene> CreateShape(ShapeEnum shape) const;
+	std::shared_ptr<RenderableOnScene> CreateShape(ShapeEnum shape, ShapeList* shapeList) const;
 	static const std::vector<std::pair<ShapeEnum, std::string>>& GetShapeList();
 };

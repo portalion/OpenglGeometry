@@ -11,7 +11,7 @@ void ShapeList::CreateShapeButton()
 
     if (ImGui::Button("Create shape"))
     {
-        auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first);
+        auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first, this);
         shapes.push_back(newShape);
 
         if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
@@ -161,4 +161,15 @@ void ShapeList::Render()
         defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
         renderable->Render();
     }
+}
+
+void ShapeList::AddPoint(std::shared_ptr<Point> point)
+{
+    shapes.push_back(point);
+    point->removable = false;
+}
+
+void ShapeList::RemovePoint(std::shared_ptr<Point> point)
+{
+    point->removable = true;
 }

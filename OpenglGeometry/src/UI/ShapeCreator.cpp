@@ -7,7 +7,7 @@
 #include <objects/surfaces/BezierSurface.h>
 #include <objects/surfaces/BezierSurfaceC2.h>
 
-std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape) const
+std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape, ShapeList* shapeList) const
 {
     switch (shape)
     {
@@ -24,16 +24,16 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape)
     case ShapeEnum::InterpolatedBezierCurve:
         return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::BezierSurface:
-        return std::make_shared<BezierSurface>();
+        return std::make_shared<BezierSurface>(shapeList);
     case ShapeEnum::BezierSurfaceC2:
         return std::make_shared<BezierSurfaceC2>();
     }
     throw std::runtime_error("Invalid shape");
 }
 
-std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape) const
+std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape, ShapeList* shapeList) const
 {
-    auto newShape = GetShapeByType(shape);
+    auto newShape = GetShapeByType(shape, shapeList);
     newShape->InitName();
     newShape->Move(cursor->GetPosition());
 
