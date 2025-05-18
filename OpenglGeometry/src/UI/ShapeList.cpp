@@ -131,6 +131,10 @@ void ShapeList::DisplayUI()
             shapes.erase(
                 std::remove_if(shapes.begin(), shapes.end(),
                     [&](const std::shared_ptr<RenderableOnScene>& shape) {
+                        if (const auto& p = std::dynamic_pointer_cast<Point>(shape))
+                        {
+                            if (!p->removable) return false;
+                        }
                         bool shouldRemove = selectedShapes->IsSelected(shape);
                         return shouldRemove;
                     }),

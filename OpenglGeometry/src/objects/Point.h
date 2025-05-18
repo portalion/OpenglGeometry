@@ -19,6 +19,7 @@ protected:
 	Algebra::Vector4 lastPos;
 	Algebra::Vector4 movedPos;
 public:
+	bool removable = true;
 	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
 	virtual ~Point() { Notify("Destructor"); }
 	void Attach(IObserver* observer) {
