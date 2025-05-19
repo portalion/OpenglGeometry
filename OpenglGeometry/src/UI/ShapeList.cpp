@@ -12,6 +12,12 @@ void ShapeList::CreateShapeButton()
     if (ImGui::Button("Create shape"))
     {
         auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first, this);
+
+		if (!newShape)
+		{
+			return;
+		}
+
         shapes.push_back(newShape);
 
         if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)

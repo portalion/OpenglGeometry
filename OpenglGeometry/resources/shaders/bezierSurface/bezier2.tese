@@ -4,6 +4,7 @@ layout (isolines, equal_spacing, ccw) in;
 
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
+uniform int v_subdivisions;
 
 vec3 interpolateRow(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float u) {
     float u1 = 1.0 - u;
@@ -16,6 +17,9 @@ vec3 interpolateRow(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float u) {
 void main() {
     float u = gl_TessCoord.y;
     float v = gl_TessCoord.x;
+
+    float uSub = v_subdivisions;
+    u = (uSub + 1) * u / uSub;
 
     // Evaluate 4 Bezier curves in u
     vec3 row0 = interpolateRow(gl_in[0].gl_Position.xyz,  gl_in[1].gl_Position.xyz,

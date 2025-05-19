@@ -30,5 +30,7 @@ public:
 
 	void Render() const override;
 	void Update(const std::string& message_from_subject) override;
+
+	static std::shared_ptr<BezierSurface> Create(ShapeList* shapeList);
 };
 

@@ -10,8 +10,8 @@ void main() {
 
     if (gl_InvocationID == 0) {
         // Outer tessellation levels: 4 edges
-        gl_TessLevelOuter[0] = v_subdivisions;
-        gl_TessLevelOuter[1] = u_subdivisions;
+        gl_TessLevelOuter[0] = ceil(v_subdivisions + 1);
+        gl_TessLevelOuter[1] = ceil(u_subdivisions);
 
     }
 }

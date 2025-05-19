@@ -129,3 +129,8 @@ void BezierSurface::Update(const std::string& message_from_subject)
 {
 	somethingChanged = true;
 }
+
+std::shared_ptr<BezierSurface> BezierSurface::Create(ShapeList* shapeList)
+{
+	return std::make_shared<BezierSurface>(shapeList);
+}

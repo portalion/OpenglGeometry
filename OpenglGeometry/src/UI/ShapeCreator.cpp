@@ -24,7 +24,7 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape,
     case ShapeEnum::InterpolatedBezierCurve:
         return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::BezierSurface:
-        return std::make_shared<BezierSurface>(shapeList);
+        return BezierSurface::Create(shapeList);
     case ShapeEnum::BezierSurfaceC2:
         return std::make_shared<BezierSurfaceC2>();
     }
@@ -34,6 +34,12 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape,
 std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape, ShapeList* shapeList) const
 {
     auto newShape = GetShapeByType(shape, shapeList);
+
+    if (!newShape)
+    {
+        return nullptr;
+    }
+
     newShape->InitName();
     newShape->Move(cursor->GetPosition());
 
