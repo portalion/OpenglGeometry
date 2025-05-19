@@ -24,6 +24,12 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::TesselationEvaluation, "bezier")
 		.AddShader(ShaderType::Fragment, "bezier")
 		.ChangePatchSize(16));
+	AssignShader(AvailableShaders::BezierSurfaceReversed, ShaderBuilder("resources/shaders/bezierSurface/")
+		.AddShader(ShaderType::Vertex, "bezier")
+		.AddShader(ShaderType::TesselationControl, "bezier2")
+		.AddShader(ShaderType::TesselationEvaluation, "bezier2")
+		.AddShader(ShaderType::Fragment, "bezier")
+		.ChangePatchSize(16));
 	std::cout << "INFO: Loaded Shaders" << std::endl;
 }
 

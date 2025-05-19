@@ -13,6 +13,9 @@ struct BezierPatchData
 class BezierSurface : public RenderableOnScene, public IObserver
 {
 private:
+	int u_subdivisions = 2;
+	int v_subdivisions = 2;
+
 	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
 	inline std::string GetTypeName() const override { return "Bezier Surface"; }
@@ -25,31 +28,7 @@ public:
 	BezierSurface(ShapeList* shapeList);
 	~BezierSurface();
 
-	inline void Render() const override
-	{
-		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurface);
-		shader->Bind();
-		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
-		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
-		RenderableOnScene::Render();
-
-		auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
-		defShader->Bind();
-		for (auto& patch : bezierPatchesData)
-		{
-			for (int i = 0; i < patch.CONTROL_POINTS_PER_EDGE; i++)
-			{
-				for (int j = 0; j < patch.CONTROL_POINTS_PER_EDGE; j++)
-				{
-					auto& pt = patch.controlPoints[i][j];
-					defShader->SetUniformMat4f("u_modelMatrix", pt->GetModelMatrix());
-					pt->Render();
-				}
-			}
-		}
-
-	}
-
+	void Render() const override;
 	void Update(const std::string& message_from_subject) override;
 };
 

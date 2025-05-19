@@ -27,15 +27,41 @@ bool BezierSurface::DisplayParameters()
 	SetRotation(Algebra::Quaternion());
 	SetScale(1.f);
 
+	ImGui::DragInt(GenerateLabelWithId("u subdivision").c_str(), &u_subdivisions, 1, 2, 50);
+	ImGui::DragInt(GenerateLabelWithId("v subdivision").c_str(), &v_subdivisions, 1, 2, 50);
+
     return false;
 }
 
 void BezierSurface::GeneratePlane(int xPatches, int yPatches, float sizeX, float sizeY)
 {
-	const float sizeXPerPatch = sizeX / xPatches;
-	const float sizeYPerPatch = sizeY / yPatches;
-	const float sizeXPerPoint = sizeXPerPatch / (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1);
-	const float sizeYPerPoint = sizeYPerPatch / (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1);
+	using pointsVector = std::vector<std::shared_ptr<Point>>;
+	const unsigned int numberOfPointsX = (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1) * xPatches + 1;
+	const unsigned int numberOfPointsY = (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1) * yPatches + 1;
+
+	const float sizeXPerPoint = sizeX / (numberOfPointsX - 1);
+	const float sizeYPerPoint = sizeY / (numberOfPointsY - 1);
+
+	std::vector<pointsVector> points(numberOfPointsX, pointsVector(numberOfPointsY));
+
+	for (int i = 0; i < numberOfPointsX; i++)
+	{
+		for (int j = 0; j < numberOfPointsY; j++)
+		{
+			std::shared_ptr<Point> point = std::make_shared<Point>();
+			point->InitName();
+			point->SetPosition({
+				i * sizeXPerPoint,
+				j * sizeYPerPoint,
+				0.f });
+			point->Update();
+
+			shapeList->AddPoint(point);
+			point->Attach(this);
+			points[i][j] = point;
+		}
+	}
+
 	for (int i = 0; i < xPatches; i++)
 	{
 		for (int j = 0; j < yPatches; j++)
@@ -45,18 +71,9 @@ void BezierSurface::GeneratePlane(int xPatches, int yPatches, float sizeX, float
 			{
 				for (int y = 0; y < BezierPatchData::CONTROL_POINTS_PER_EDGE; y++)
 				{
-					std::shared_ptr<Point> point = std::make_shared<Point>();
-					point->InitName();
-					point->SetPosition({
-						i * sizeXPerPatch + x * sizeXPerPoint,
-						j * sizeYPerPatch + y * sizeXPerPoint,
-						10.f * (float)x + y });
-					point->Update();
-
-					point->Attach(this);
-					shapeList->AddPoint(point);
-
-					patch.controlPoints[x][y] = point;
+					patch.controlPoints[x][y] = points
+						[i * (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1) + x]
+						[j * (BezierPatchData::CONTROL_POINTS_PER_EDGE - 1) + y];
 				}
 			}
 			bezierPatchesData.push_back(patch);
@@ -84,6 +101,28 @@ BezierSurface::~BezierSurface()
 			}
 		}
 	}
+}
+
+void BezierSurface::Render() const
+{
+	auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurface);
+	shader->Bind();
+	shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
+	shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
+	shader->SetUniformVec1i("u_subdivisions", u_subdivisions);
+	shader->SetUniformVec1i("v_subdivisions", v_subdivisions);
+	RenderableOnScene::Render();
+
+	auto shaderReversed = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurfaceReversed);
+	shaderReversed->Bind();
+	shaderReversed->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
+	shaderReversed->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
+	shaderReversed->SetUniformVec1i("u_subdivisions", u_subdivisions);
+	shaderReversed->SetUniformVec1i("v_subdivisions", v_subdivisions);
+	RenderableOnScene::Render();
+
+	auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
+	defShader->Bind();
 }
 
 void BezierSurface::Update(const std::string& message_from_subject)
