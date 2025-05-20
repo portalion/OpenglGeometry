@@ -76,7 +76,7 @@ void BezierSurfaceC2::GeneratePlane(int xPatches, int yPatches, float sizeX, flo
 	float dx = sizeX / static_cast<float>(columns - 1);
 	float dy = sizeY / static_cast<float>(rows - 1);
 
-	Algebra::Vector4 startingPosition = Algebra::Vector4(sizeX / 2.f, sizeY / 2.f, 0.f);
+	Algebra::Vector4 startingPosition = Algebra::Vector4();
 	std::vector<std::shared_ptr<Point>> controlPoints;
 	controlPoints.reserve(rows * columns);
 
