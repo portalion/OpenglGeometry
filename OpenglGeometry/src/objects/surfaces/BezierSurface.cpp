@@ -30,6 +30,8 @@ bool BezierSurface::DisplayParameters()
 	ImGui::DragInt(GenerateLabelWithId("u subdivision").c_str(), &u_subdivisions, 1, 2, 50);
 	ImGui::DragInt(GenerateLabelWithId("v subdivision").c_str(), &v_subdivisions, 1, 2, 50);
 
+	ImGui::Checkbox(GenerateLabelWithId("Draw Bezier Polygon").c_str(), &drawBezierPolygon);
+
     return false;
 }
 
@@ -131,6 +133,29 @@ void BezierSurface::GenerateCylinder(int radiusPatches, int heightPatches, float
 	}
 }
 
+void AddPolygons(std::vector<std::shared_ptr<Polyline>>& polygons, const BezierPatchData& patch)
+{
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+	{
+		controlPoints.clear();
+		for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+		{
+			controlPoints.push_back(patch.controlPoints[i][j]);
+		}
+		polygons.push_back(std::make_shared<Polyline>(controlPoints));
+	}
+	for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+	{
+		controlPoints.clear();
+		for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+		{
+			controlPoints.push_back(patch.controlPoints[j][i]);
+		}
+		polygons.push_back(std::make_shared<Polyline>(controlPoints));
+	}
+}
+
 BezierSurface::BezierSurface(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 	:shapeList{shapeList}
 {
@@ -142,6 +167,11 @@ BezierSurface::BezierSurface(ShapeList* shapeList, bool isCylinder, float sizex,
 	else
 	{
 		GeneratePlane(xpatch, ypatch, sizex, sizey);
+	}
+
+	for (int i = 0; i < bezierPatchesData.size(); i++)
+	{
+		AddPolygons(bezierPolygon, bezierPatchesData[i]);
 	}
 }
 
@@ -162,6 +192,8 @@ BezierSurface::~BezierSurface()
 
 void BezierSurface::Render() const
 {
+	for (auto polygon : bezierPolygon)
+		polygon->Update();
 	auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurface);
 	shader->Bind();
 	shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
@@ -180,6 +212,12 @@ void BezierSurface::Render() const
 
 	auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 	defShader->Bind();
+
+	if(drawBezierPolygon)
+	{
+		for (auto polygon : bezierPolygon)
+			polygon->Render();
+	}
 }
 
 void BezierSurface::Update(const std::string& message_from_subject)

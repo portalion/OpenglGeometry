@@ -95,6 +95,7 @@ void ShapeList::ShowCreationPopup()
                     shape->InitName();
                     shapes.push_back(shape);
                 }
+				isInCreationMode = false;
             }
 			ImGui::SameLine();
             if(ImGui::Button("Cancel##creationPopup"))

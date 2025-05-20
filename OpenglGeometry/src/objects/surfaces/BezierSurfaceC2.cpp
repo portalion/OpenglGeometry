@@ -1,6 +1,29 @@
 #include "BezierSurfaceC2.h"
 #include <array>
 
+void AddPolygonsc2(std::vector<std::shared_ptr<Polyline>>& polygons, const BezierPatchData& patch)
+{
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+	{
+		controlPoints.clear();
+		for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+		{
+			controlPoints.push_back(patch.controlPoints[i][j]);
+		}
+		polygons.push_back(std::make_shared<Polyline>(controlPoints));
+	}
+	for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+	{
+		controlPoints.clear();
+		for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+		{
+			controlPoints.push_back(patch.controlPoints[j][i]);
+		}
+		polygons.push_back(std::make_shared<Polyline>(controlPoints));
+	}
+}
+
 RenderableMesh<PositionVertexData> BezierSurfaceC2::GenerateMesh()
 {
 	RenderableMesh<PositionVertexData> result;
@@ -11,7 +34,7 @@ RenderableMesh<PositionVertexData> BezierSurfaceC2::GenerateMesh()
 			{ 0.f,     2.f / 6.f, 4.f / 6.f, 0.f },
 			{ 0.f,     1.f / 6.f, 4.f / 6.f, 1.f / 6.f }
 	};
-
+	bezierPatchesDataForB.clear();
 	for (int patchIndex = 0; patchIndex < bezierPatchesData.size(); ++patchIndex)
 	{
 		auto patch = bezierPatchesData[patchIndex];
@@ -35,6 +58,9 @@ RenderableMesh<PositionVertexData> BezierSurfaceC2::GenerateMesh()
 
 		std::vector<Algebra::Vector4> B;
 		B.reserve(16);
+
+		BezierPatchData tmp;
+
 		for (int i = 0; i < 4; ++i)
 			for (int j = 0; j < 4; ++j)
 			{
@@ -42,7 +68,14 @@ RenderableMesh<PositionVertexData> BezierSurfaceC2::GenerateMesh()
 				for (int k = 0; k < 4; ++k)
 					b += Q[i][k] * A[j][k];
 				bernsteinPoints[patchIndex * 16 + i * 4 + j]->SetPosition(b);
+				tmp.controlPoints[i][j] = bernsteinPoints[patchIndex * 16 + i * 4 + j];
 			}
+		bezierPatchesDataForB.push_back(tmp);
+	}
+	bezierPolygon.clear();
+	for (int i = 0; i < bezierPatchesDataForB.size(); i++)
+	{
+		AddPolygonsc2(bezierPolygon, bezierPatchesDataForB[i]);
 	}
 
 	for (auto pt : bernsteinPoints)
@@ -65,6 +98,9 @@ bool BezierSurfaceC2::DisplayParameters()
 	ImGui::DragInt(GenerateLabelWithId("u subdivision").c_str(), &u_subdivisions, 1, 2, 50);
 	ImGui::DragInt(GenerateLabelWithId("v subdivision").c_str(), &v_subdivisions, 1, 2, 50);
 
+	ImGui::Checkbox(GenerateLabelWithId("Draw Boor Polygon").c_str(), &drawBoorPolygon);
+	ImGui::Checkbox(GenerateLabelWithId("Draw Bezier Polygon").c_str(), &drawBezierPolygon);
+
 	return false;
 }
 
@@ -79,11 +115,6 @@ void BezierSurfaceC2::GeneratePlane(int xPatches, int yPatches, float sizeX, flo
 	Algebra::Vector4 startingPosition = Algebra::Vector4();
 	std::vector<std::shared_ptr<Point>> controlPoints;
 	controlPoints.reserve(rows * columns);
-
-	// Width is along X axis and height is along Y axis, Z axis is flat
-	// storing points by columns then rows, like in matrix
-	// 0 1 2 3
-	// 4 5 6 7
 
 	for (int i = 0; i < rows; ++i)
 	{
@@ -143,11 +174,6 @@ void BezierSurfaceC2::GenerateCylinder(int radiusPatches, int heightPatches, flo
 	std::vector<std::shared_ptr<Point>> controlPoints;
 	controlPoints.reserve(rows * columns);
 
-	// Width is along X axis and height is along Y axis, Z axis is flat
-	// storing points by columns then rows, like in matrix
-	// 0 1 2 3
-	// 4 5 6 7
-
 	for (int i = 0; i < rows; ++i)
 	{
 		for (int j = 0; j < columns; ++j)
@@ -205,6 +231,12 @@ BezierSurfaceC2::BezierSurfaceC2(ShapeList* shapeList, bool isCylinder, float si
 	{
 		GeneratePlane(xpatch, ypatch, sizex, sizey);
 	}
+
+	for (int i = 0; i < bezierPatchesData.size(); i++)
+	{
+		AddPolygonsc2(boorPolygon, bezierPatchesData[i]);
+	}
+
 }
 
 BezierSurfaceC2::~BezierSurfaceC2()
@@ -224,6 +256,10 @@ BezierSurfaceC2::~BezierSurfaceC2()
 
 void BezierSurfaceC2::Render() const
 {
+	for (auto polygon : bezierPolygon)
+		polygon->Update();
+	for (auto polygon : boorPolygon)
+		polygon->Update();
 	auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurface);
 	shader->Bind();
 	shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
@@ -242,6 +278,17 @@ void BezierSurfaceC2::Render() const
 
 	auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 	defShader->Bind();
+
+	if (drawBezierPolygon)
+	{
+		for (auto polygon : bezierPolygon)
+			polygon->Render();
+	} 
+	if (drawBoorPolygon)
+	{
+		for (auto polygon : boorPolygon)
+			polygon->Render();
+	}
 }
 
 void BezierSurfaceC2::Update(const std::string& message_from_subject)

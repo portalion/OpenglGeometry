@@ -10,13 +10,20 @@ class BezierSurfaceC2 : public RenderableOnScene, public IObserver
 private:
 	int u_subdivisions = 8;
 	int v_subdivisions = 8;
+	bool drawBoorPolygon = false;
+	bool drawBezierPolygon = false;
 
+	std::vector<std::shared_ptr<Polyline>> boorPolygon;
+	std::vector<std::shared_ptr<Polyline>> bezierPolygon;
 	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
+	std::vector<BezierPatchData> bezierPatchesDataForB;
 	std::vector<std::shared_ptr<Point>> bernsteinPoints;
 	inline std::string GetTypeName() const override { return "Bezier Surface C2"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	bool DisplayParameters() override;
+
+	std::vector<std::vector<std::shared_ptr<Point>>> GetBernsteinGrids() const;
 
 	void GeneratePlane(int xPatches = 1, int yPatches = 1, float sizeX = 10.f, float sizeY = 10.f);
 	void GenerateCylinder(int radiusPatches = 1, int heightPatches = 1, float r = 10.f, float height = 10.f);

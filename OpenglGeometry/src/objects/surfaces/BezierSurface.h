@@ -3,6 +3,7 @@
 #include "UI/ShapeList.h"
 #include "objects/Point.h"
 #include "App.h"
+#include <objects/lines/Polyline.h>
 
 struct BezierPatchData
 {
@@ -15,7 +16,9 @@ class BezierSurface : public RenderableOnScene, public IObserver
 private:
 	int u_subdivisions = 8;
 	int v_subdivisions = 8;
+	bool drawBezierPolygon = false;
 
+	std::vector<std::shared_ptr<Polyline>> bezierPolygon;
 	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
 	inline std::string GetTypeName() const override { return "Bezier Surface"; }
