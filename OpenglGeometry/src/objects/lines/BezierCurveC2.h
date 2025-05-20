@@ -37,7 +37,7 @@ public:
 	}
 };
 
-class BezierCurveC2 : public RenderableOnScene, public IObserver
+class BezierCurveC2 : public RenderableOnScene, public IObserver, public ILine
 {
 private:
 	bool refreshBernstein = false;

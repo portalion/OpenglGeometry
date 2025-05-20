@@ -3,6 +3,7 @@
 #include <objects/lines/BezierCurve.h>
 #include <objects/lines/InterpolatedBezierCurve.h>
 #include <objects/lines/BezierCurveC2.h>
+#include <objects/lines/ILine.h>
 
 void ShapeList::CreateShapeButton()
 {
@@ -22,20 +23,10 @@ void ShapeList::CreateShapeButton()
 
         if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
         {
-            auto beziers = selectedShapes->GetSelectedWithType<BezierCurve>();
-            for (auto bezier : beziers)
+            auto lines = selectedShapes->GetSelectedWithType<ILine>();
+            for (auto line : lines)
             {
-                bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
-            }
-            auto beziers2 = selectedShapes->GetSelectedWithType<BezierCurveC2>();
-            for (auto bezier : beziers2)
-            {
-                bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
-            }
-            auto interpolatedBeziers = selectedShapes->GetSelectedWithType<InterpolatedBezierCurve>();
-            for (auto bezier : interpolatedBeziers)
-            {
-                bezier->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
+                line->AddPoint(std::dynamic_pointer_cast<Point>(newShape));
             }
         }
     }

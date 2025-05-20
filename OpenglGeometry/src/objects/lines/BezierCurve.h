@@ -7,7 +7,7 @@
 #include "App.h"
 #include "core/Globals.h"
 
-class BezierCurve : public RenderableOnScene, public IObserver
+class BezierCurve : public RenderableOnScene, public IObserver, public ILine
 {
 private:
 	bool displayPolyline = false;

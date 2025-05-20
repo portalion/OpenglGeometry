@@ -3,8 +3,9 @@
 #include <vector>
 #include "objects/Point.h"
 #include <algorithm>
+#include "objects/lines/ILine.h"
 
-class Polyline : public RenderableOnScene, public IObserver
+class Polyline : public RenderableOnScene, public IObserver, public ILine
 {
 private:
 	std::vector<std::weak_ptr<Point>> points;
