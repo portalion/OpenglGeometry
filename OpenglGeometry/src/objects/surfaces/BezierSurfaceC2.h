@@ -1,9 +1,32 @@
 #pragma once
 #include "core/RenderableOnScene.h"
-class BezierSurfaceC2 : public RenderableOnScene
+#include "UI/ShapeList.h"
+#include "objects/Point.h"
+#include "App.h"
+#include "BezierSurface.h"
+
+class BezierSurfaceC2 : public RenderableOnScene, public IObserver
 {
-	RenderableMesh<PositionVertexData> GenerateMesh() override;
+private:
+	int u_subdivisions = 2;
+	int v_subdivisions = 2;
+
+	ShapeList* shapeList;
+	std::vector<BezierPatchData> bezierPatchesData;
+	std::vector<std::shared_ptr<Point>> bernsteinPoints;
 	inline std::string GetTypeName() const override { return "Bezier Surface C2"; }
+	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	bool DisplayParameters() override;
+
+	void GeneratePlane(int xPatches = 1, int yPatches = 1, float sizeX = 10.f, float sizeY = 10.f);
+	void GenerateCylinder(int radiusPatches = 1, int heightPatches = 1, float r = 10.f, float height = 10.f);
+public:
+	BezierSurfaceC2(ShapeList* shapeList);
+	~BezierSurfaceC2();
+
+	void Render() const override;
+	void Update(const std::string& message_from_subject) override;
+
+	static std::shared_ptr<BezierSurfaceC2> Create(ShapeList* shapeList);
 };
 

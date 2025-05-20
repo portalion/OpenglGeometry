@@ -26,7 +26,7 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape,
     case ShapeEnum::BezierSurface:
         return BezierSurface::Create(shapeList);
     case ShapeEnum::BezierSurfaceC2:
-        return std::make_shared<BezierSurfaceC2>();
+        return BezierSurfaceC2::Create(shapeList);
     }
     throw std::runtime_error("Invalid shape");
 }
