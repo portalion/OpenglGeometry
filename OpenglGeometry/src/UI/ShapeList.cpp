@@ -4,6 +4,8 @@
 #include <objects/lines/InterpolatedBezierCurve.h>
 #include <objects/lines/BezierCurveC2.h>
 #include <objects/lines/ILine.h>
+#include <objects/surfaces/BezierSurface.h>
+#include <objects/surfaces/BezierSurfaceC2.h>
 
 void ShapeList::CreateShapeButton()
 {
@@ -50,6 +52,60 @@ void ShapeList::CreateShapeButton()
     }
 }
 
+void ShapeList::ShowCreationPopup()
+{
+    if (isInCreationMode)
+    {
+        ImGui::OpenPopup("Create shape");
+        ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_FirstUseEver);
+        if (ImGui::BeginPopupModal("Create shape", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+			ImGui::Checkbox("Create with C2", &createC2);
+            ImGui::Checkbox("Is cylinder", &isCylinder);
+
+            if (isCylinder)
+            {
+               
+                ImGui::DragInt("radius patches", &rPatches, 1, 1, 30);
+                ImGui::DragInt("y patches", &yPatches, 1, 1, 30);
+
+                ImGui::DragFloat("radius", &sizeR, 1, -1000.f, 1000.f);
+                ImGui::DragFloat("size z", &sizeY, 1, -1000.f, 1000.f);
+            }
+            else
+            {
+                ImGui::DragInt("x patches", &rPatches, 1, 1, 30);
+                ImGui::DragInt("y patches", &yPatches, 1, 1, 30);
+
+                ImGui::DragFloat("size x", &sizeR, 1, -1000.f, 1000.f);
+                ImGui::DragFloat("size y", &sizeY, 1, -1000.f, 1000.f);
+            }
+
+            if (ImGui::Button("Create##creationPopup"))
+            {
+                if (createC2)
+                {
+                    auto shape = BezierSurfaceC2::Create(this, isCylinder, sizeR, sizeY, rPatches, yPatches);
+                    shape->InitName();
+                    shapes.push_back(shape);
+                }
+                else
+                {
+                    auto shape = BezierSurface::Create(this, isCylinder, sizeR, sizeY, rPatches, yPatches);
+                    shape->InitName();
+                    shapes.push_back(shape);
+                }
+            }
+			ImGui::SameLine();
+            if(ImGui::Button("Cancel##creationPopup"))
+            {
+				isInCreationMode = false;
+            }
+            ImGui::EndPopup();
+        }
+    }
+}
+
 ShapeList::ShapeList(AxisCursor* axis, SelectedShapes* selectedShapes)
     :selectedShapes{selectedShapes}, shapeCreator{selectedShapes, axis}
 {
@@ -85,8 +141,15 @@ std::shared_ptr<Point> ShapeList::GetPointByPosition(Algebra::Matrix4 VP, Algebr
     return nullptr;
 }
 
+void ShapeList::StartCreationMode(bool C2)
+{
+    createC2 = C2;
+	isInCreationMode = true;
+}
+
 void ShapeList::DisplayUI()
 {
+    ShowCreationPopup();
     if (ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))
     {
         ImGui::BeginChild("ShapeList", ImVec2(0, 150), true, ImGuiWindowFlags_HorizontalScrollbar);

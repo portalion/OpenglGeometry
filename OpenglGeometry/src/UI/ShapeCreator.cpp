@@ -24,9 +24,11 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape,
     case ShapeEnum::InterpolatedBezierCurve:
         return std::make_shared<InterpolatedBezierCurve>(selectedShapes->GetSelectedWithType<Point>(), selectedShapes);
     case ShapeEnum::BezierSurface:
-        return BezierSurface::Create(shapeList);
+		shapeList->StartCreationMode(false);
+        return nullptr;
     case ShapeEnum::BezierSurfaceC2:
-        return BezierSurfaceC2::Create(shapeList);
+        shapeList->StartCreationMode(true);
+        return nullptr;
     }
     throw std::runtime_error("Invalid shape");
 }

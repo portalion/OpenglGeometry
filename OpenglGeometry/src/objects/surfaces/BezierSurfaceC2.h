@@ -8,8 +8,8 @@
 class BezierSurfaceC2 : public RenderableOnScene, public IObserver
 {
 private:
-	int u_subdivisions = 2;
-	int v_subdivisions = 2;
+	int u_subdivisions = 8;
+	int v_subdivisions = 8;
 
 	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
@@ -21,12 +21,12 @@ private:
 	void GeneratePlane(int xPatches = 1, int yPatches = 1, float sizeX = 10.f, float sizeY = 10.f);
 	void GenerateCylinder(int radiusPatches = 1, int heightPatches = 1, float r = 10.f, float height = 10.f);
 public:
-	BezierSurfaceC2(ShapeList* shapeList);
+	BezierSurfaceC2(ShapeList* shapeLis, bool isCylinder, float sizex, float sizey, int xpatch, int ypatcht);
 	~BezierSurfaceC2();
 
 	void Render() const override;
 	void Update(const std::string& message_from_subject) override;
 
-	static std::shared_ptr<BezierSurfaceC2> Create(ShapeList* shapeList);
+	static std::shared_ptr<BezierSurfaceC2> Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch);
 };
 

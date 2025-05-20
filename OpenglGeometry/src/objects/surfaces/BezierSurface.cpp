@@ -131,11 +131,18 @@ void BezierSurface::GenerateCylinder(int radiusPatches, int heightPatches, float
 	}
 }
 
-BezierSurface::BezierSurface(ShapeList* shapeList)
+BezierSurface::BezierSurface(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 	:shapeList{shapeList}
 {
 	renderingMode = RenderingMode::PATCHES;
-	GenerateCylinder(3, 5, 30.f, 30.f);
+	if (isCylinder)
+	{
+		GenerateCylinder(xpatch, ypatch, sizex, sizey);
+	}
+	else
+	{
+		GeneratePlane(xpatch, ypatch, sizex, sizey);
+	}
 }
 
 BezierSurface::~BezierSurface()
@@ -180,7 +187,7 @@ void BezierSurface::Update(const std::string& message_from_subject)
 	somethingChanged = true;
 }
 
-std::shared_ptr<BezierSurface> BezierSurface::Create(ShapeList* shapeList)
+std::shared_ptr<BezierSurface> BezierSurface::Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 {
-	return std::make_shared<BezierSurface>(shapeList);
+	return std::make_shared<BezierSurface>(shapeList, isCylinder, sizex, sizey, xpatch, ypatch);
 }
