@@ -23,7 +23,7 @@ private:
 	bool DisplayParameters() override;
 
 	void GeneratePlane(int xPatches = 1, int yPatches = 1, float sizeX = 10.f, float sizeY = 10.f);
-	void GenerateCylinder();
+	void GenerateCylinder(int radiusPatches = 1, int heightPatches = 1, float r = 10.f, float height = 10.f);
 public:
 	BezierSurface(ShapeList* shapeList);
 	~BezierSurface();

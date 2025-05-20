@@ -81,11 +81,61 @@ void BezierSurface::GeneratePlane(int xPatches, int yPatches, float sizeX, float
 	}
 }
 
+void BezierSurface::GenerateCylinder(int radiusPatches, int heightPatches, float radius, float height)
+{
+	const int columns = radiusPatches * 3;
+	const int rows = heightPatches * 3 + 1;
+
+	float dHeight = height / static_cast<float>(heightPatches * 3);
+	float dAngle = 2.f * std::numbers::pi_v<float> / static_cast<float>(columns);
+
+	Algebra::Vector4 startingPosition = Algebra::Vector4(0.f, 0.f, height / 2.f);
+
+	std::vector<std::shared_ptr<Point>> controlPoints(rows * columns);
+	int k = 0;
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < columns; ++j)
+		{
+			Algebra::Vector4 heightOffset = Algebra::Vector4(0.f, 0.f, i * dHeight);
+			Algebra::Vector4 radiusOffset = Algebra::Matrix4::RotationZ(dAngle * j) * Algebra::Vector4(radius, 0.f, 0.f);
+
+			auto point = std::make_shared<Point>();
+			point->InitName();
+			point->SetPosition(startingPosition + heightOffset + radiusOffset);
+			point->Update();
+
+			shapeList->AddPoint(point);
+			point->Attach(this);
+			controlPoints[k++] = point;
+		}
+	}
+
+	for (int patchIndex = 0; patchIndex < radiusPatches * heightPatches; ++patchIndex)
+	{
+		BezierPatchData patch;
+
+		int startingI = patchIndex / radiusPatches;
+		int startingJ = patchIndex % radiusPatches;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				int index = (startingI * 3 + i) * columns + (startingJ * 3 + j) % columns;
+				patch.controlPoints[i][j] = controlPoints[index];
+			}
+		}
+
+		bezierPatchesData.push_back(patch);
+	}
+}
+
 BezierSurface::BezierSurface(ShapeList* shapeList)
 	:shapeList{shapeList}
 {
 	renderingMode = RenderingMode::PATCHES;
-	GeneratePlane(1, 1, 30.f, 30.f);
+	GenerateCylinder(3, 5, 30.f, 30.f);
 }
 
 BezierSurface::~BezierSurface()
