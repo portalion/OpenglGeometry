@@ -73,5 +73,7 @@ public:
 		RenderableOnScene::Update();
 		polyline.Update();
 	}
+
+	json Serialize() const override;
 };
 

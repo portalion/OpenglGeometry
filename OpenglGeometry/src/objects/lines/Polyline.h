@@ -74,5 +74,7 @@ public:
 		}
 		points.clear();
 	}
+
+	json Serialize() const override;
 };
 

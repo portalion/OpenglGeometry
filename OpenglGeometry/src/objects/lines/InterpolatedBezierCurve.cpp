@@ -233,3 +233,22 @@ InterpolatedBezierCurve::InterpolatedBezierCurve(std::vector<std::shared_ptr<Poi
 	}
 }
 
+json InterpolatedBezierCurve::Serialize() const
+{
+	json result;
+	result["objectType"] = "interpolatedC2";
+	result["id"] = id;
+	result["name"] = name;
+	result["controlPoints"] = json::array();
+
+	for (const auto& point : points)
+	{
+		if (auto pt = point.lock())
+		{
+			result["controlPoints"].push_back(json::object({ { "id", pt->GetShapeId() } }));
+		}
+	}
+
+	return result;
+}
+

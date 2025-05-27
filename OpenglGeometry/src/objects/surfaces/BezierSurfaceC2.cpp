@@ -223,6 +223,8 @@ BezierSurfaceC2::BezierSurfaceC2(ShapeList* shapeList, bool isCylinder, float si
 	:shapeList{ shapeList }
 {
 	renderingMode = RenderingMode::PATCHES;
+	u_patches = xpatch;
+	v_patches = ypatch;
 	if (isCylinder)
 	{
 		GenerateCylinder(xpatch, ypatch, sizex, sizey);
@@ -299,4 +301,37 @@ void BezierSurfaceC2::Update(const std::string& message_from_subject)
 std::shared_ptr<BezierSurfaceC2> BezierSurfaceC2::Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 {
 	return std::make_shared<BezierSurfaceC2>(shapeList, isCylinder, sizex, sizey, xpatch, ypatch);
+}
+
+json BezierSurfaceC2::Serialize() const
+{
+	json result;
+	result["objectType"] = "bezierSurfaceC2";
+	result["id"] = id;
+	result["name"] = name;
+	result["controlPoints"] = json::array();
+
+	for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+	{
+		for (auto& patch : this->bezierPatchesData)
+		{
+			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				if (auto point = patch.controlPoints[i][j])
+				{
+					result["controlPoints"].push_back(json::object({ { "id", point->GetShapeId() } }));
+				}
+			}
+		}
+	}
+	result["size"] = json::object({
+		{"u", u_patches * 4},
+		{"v", v_patches * 4},
+		});
+	result["samples"] = json::object({
+		{"u", u_subdivisions},
+		{"v", v_subdivisions},
+		});
+
+	return result;
 }

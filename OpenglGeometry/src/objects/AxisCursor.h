@@ -9,5 +9,10 @@ class AxisCursor : public virtual RenderableOnScene, public virtual PositionComp
 	{ 
 		return false; 
 	};
+
+	inline json Serialize() const override
+	{
+		return json::object();
+	}
 };
 

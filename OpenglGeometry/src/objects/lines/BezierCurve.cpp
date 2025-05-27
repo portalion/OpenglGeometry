@@ -170,3 +170,21 @@ BezierCurve::BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedSha
         AddPoint(point);
     }
 }
+
+json BezierCurve::Serialize() const
+{
+	json result;
+	result["objectType"] = "bezierC0";
+	result["id"] = id;
+	result["name"] = name;
+	result["controlPoints"] = json::array();
+	for (const auto& point : points)
+	{
+		if (auto ptr = point.lock())
+		{
+			result["controlPoints"].push_back(json::object({ { "id", ptr->GetShapeId() } }));
+		}
+	}
+
+	return result;
+}

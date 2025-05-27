@@ -10,6 +10,7 @@
 #include <objects/lines/BezierCurve.h>
 #include <objects/lines/BezierCurveC2.h>
 #include <objects/lines/InterpolatedBezierCurve.h>
+#include <fstream>
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);
@@ -138,6 +139,18 @@ void App::DisplayParameters()
     //TODO: Add iterator to selectedShapes
     
     shapeList.DisplayUI();
+    
+    //TODO: Change to json manager
+    if (ImGui::Button("Save scene"))
+    {
+		std::ofstream file("scene.json");
+		file << shapeList.SerializeList().dump(4);
+    }
+	ImGui::SameLine();
+    if (ImGui::Button("Load scene"))
+    {
+        std::ifstream file("scene.json");
+    }
 
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
     {

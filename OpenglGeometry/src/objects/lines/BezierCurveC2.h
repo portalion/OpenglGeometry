@@ -183,4 +183,6 @@ public:
 	void Update() override;
 	void UpdateBasedOnDeBoor();
 	void UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector4 moved);
+
+	json Serialize() const override;
 };

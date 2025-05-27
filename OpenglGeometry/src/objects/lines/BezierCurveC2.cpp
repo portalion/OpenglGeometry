@@ -252,3 +252,22 @@ void BezierCurveC2::UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector
 	}
 }
 
+json BezierCurveC2::Serialize() const
+{
+	json result;
+	result["objectType"] = "bezierC2";
+	result["id"] = id;
+	result["name"] = name;
+	result["controlPoints"] = json::array();
+
+	for (const auto& point : points)
+	{
+		if (auto pt = point.lock())
+		{
+			result["controlPoints"].push_back(json::object({ { "id", pt->GetShapeId() } }));
+		}
+	}
+
+	return result;
+}
+

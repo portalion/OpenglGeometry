@@ -51,3 +51,31 @@ bool Torus::DisplayParameters()
 
 	return somethingChanged;
 }
+
+json Torus::Serialize() const
+{
+	json result;
+	result["id"] = id;
+	result["objectType"] = "torus";
+	result["name"] = name;
+	result["position"] = json::object({
+		{ "x", GetPosition().x },
+		{ "y", GetPosition().y },
+		{ "z", GetPosition().z } });
+	result["rotation"] = json::object({
+		{ "x", GetRotation().x },
+		{ "y", GetRotation().y },
+		{ "z", GetRotation().z },
+		{ "w", GetRotation().w } });
+	result["scale"] = json::object({
+		{ "x", GetScale() },
+		{ "y", GetScale() },
+		{ "z", GetScale() } });
+	result["samples"] = json::object({
+		{ "u", radiusSegments },
+		{ "v", tubeSegments } });
+	result["smallRadius"] = tubeRadius;
+	result["largeRadius"] = radius;
+
+	return result;
+}

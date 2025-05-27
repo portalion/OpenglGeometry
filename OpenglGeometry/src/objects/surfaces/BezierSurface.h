@@ -17,7 +17,8 @@ private:
 	int u_subdivisions = 8;
 	int v_subdivisions = 8;
 	bool drawBezierPolygon = false;
-
+	int u_patches = 1;
+	int v_patches = 1;
 	std::vector<std::shared_ptr<Polyline>> bezierPolygon;
 	ShapeList* shapeList;
 	std::vector<BezierPatchData> bezierPatchesData;
@@ -35,5 +36,7 @@ public:
 	void Update(const std::string& message_from_subject) override;
 
 	static std::shared_ptr<BezierSurface> Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch);
+
+	json Serialize() const override;
 };
 

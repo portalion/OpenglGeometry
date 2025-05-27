@@ -84,3 +84,21 @@ Polyline::Polyline(std::vector<std::shared_ptr<Point>> points)
         AddPoint(point);
     }
 }
+
+json Polyline::Serialize() const
+{
+    json result;
+	result["objectType"] = "chain";
+	result["id"] = id;
+	result["name"] = name;
+	result["controlPoints"] = json::array();
+	for (const auto& point : points)
+	{
+		if (auto ptr = point.lock())
+		{
+            result["controlPoints"].push_back(json::object({ { "id", ptr->GetShapeId() } }));
+		}
+	}
+
+    return result;
+}

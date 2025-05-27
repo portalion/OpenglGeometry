@@ -28,3 +28,17 @@ RenderableMesh<PositionVertexData> Point::GenerateMesh()
 {
     return mesh;
 }
+
+json Point::Serialize() const
+{
+    json result;
+    result["id"] = id;
+    result["name"] = name;
+    auto pos = GetPosition();
+    result["position"] = json::object({
+        { "x", pos.x },
+        { "y", pos.y },
+        { "z", pos.z } });
+
+    return result;
+}

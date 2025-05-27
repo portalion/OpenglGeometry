@@ -62,6 +62,8 @@ public:
 		movedPos = GetPosition() - lastPos;
 		lastPos = GetPosition();
 	}
+
+	json Serialize() const override;
 };
 
 

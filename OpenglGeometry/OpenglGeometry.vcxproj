@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\managers\JsonManager.cpp" />
     <ClCompile Include="src\objects\surfaces\BezierSurface.cpp" />
     <ClCompile Include="src\objects\surfaces\BezierSurfaceC2.cpp" />
     <ClCompile Include="src\objects\lines\InterpolatedBezierCurve.cpp" />
@@ -232,6 +233,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\managers\JsonManager.h" />
     <ClInclude Include="src\objects\lines\ILine.h" />
     <ClInclude Include="src\objects\surfaces\BezierSurface.h" />
     <ClInclude Include="src\objects\surfaces\BezierSurfaceC2.h" />

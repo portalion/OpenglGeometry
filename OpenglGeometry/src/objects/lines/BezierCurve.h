@@ -68,10 +68,12 @@ public:
 		}
 	}
 	
-	void Update() override
+	inline void Update() override
 	{
 		RenderableOnScene::Update();
 		polyline.Update();
 	}
+
+	json Serialize() const override;
 };
 

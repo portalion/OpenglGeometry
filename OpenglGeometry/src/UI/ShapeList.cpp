@@ -239,3 +239,22 @@ void ShapeList::RemovePoint(std::shared_ptr<Point> point)
 {
     point->removable = true;
 }
+
+json ShapeList::SerializeList()
+{
+    json result;
+	result["geometry"] = json::array();
+	result["points"] = json::array();
+	for (const auto& shape : shapes)
+	{
+		if (auto point = std::dynamic_pointer_cast<Point>(shape))
+		{
+			result["points"].push_back(point->Serialize());
+		}
+		else
+		{
+			result["geometry"].push_back(shape->Serialize());
+		}
+	}
+    return result;
+}

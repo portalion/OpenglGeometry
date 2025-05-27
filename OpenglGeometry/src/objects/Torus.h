@@ -14,5 +14,7 @@ private:
 	inline std::string GetTypeName() const override { return "Torus"; }
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	bool DisplayParameters() override;
+
+	json Serialize() const override;
 };
 
