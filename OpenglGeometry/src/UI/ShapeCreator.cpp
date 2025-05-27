@@ -62,27 +62,15 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j,
     else if (shapeTypeStr == "interpolatedC2")
     {
         return InterpolatedBezierCurve::Deserialize(j, list);
+    } 
+    else if (shapeTypeStr == "bezierC2")
+    {
+        return BezierCurveC2::Deserialize(j, list);
     }
-    /*else if (shapeTypeStr == "bezier_curve_c0")
+    else if (shapeTypeStr == "bezierC0")
 	{
-		return BezierCurve::Deserialize(j, selectedShapes);
+		return BezierCurve::Deserialize(j, list);
 	}
-	else if (shapeTypeStr == "bezier_curve_c2")
-	{
-		return BezierCurveC2::Deserialize(j, selectedShapes);
-	}
-	else if (shapeTypeStr == "interpolated_bezier_curve")
-	{
-		return InterpolatedBezierCurve::Deserialize(j, selectedShapes);
-	}
-	else if (shapeTypeStr == "bezier_surface")
-	{
-		return BezierSurface::Deserialize(j, list);
-	}
-	else if (shapeTypeStr == "bezier_surface_c2")
-	{
-		return BezierSurfaceC2::Deserialize(j, list);
-    }*/
 
     return nullptr;
 }

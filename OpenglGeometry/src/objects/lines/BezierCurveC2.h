@@ -184,5 +184,6 @@ public:
 	void UpdateBasedOnDeBoor();
 	void UpdateBasedOnBernstein(int movedBezierIndex, Algebra::Vector4 moved);
 
+	static std::shared_ptr<BezierCurveC2> Deserialize(const json& j, ShapeList* list);
 	json Serialize() const override;
 };
