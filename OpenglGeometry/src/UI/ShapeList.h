@@ -35,6 +35,7 @@ public:
 	void Render();
 	void AddPoint(std::shared_ptr<Point> point);
 	void RemovePoint(std::shared_ptr<Point> point);
+	inline SelectedShapes* GetSelectedShapes() { return selectedShapes; }
 	
 	std::shared_ptr<Point> GetPointWithId(unsigned int id);
 	void Deserialize(const json& j);

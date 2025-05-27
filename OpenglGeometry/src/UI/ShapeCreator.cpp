@@ -59,6 +59,10 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j,
 	{
 		return Polyline::Deserialize(j, list);
 	}
+    else if (shapeTypeStr == "interpolatedC2")
+    {
+        return InterpolatedBezierCurve::Deserialize(j, list);
+    }
     /*else if (shapeTypeStr == "bezier_curve_c0")
 	{
 		return BezierCurve::Deserialize(j, selectedShapes);

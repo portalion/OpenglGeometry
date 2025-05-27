@@ -74,6 +74,7 @@ public:
 		polyline.Update();
 	}
 
+	static std::shared_ptr<InterpolatedBezierCurve> Deserialize(const json& j, ShapeList* list);
 	json Serialize() const override;
 };
 

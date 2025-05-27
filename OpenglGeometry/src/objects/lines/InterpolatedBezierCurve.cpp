@@ -233,6 +233,26 @@ InterpolatedBezierCurve::InterpolatedBezierCurve(std::vector<std::shared_ptr<Poi
 	}
 }
 
+std::shared_ptr<InterpolatedBezierCurve> InterpolatedBezierCurve::Deserialize(const json& j, ShapeList* list)
+{
+	auto id = j["id"].get<unsigned int>();
+	auto name = j["name"].get<std::string>();
+	std::vector<std::shared_ptr<Point>> points;
+	for (const auto& pointJson : j["controlPoints"])
+	{
+		auto pointId = pointJson["id"].get<unsigned int>();
+		auto point = list->GetPointWithId(pointId);
+		if (point)
+		{
+			points.push_back(point);
+		}
+	}
+
+	auto polyline = std::make_shared<InterpolatedBezierCurve>(points, list->GetSelectedShapes());
+	polyline->InitName(id, name);
+	return polyline;
+}
+
 json InterpolatedBezierCurve::Serialize() const
 {
 	json result;
