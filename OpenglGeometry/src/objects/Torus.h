@@ -15,6 +15,8 @@ private:
 	RenderableMesh<PositionVertexData> GenerateMesh() override;
 	bool DisplayParameters() override;
 
+public:
+	static std::shared_ptr<Torus> Deserialize(const json& j);
 	json Serialize() const override;
 };
 

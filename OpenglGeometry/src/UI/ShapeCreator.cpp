@@ -51,9 +51,36 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape, Sh
 std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j, ShapeList* list) const
 {
 	auto shapeTypeStr = j["objectType"].get<std::string>();
-    
+    if (shapeTypeStr == "torus")
+    {
+		return Torus::Deserialize(j);
+	}
+	/*else if (shapeTypeStr == "polyline")
+	{
+		return Polyline::Deserialize(j, selectedShapes);
+	}
+	else if (shapeTypeStr == "bezier_curve_c0")
+	{
+		return BezierCurve::Deserialize(j, selectedShapes);
+	}
+	else if (shapeTypeStr == "bezier_curve_c2")
+	{
+		return BezierCurveC2::Deserialize(j, selectedShapes);
+	}
+	else if (shapeTypeStr == "interpolated_bezier_curve")
+	{
+		return InterpolatedBezierCurve::Deserialize(j, selectedShapes);
+	}
+	else if (shapeTypeStr == "bezier_surface")
+	{
+		return BezierSurface::Deserialize(j, list);
+	}
+	else if (shapeTypeStr == "bezier_surface_c2")
+	{
+		return BezierSurfaceC2::Deserialize(j, list);
+    }*/
 
-    return std::shared_ptr<RenderableOnScene>();
+    return nullptr;
 }
 
 const std::vector<std::pair<ShapeEnum, std::string>>& ShapeCreator::GetShapeList()

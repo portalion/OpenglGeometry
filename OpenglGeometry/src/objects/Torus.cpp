@@ -52,6 +52,30 @@ bool Torus::DisplayParameters()
 	return somethingChanged;
 }
 
+std::shared_ptr<Torus> Torus::Deserialize(const json& j)
+{
+	auto id = j["id"].get<unsigned int>();
+	auto name = j["name"].get<std::string>();
+	auto position = Algebra::Vector4(
+		j["position"]["x"].get<float>(),
+		j["position"]["y"].get<float>(),
+		j["position"]["z"].get<float>(), 1.f);
+	auto rotation = Algebra::Quaternion(
+		j["rotation"]["x"].get<float>(),
+		j["rotation"]["y"].get<float>(),
+		j["rotation"]["z"].get<float>(),
+		j["rotation"]["w"].get<float>());
+	auto result = std::make_shared<Torus>();
+	result->InitName(id, name);
+	result->SetPosition(position);
+	result->SetRotation(rotation);
+	result->tubeRadius = j["smallRadius"].get<float>();
+	result->radius = j["largeRadius"].get<float>();
+	result->radiusSegments = j["samples"]["u"].get<unsigned int>();
+	result->tubeSegments = j["samples"]["v"].get<unsigned int>();
+	return result;
+}
+
 json Torus::Serialize() const
 {
 	json result;
