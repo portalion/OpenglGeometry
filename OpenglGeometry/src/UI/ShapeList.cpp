@@ -150,6 +150,11 @@ void ShapeList::StartCreationMode(bool C2)
 
 void ShapeList::DisplayUI()
 {
+    if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A))
+    {
+        for(auto& shape : shapes)
+			selectedShapes->AddShape(shape);
+    }
     ShowCreationPopup();
     if (ImGui::CollapsingHeader("Shape List", ImGuiTreeNodeFlags_Leaf))
     {

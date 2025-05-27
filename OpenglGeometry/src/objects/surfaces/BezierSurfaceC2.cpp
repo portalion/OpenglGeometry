@@ -170,7 +170,7 @@ void BezierSurfaceC2::GenerateCylinder(int radiusPatches, int heightPatches, flo
 	float dHeight = height / static_cast<float>(rows - 1);
 	float dAngle = 2.f * std::numbers::pi_v<float> / static_cast<float>(columns);
 
-	Algebra::Vector4 startingPosition = Algebra::Vector4(0.f, 0.f, height / 2.f);
+	Algebra::Vector4 startingPosition = Algebra::Vector4();
 	std::vector<std::shared_ptr<Point>> controlPoints;
 	controlPoints.reserve(rows * columns);
 

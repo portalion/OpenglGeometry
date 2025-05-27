@@ -279,6 +279,7 @@
     <ClInclude Include="src\core\Window.h" />
     <ClInclude Include="src\engine\VertexBuffer.h" />
     <ClInclude Include="src\engine\VertexArray.h" />
+    <ClInclude Include="vendor\nlohmann\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\bezierLine\bezier.frag" />
