@@ -48,6 +48,14 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::CreateShape(ShapeEnum shape, Sh
     return newShape;
 }
 
+std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j, ShapeList* list) const
+{
+	auto shapeTypeStr = j["objectType"].get<std::string>();
+    
+
+    return std::shared_ptr<RenderableOnScene>();
+}
+
 const std::vector<std::pair<ShapeEnum, std::string>>& ShapeCreator::GetShapeList()
 {
     static const std::vector<std::pair<ShapeEnum, std::string>> shapeList = {

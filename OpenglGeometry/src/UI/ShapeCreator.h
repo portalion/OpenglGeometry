@@ -28,5 +28,6 @@ public:
 	ShapeCreator(SelectedShapes* selectedShapes, AxisCursor* cursor) : selectedShapes{ selectedShapes }, cursor{ cursor } {}
 
 	std::shared_ptr<RenderableOnScene> CreateShape(ShapeEnum shape, ShapeList* shapeList) const;
+	std::shared_ptr<RenderableOnScene> DeserializeShape(const json& j, ShapeList* list) const;
 	static const std::vector<std::pair<ShapeEnum, std::string>>& GetShapeList();
 };

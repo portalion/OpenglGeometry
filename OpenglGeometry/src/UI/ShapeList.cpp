@@ -241,6 +241,21 @@ void ShapeList::RemovePoint(std::shared_ptr<Point> point)
     point->removable = true;
 }
 
+std::shared_ptr<Point> ShapeList::GetPointWithId(unsigned int id)
+{
+    for (const auto& shape : shapes)
+    {
+        if (auto point = std::dynamic_pointer_cast<Point>(shape))
+        {
+            if (point->GetShapeId() == id)
+            {
+                return point;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void ShapeList::Deserialize(const json& j)
 {
     selectedShapes->Clear();
@@ -258,7 +273,7 @@ void ShapeList::Deserialize(const json& j)
 			}
 		}
 	}
-	/*if (j.contains("geometry"))
+	if (j.contains("geometry"))
 	{
 		for (const auto& shapeJson : j["geometry"])
 		{
@@ -268,7 +283,7 @@ void ShapeList::Deserialize(const json& j)
 				shapes.push_back(shape);
 			}
 		}
-	}*/
+	}
 }
 
 json ShapeList::SerializeList()
