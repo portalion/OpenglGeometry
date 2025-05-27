@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "objects/lines/ILine.h"
 
+class ShapeList;
+
 class Polyline : public RenderableOnScene, public IObserver, public ILine
 {
 private:
@@ -75,6 +77,7 @@ public:
 		points.clear();
 	}
 
+	static std::shared_ptr<Polyline> Deserialize(const json& j, ShapeList* list);
 	json Serialize() const override;
 };
 

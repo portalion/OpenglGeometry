@@ -55,11 +55,11 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j,
     {
 		return Torus::Deserialize(j);
 	}
-	/*else if (shapeTypeStr == "polyline")
+	else if (shapeTypeStr == "chain")
 	{
-		return Polyline::Deserialize(j, selectedShapes);
+		return Polyline::Deserialize(j, list);
 	}
-	else if (shapeTypeStr == "bezier_curve_c0")
+    /*else if (shapeTypeStr == "bezier_curve_c0")
 	{
 		return BezierCurve::Deserialize(j, selectedShapes);
 	}
