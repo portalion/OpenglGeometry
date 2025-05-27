@@ -149,7 +149,10 @@ void App::DisplayParameters()
 	ImGui::SameLine();
     if (ImGui::Button("Load scene"))
     {
+        json j;
         std::ifstream file("scene.json");
+        file >> j;
+        shapeList.Deserialize(j);
     }
 
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))

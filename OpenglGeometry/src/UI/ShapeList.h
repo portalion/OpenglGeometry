@@ -35,7 +35,8 @@ public:
 	void Render();
 	void AddPoint(std::shared_ptr<Point> point);
 	void RemovePoint(std::shared_ptr<Point> point);
-
+	
+	void Deserialize(const json& j);
 	json SerializeList();
 };
 

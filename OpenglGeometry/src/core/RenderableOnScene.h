@@ -24,6 +24,7 @@ public:
 	RenderableOnScene();
 	virtual ~RenderableOnScene() = default;
 	void InitName();
+	void InitName(unsigned int id, std::string name);
 	
 	void DisplayMenu();
 	virtual void Update();

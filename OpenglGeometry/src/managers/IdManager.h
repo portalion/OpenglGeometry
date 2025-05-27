@@ -16,6 +16,8 @@ public:
 	static IdManager& GetInstance();
 
 	unsigned int GetNewId(std::string name);
+	void SaveId(std::string name, unsigned int id);
 	void FreeId(std::string name, unsigned int id);
+	void ClearIds();
 };
 

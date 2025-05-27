@@ -64,6 +64,7 @@ public:
 	}
 
 	json Serialize() const override;
+	static std::shared_ptr<Point> Deserialize(const json& j);
 };
 
 

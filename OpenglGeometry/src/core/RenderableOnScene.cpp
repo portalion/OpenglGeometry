@@ -24,6 +24,14 @@ void RenderableOnScene::InitName()
 	name = GetTypeName() + ' ' + std::to_string(id);
 }
 
+void RenderableOnScene::InitName(unsigned int id, std::string name)
+{
+	auto typeName = GetTypeName();
+	this->id = id;
+	this->name = name;
+	IdManager::GetInstance().SaveId(typeName, id);
+}
+
 std::string RenderableOnScene::GenerateLabelWithId(std::string label)
 {
 	return label + "##" + GetTypeName() + std::to_string(id);

@@ -6,6 +6,7 @@
 #include <objects/lines/ILine.h>
 #include <objects/surfaces/BezierSurface.h>
 #include <objects/surfaces/BezierSurfaceC2.h>
+#include <managers/IdManager.h>
 
 void ShapeList::CreateShapeButton()
 {
@@ -238,6 +239,36 @@ void ShapeList::AddPoint(std::shared_ptr<Point> point)
 void ShapeList::RemovePoint(std::shared_ptr<Point> point)
 {
     point->removable = true;
+}
+
+void ShapeList::Deserialize(const json& j)
+{
+    selectedShapes->Clear();
+    shapes.clear();
+    IdManager::GetInstance().ClearIds();
+
+	if (j.contains("points"))
+	{
+		for (const auto& pointJson : j["points"])
+		{
+			auto point = Point::Deserialize(pointJson);
+			if (point)
+			{
+				shapes.push_back(point);
+			}
+		}
+	}
+	/*if (j.contains("geometry"))
+	{
+		for (const auto& shapeJson : j["geometry"])
+		{
+			auto shape = shapeCreator.DeserializeShape(shapeJson, this);
+			if (shape)
+			{
+				shapes.push_back(shape);
+			}
+		}
+	}*/
 }
 
 json ShapeList::SerializeList()

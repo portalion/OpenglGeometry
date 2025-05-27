@@ -42,3 +42,19 @@ json Point::Serialize() const
 
     return result;
 }
+
+std::shared_ptr<Point> Point::Deserialize(const json& j)
+{
+    auto id = j["id"].get<unsigned int>();
+	auto name = j["name"].get<std::string>();
+    Algebra::Vector4 position;
+    position.x = j["position"]["x"];
+    position.y = j["position"]["y"];
+    position.z = j["position"]["z"];
+
+	auto point = std::make_shared<Point>();
+	point->InitName(id, name);
+	point->SetPosition(position);
+
+    return point;
+}
