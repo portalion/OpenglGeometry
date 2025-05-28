@@ -43,5 +43,17 @@ private:
 	InfiniteGrid grid;
 	ShapeList shapeList;
 
+	Algebra::Matrix4 projectionMatrixLeft;
+	Algebra::Matrix4 projectionMatrixRight;
+	float interocularDistance = 0.05f, convergenceDistance = 2.f;
+
+	bool drawStereo = false;
+	void RenderScene();
+
 	std::shared_ptr<Shader> defaultShader;
+	void SetProjectionMatrix();
+	void SetLeftEyeProjectionMatrix();
+	void SetRightEyeProjectionMatrix();
+	std::pair<Algebra::Matrix4, Algebra::Matrix4> StereoscopicProjection(float aspect, float f, float n, float fov, float d, float c);
+
 };

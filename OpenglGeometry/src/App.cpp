@@ -84,7 +84,14 @@ void App::HandleResize()
 	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
 	float newHeight = static_cast<float>(window.GetHeight());
 	float aspect = newWidth / newHeight;
-    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
+    float fov = 3.14f / 2.f;
+    float firstZ = 0.1f;
+    float lastZ = 10000.f;
+
+    projectionMatrix = Algebra::Matrix4::Projection(aspect, firstZ, lastZ, fov);
+	auto matrices = StereoscopicProjection(aspect, lastZ, firstZ, fov, interocularDistance, convergenceDistance);
+	projectionMatrixLeft = matrices.first;
+	projectionMatrixRight = matrices.second;
 }
 
 void App::Update()
@@ -114,6 +121,18 @@ void App::DisplayParameters()
     if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
     {
 		ImGui::Checkbox("Show grid", &showGrid);
+		ImGui::Checkbox("Show stereoscopy", &drawStereo);
+        ImGui::SliderFloat("Interocular Distance (d)",
+            &interocularDistance,
+            0.05f,
+            10.f,
+            "%.3f");
+
+        ImGui::SliderFloat("Convergence Distance (c)",
+            &convergenceDistance,
+            2.0f,
+            100.f,
+            "%.2f");
         static int currentModeIndex = 0;
         const auto& modes = InputMode::GetModeList();
 
@@ -150,7 +169,7 @@ void App::DisplayParameters()
     if (ImGui::Button("Load scene"))
     {
         json j;
-        std::ifstream file("scene.json");
+        std::ifstream file("file_example.json");
         file >> j;
         shapeList.Deserialize(j);
     }
@@ -171,6 +190,82 @@ Algebra::Vector4 App::ScreenToNDC(float x, float y)
     float ndcY = 1.0f - (2.0f * y) / window.GetHeight();
     
     return Algebra::Vector4(ndcX, ndcY, 0.f, 1.f);
+}
+
+void App::RenderScene()
+{
+    defaultShader->Bind();
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
+    defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
+    defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
+
+    shapeList.Render();
+
+    defaultShader->SetUniformMat4f("u_modelMatrix", Algebra::Matrix4::Translation(axis.GetPosition()));
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
+    axis.Render();
+
+    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
+    defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
+
+    if (!selectedShapes.IsEmpty())
+    {
+        defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
+        middleSelectionPoint.Render();
+    }
+
+    defaultShader->UnBind();
+}
+
+std::pair<Algebra::Matrix4, Algebra::Matrix4> App::StereoscopicProjection(float aspect, float f, float n, float fov, float d, float c)
+{
+    float top = n * tanf(fov * 0.5f);
+    float bottom = -top;
+    float right = top * aspect;
+    float left = -right;
+
+    float shift = (d * 0.5f) * n / c;
+    float lL = left + shift;
+    float rL = right + shift;
+    float lR = left - shift;
+    float rR = right - shift;
+
+    auto makeOffAxis = [&](float l, float r) {
+        Algebra::Matrix4 P;
+
+        P[0][0] = 2.0f * n / (r - l);
+        P[0][2] = (r + l) / (r - l);
+
+        P[1][1] = 2.0f * n / (top - bottom);
+        P[1][2] = (top + bottom) / (top - bottom);
+
+        P[2][2] = (f + n) / (f - n);
+        P[2][3] = -2.0f * n * f / (f - n);
+
+        P[3][2] = 1.0f;
+        return P;
+        };
+
+    std::pair<Algebra::Matrix4, Algebra::Matrix4> matrices;
+    matrices.first = makeOffAxis(lL, rL) * Algebra::Matrix4::Translation(d * 0.5f, 0.f, 0.f);
+    matrices.second = makeOffAxis(lR, rR) * Algebra::Matrix4::Translation(-d * 0.5f, 0.f, 0.f);;
+
+    return matrices;
+}
+
+void App::SetProjectionMatrix()
+{
+    HandleResize();
+}
+
+void App::SetLeftEyeProjectionMatrix()
+{
+    projectionMatrix = projectionMatrixLeft;
+}
+
+void App::SetRightEyeProjectionMatrix()
+{
+    projectionMatrix = projectionMatrixRight;
 }
 
 void App::GetClickedPoint()
@@ -211,26 +306,19 @@ void App::Render()
     {
 	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
     }
-	glEnable(GL_DEPTH_TEST);
-	defaultShader->Bind();
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-    defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
-    defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
-    
-    shapeList.Render();
+    glEnable(GL_DEPTH_TEST);
 
-    defaultShader->SetUniformMat4f("u_modelMatrix", Algebra::Matrix4::Translation(axis.GetPosition()));
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
-    axis.Render();
-    
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-    defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
-
-    if (!selectedShapes.IsEmpty())
+    if (!drawStereo)
     {
-        defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
-        middleSelectionPoint.Render();
+        HandleResize();
+	    RenderScene();
     }
-  
-    defaultShader->UnBind();
+    else
+    {
+        HandleResize();
+		SetLeftEyeProjectionMatrix();
+        RenderScene();
+        SetRightEyeProjectionMatrix();
+        RenderScene();
+    }
 }
