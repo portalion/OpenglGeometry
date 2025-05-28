@@ -206,11 +206,12 @@ void App::GetClickedPoint()
 
 void App::Render()
 {
+	glDisable(GL_DEPTH_TEST);
     if (showGrid)
     {
 	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
     }
-
+	glEnable(GL_DEPTH_TEST);
 	defaultShader->Bind();
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
     defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);

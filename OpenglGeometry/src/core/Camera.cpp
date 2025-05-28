@@ -15,7 +15,7 @@ Algebra::Matrix4 Camera::GetZoomMatrix()
 
 Algebra::Matrix4 Camera::GetRotationMatrix()
 {
-	return rotation.ToMatrix();
+	return rotation.ToMatrix() * Algebra::Matrix4::DiagonalScaling(1, 1, -1);
 }
 
 void Camera::HandleTranslation(const float& dt)
