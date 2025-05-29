@@ -100,7 +100,7 @@ std::shared_ptr<Polyline> Polyline::Deserialize(const json& j, ShapeList* list)
 			points.push_back(point);
 		}
 	}
-
+	std::reverse(points.begin(), points.end()); 
 	auto polyline = std::make_shared<Polyline>(points);
 	polyline->InitName(id, name);
     return polyline;

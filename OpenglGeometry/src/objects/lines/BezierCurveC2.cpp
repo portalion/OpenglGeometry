@@ -266,7 +266,7 @@ std::shared_ptr<BezierCurveC2> BezierCurveC2::Deserialize(const json& j, ShapeLi
 			points.push_back(point);
 		}
 	}
-
+	std::reverse(points.begin(), points.end());
 	auto polyline = std::make_shared<BezierCurveC2>(points, list->GetSelectedShapes());
 	polyline->InitName(id, name);
 	return polyline;

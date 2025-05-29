@@ -247,7 +247,7 @@ std::shared_ptr<InterpolatedBezierCurve> InterpolatedBezierCurve::Deserialize(co
 			points.push_back(point);
 		}
 	}
-
+	std::reverse(points.begin(), points.end());
 	auto polyline = std::make_shared<InterpolatedBezierCurve>(points, list->GetSelectedShapes());
 	polyline->InitName(id, name);
 	return polyline;
