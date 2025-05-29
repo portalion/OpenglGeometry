@@ -11,6 +11,7 @@
 #include <objects/lines/BezierCurveC2.h>
 #include <objects/lines/InterpolatedBezierCurve.h>
 #include <fstream>
+#include "imgui/imfilebrowser.h"
 
 Algebra::Matrix4 App::projectionMatrix;
 Camera App::camera = Camera(Globals::startingCameraPosition, 1.f);

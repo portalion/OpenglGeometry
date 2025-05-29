@@ -242,6 +242,44 @@ BezierSurfaceC2::BezierSurfaceC2(ShapeList* shapeList, bool isCylinder, float si
 
 }
 
+BezierSurfaceC2::BezierSurfaceC2(std::vector<std::shared_ptr<Point>> controlPoints, unsigned int uSize, unsigned int vSize, ShapeList* list)
+	:shapeList{ list }
+{
+	renderingMode = RenderingMode::PATCHES;
+	auto xPatches = uSize - 3;
+	auto yPatches = vSize - 3;
+
+	for (int patchIndex = 0; patchIndex < xPatches * yPatches; ++patchIndex)
+	{
+		int startingI = patchIndex / xPatches;
+		int startingJ = patchIndex % xPatches;
+		BezierPatchData patch;
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				int index = (startingI + i) * uSize + (startingJ + j) % uSize;
+				patch.controlPoints[i][j] = controlPoints[index];
+				controlPoints[index]->Attach(this);
+			}
+		}
+
+		bezierPatchesData.push_back(patch);
+	}
+
+	for (int i = 0; i < bezierPatchesData.size() * 16; ++i)
+	{
+		auto point = std::make_shared<Point>();
+		point->SetPosition(Algebra::Vector4());
+		bernsteinPoints.push_back(point);
+	}
+
+	for (int i = 0; i < bezierPatchesData.size(); i++)
+	{
+		AddPolygonsc2(bezierPolygon, bezierPatchesData[i]);
+	}
+}
+
 BezierSurfaceC2::~BezierSurfaceC2()
 {
 	for (auto patch : bezierPatchesData)
@@ -304,6 +342,33 @@ void BezierSurfaceC2::Update(const std::string& message_from_subject)
 std::shared_ptr<BezierSurfaceC2> BezierSurfaceC2::Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 {
 	return std::make_shared<BezierSurfaceC2>(shapeList, isCylinder, sizex, sizey, xpatch, ypatch);
+}
+
+std::shared_ptr<BezierSurfaceC2> BezierSurfaceC2::Deserialize(const json& j, ShapeList* list)
+{
+	auto id = j["id"].get<unsigned int>();
+	auto name = j["name"].get<std::string>();
+	auto uSize = j["size"]["u"].get<int>();
+	auto vSize = j["size"]["v"].get<int>();
+	auto u_subdivisions = j["samples"]["u"].get<int>();
+	auto v_subdivisions = j["samples"]["v"].get<int>();
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	for (auto pt : j["controlPoints"])
+	{
+		auto point = list->GetPointWithId(pt["id"].get<unsigned int>());
+		if (point)
+		{
+			point->removable = false;
+			controlPoints.push_back(point);
+		}
+	}
+
+	auto result = std::make_shared<BezierSurfaceC2>(controlPoints, uSize, vSize, list);
+	result->InitName(id, name);
+	result->u_subdivisions = u_subdivisions;
+	result->v_subdivisions = v_subdivisions;
+
+	return result;
 }
 
 json BezierSurfaceC2::Serialize() const

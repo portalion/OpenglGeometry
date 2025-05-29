@@ -269,6 +269,7 @@
     <ClInclude Include="src\core\input\TransformationAroundAxisInputMode.h" />
     <ClInclude Include="src\core\input\TransformationAroundPointInputMode.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imfilebrowser.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_opengl3.h" />
