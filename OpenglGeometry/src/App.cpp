@@ -19,7 +19,8 @@ Window* App::windowStatic = nullptr;
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-    shapeList{ &axis, &selectedShapes }
+    shapeList{ &axis, &selectedShapes },
+    saveFileBrowser{ ImGuiFileBrowserFlags_EnterNewFilename }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
@@ -28,6 +29,9 @@ App::App()
     defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
     currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera, &axis);
+
+	saveFileBrowser.SetTypeFilters({ ".json" });
+	openFileBrowser.SetTypeFilters({ ".json" });
 }
 
 App::~App()
@@ -97,6 +101,40 @@ void App::HandleResize()
 
 void App::Update()
 {
+    openFileBrowser.Display();
+	if (openFileBrowser.HasSelected())
+	{
+		std::string filePath = openFileBrowser.GetSelected().string();
+		openFileBrowser.ClearSelected();
+		json j;
+		std::ifstream file(filePath);
+		if (file.is_open())
+		{
+			file >> j;
+			shapeList.Deserialize(j);
+		}
+		else
+		{
+			std::cerr << "Failed to open file: " << filePath << std::endl;
+		}
+	}
+
+	saveFileBrowser.Display();
+    if (saveFileBrowser.HasSelected())
+    {
+		std::string filePath = saveFileBrowser.GetSelected().string();
+		saveFileBrowser.ClearSelected();
+		std::ofstream file(filePath);
+		if (file.is_open())
+		{
+			file << shapeList.SerializeList().dump(4);
+		}
+		else
+		{
+			std::cerr << "Failed to open file: " << filePath << std::endl;
+		}
+    }
+
     shapeList.Update();
     axis.Update();
     middleSelectionPoint.Update();
@@ -163,16 +201,12 @@ void App::DisplayParameters()
     //TODO: Change to json manager
     if (ImGui::Button("Save scene"))
     {
-		std::ofstream file("scene.json");
-		file << shapeList.SerializeList().dump(4);
+		saveFileBrowser.Open();
     }
 	ImGui::SameLine();
     if (ImGui::Button("Load scene"))
     {
-        json j;
-        std::ifstream file("file_example.json");
-        file >> j;
-        shapeList.Deserialize(j);
+        openFileBrowser.Open();
     }
 
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))

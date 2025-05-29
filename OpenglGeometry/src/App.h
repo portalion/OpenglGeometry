@@ -13,6 +13,7 @@
 #include "UI/SelectedShapes.h"
 #include <UI/ShapeCreator.h>
 #include <UI/ShapeList.h>
+#include "imgui/imfilebrowser.h"
 
 class App {
 public:
@@ -31,6 +32,10 @@ public:
 	static Camera camera;
 	static Window* windowStatic;
 private:
+	ImGui::FileBrowser openFileBrowser;
+	ImGui::FileBrowser saveFileBrowser;
+	bool dialogOpen = false;
+	bool dialogSave = false;
 	bool running;
 	bool showGrid = true;
 	Window window;
