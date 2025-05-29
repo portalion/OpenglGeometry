@@ -71,6 +71,14 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::DeserializeShape(const json& j,
 	{
 		return BezierCurve::Deserialize(j, list);
 	}
+	else if (shapeTypeStr == "bezierSurfaceC0")
+	{
+		return BezierSurface::Deserialize(j, list);
+	}
+	//else if (shapeTypeStr == "bezierSurfaceC2")
+	//{
+	//	return BezierSurfaceC2::Deserialize(j, list);
+	//}
 
     return nullptr;
 }

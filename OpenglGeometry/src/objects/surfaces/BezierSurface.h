@@ -30,6 +30,7 @@ private:
 	void GenerateCylinder(int radiusPatches = 1, int heightPatches = 1, float r = 10.f, float height = 10.f);
 public:
 	BezierSurface(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch);
+	BezierSurface(std::vector<std::shared_ptr<Point>> controlPoints, unsigned int uSize, unsigned int vSize, ShapeList* list);
 	~BezierSurface();
 
 	void Render() const override;
@@ -37,6 +38,7 @@ public:
 
 	static std::shared_ptr<BezierSurface> Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch);
 
+	static std::shared_ptr<BezierSurface> Deserialize(const json& j, ShapeList* list);
 	json Serialize() const override;
 };
 

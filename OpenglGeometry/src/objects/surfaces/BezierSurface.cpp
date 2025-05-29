@@ -178,6 +178,59 @@ BezierSurface::BezierSurface(ShapeList* shapeList, bool isCylinder, float sizex,
 	}
 }
 
+BezierSurface::BezierSurface(std::vector<std::shared_ptr<Point>> controlPoints, unsigned int uSize, unsigned int vSize, ShapeList* list)
+	:shapeList{ list }
+{
+	renderingMode = RenderingMode::PATCHES;
+	u_patches = (uSize - 1) / 3;
+	v_patches = (vSize - 1) / 3;
+
+	std::vector<std::vector<std::shared_ptr<Point>>> controlPoints2D;
+
+	int row = 0;
+	int column = 0;
+	for (int i = 0; i < vSize; i++)
+	{
+		column = 0;
+		controlPoints2D.push_back(std::vector<std::shared_ptr<Point>>());
+		for (int j = 0; j < uSize; j++)
+		{
+			auto point = controlPoints[i * uSize + j];
+			point->Attach(this);
+			controlPoints2D[row].push_back(point);
+
+			if (column % 4 == 3 && j != uSize - 1)
+				j--;
+
+			column++;
+		}
+		if (row % 4 == 3 && i != vSize - 1)
+			i--;
+		row++;
+	}
+
+	for (int i = 0; i < v_patches; i++)
+	{
+		for (int j = 0; j < u_patches; j++)
+		{
+			BezierPatchData patch;
+			for (int x = 0; x < BezierPatchData::CONTROL_POINTS_PER_EDGE; x++)
+			{
+				for (int y = 0; y < BezierPatchData::CONTROL_POINTS_PER_EDGE; y++)
+				{
+					patch.controlPoints[x][y] = controlPoints2D[i * 4 + x][j * 4 + y];
+				}
+			}
+			bezierPatchesData.push_back(patch);
+		}
+	}
+
+	for (int i = 0; i < bezierPatchesData.size(); i++)
+	{
+		AddPolygons(bezierPolygon, bezierPatchesData[i]);
+	}
+}
+
 BezierSurface::~BezierSurface()
 {
 	for (auto patch : bezierPatchesData)
@@ -234,6 +287,33 @@ void BezierSurface::Update(const std::string& message_from_subject)
 std::shared_ptr<BezierSurface> BezierSurface::Create(ShapeList* shapeList, bool isCylinder, float sizex, float sizey, int xpatch, int ypatch)
 {
 	return std::make_shared<BezierSurface>(shapeList, isCylinder, sizex, sizey, xpatch, ypatch);
+}
+
+std::shared_ptr<BezierSurface> BezierSurface::Deserialize(const json& j, ShapeList* list)
+{
+	auto id = j["id"].get<unsigned int>();
+	auto name = j["name"].get<std::string>();
+	auto uSize = j["size"]["u"].get<int>();
+	auto vSize = j["size"]["v"].get<int>();
+	auto u_subdivisions = j["samples"]["u"].get<int>();
+	auto v_subdivisions = j["samples"]["v"].get<int>();
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	for (auto pt : j["controlPoints"])
+	{
+		auto point = list->GetPointWithId(pt["id"].get<unsigned int>());
+		if (point)
+		{
+			point->removable = false;
+			controlPoints.push_back(point);
+		}
+	}
+
+	auto result = std::make_shared<BezierSurface>(controlPoints, uSize, vSize, list);
+	result->InitName(id, name);
+	result->u_subdivisions = u_subdivisions;
+	result->v_subdivisions = v_subdivisions;
+
+	return result;
 }
 
 json BezierSurface::Serialize() const
