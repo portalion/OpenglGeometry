@@ -5,7 +5,6 @@
 #include "Polyline.h"
 #include <UI/SelectedShapes.h>
 #include "App.h"
-#include "core/Globals.h"
 
 class BezierCurve : public RenderableOnScene, public IObserver, public ILine
 {
@@ -53,20 +52,7 @@ public:
 		points.erase(std::remove_if(points.begin(), points.end(),
 			[&point](const std::weak_ptr<Point>& p) { return p.lock() == point.lock(); }), points.end());
 	}
-	inline void Render() const override
-	{
-		auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierLine);
-		shader->Bind();
-		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
-		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
-		shader->SetUniformVec4f("u_cameraPos", App::camera.GetPosition());
-		RenderableOnScene::Render();
-		ShaderManager::GetInstance().GetShader(AvailableShaders::Default)->Bind();
-		if (displayPolyline)
-		{
-			polyline.Render();
-		}
-	}
+	void Render() const override;
 	
 	inline void Update() override
 	{

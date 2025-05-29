@@ -301,16 +301,21 @@ void App::GetClickedPoint()
 
 void App::Render()
 {
-	glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
-    glDisable(GL_BLEND);
+    if (showGrid)
+    {
+        HandleResize();
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
+        glDisable(GL_BLEND);
+    }
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);    // Allow depth writes
     glDisable(GL_BLEND);
+    Globals::ChangeStereo(drawStereo);
     if (!drawStereo)
     {
         HandleResize();
@@ -318,14 +323,25 @@ void App::Render()
     }
     else
     {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
         HandleResize();
 		SetLeftEyeProjectionMatrix();
         RenderScene();
+
+        glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glClear(GL_DEPTH_BUFFER_BIT);
         SetRightEyeProjectionMatrix();
         RenderScene();
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glDisable(GL_BLEND);
     }
     if (showGrid)
     {
+        HandleResize();
         glEnable(GL_BLEND);
         glDepthFunc(GL_GREATER);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

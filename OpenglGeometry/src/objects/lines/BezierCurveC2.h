@@ -153,6 +153,7 @@ public:
 		shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
 		shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
 		shader->SetUniformVec4f("u_cameraPos", App::camera.GetPosition());
+		shader->SetUniformVec4f("u_color", Globals::defaultLineColor);
 		RenderableOnScene::Render();
 		auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 		defShader->Bind();

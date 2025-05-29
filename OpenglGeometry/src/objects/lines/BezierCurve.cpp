@@ -171,6 +171,22 @@ BezierCurve::BezierCurve(std::vector<std::shared_ptr<Point>> points, SelectedSha
     }
 }
 
+void BezierCurve::Render() const
+{
+	auto shader = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierLine);
+	shader->Bind();
+	shader->SetUniformMat4f("u_viewMatrix", App::camera.GetViewMatrix());
+	shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
+	shader->SetUniformVec4f("u_cameraPos", App::camera.GetPosition());
+	shader->SetUniformVec4f("u_color", Globals::defaultLineColor);
+	RenderableOnScene::Render();
+	ShaderManager::GetInstance().GetShader(AvailableShaders::Default)->Bind();
+	if (displayPolyline)
+	{
+		polyline.Render();
+	}
+}
+
 std::shared_ptr<BezierCurve> BezierCurve::Deserialize(const json& j, ShapeList* list)
 {
 	auto id = j["id"].get<unsigned int>();

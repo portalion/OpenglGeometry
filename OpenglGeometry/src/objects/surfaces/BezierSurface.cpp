@@ -1,4 +1,5 @@
 #include "BezierSurface.h"
+#include "core/Globals.h"
 
 RenderableMesh<PositionVertexData> BezierSurface::GenerateMesh()
 {
@@ -202,6 +203,7 @@ void BezierSurface::Render() const
 	shader->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
 	shader->SetUniformVec1i("u_subdivisions", u_subdivisions);
 	shader->SetUniformVec1i("v_subdivisions", v_subdivisions);
+	shader->SetUniformVec4f("u_color", Globals::defaultLineColor);
 	RenderableOnScene::Render();
 
 	auto shaderReversed = ShaderManager::GetInstance().GetShader(AvailableShaders::BezierSurfaceReversed);
@@ -210,6 +212,8 @@ void BezierSurface::Render() const
 	shaderReversed->SetUniformMat4f("u_projectionMatrix", App::projectionMatrix);
 	shaderReversed->SetUniformVec1i("u_subdivisions", u_subdivisions);
 	shaderReversed->SetUniformVec1i("v_subdivisions", v_subdivisions);
+	shaderReversed->SetUniformVec4f("u_color", Globals::defaultLineColor);
+
 	RenderableOnScene::Render();
 
 	auto defShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
