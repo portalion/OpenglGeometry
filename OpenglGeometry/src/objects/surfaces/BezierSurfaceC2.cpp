@@ -371,6 +371,54 @@ std::shared_ptr<BezierSurfaceC2> BezierSurfaceC2::Deserialize(const json& j, Sha
 	return result;
 }
 
+std::vector<std::shared_ptr<Point>> ReconstructDeBoorPointsFromC2Patches(
+	const std::vector<BezierPatchData>& bezierPatchesData,
+	unsigned int uSize,
+	unsigned int vSize)
+{
+	std::vector<std::vector<std::shared_ptr<Point>>> controlPoints2D(
+		vSize, std::vector<std::shared_ptr<Point>>(uSize, nullptr));
+
+	int xPatches = uSize - 3;
+	int yPatches = vSize - 3;
+
+	for (int patchIndex = 0; patchIndex < xPatches * yPatches; ++patchIndex)
+	{
+		int startingI = patchIndex / xPatches;
+		int startingJ = patchIndex % xPatches;
+
+		const auto& patch = bezierPatchesData[patchIndex];
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				int row = startingI + i;
+				int col = (startingJ + j) % uSize; // wraparound if needed
+
+				if (!controlPoints2D[row][col])
+				{
+					controlPoints2D[row][col] = patch.controlPoints[i][j];
+				}
+			}
+		}
+	}
+
+	// Flatten to 1D controlPoints vector (row-major)
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	controlPoints.reserve(vSize * uSize);
+
+	for (int i = 0; i < vSize; ++i)
+	{
+		for (int j = 0; j < uSize; ++j)
+		{
+			controlPoints.push_back(controlPoints2D[i][j]);
+		}
+	}
+
+	return controlPoints;
+}
+
 json BezierSurfaceC2::Serialize() const
 {
 	json result;
@@ -379,22 +427,17 @@ json BezierSurfaceC2::Serialize() const
 	result["name"] = name;
 	result["controlPoints"] = json::array();
 
-	for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+	auto points = ReconstructDeBoorPointsFromC2Patches(
+		bezierPatchesData, u_patches + 3, v_patches + 3);
+
+	for (auto point : points)
 	{
-		for (auto& patch : this->bezierPatchesData)
-		{
-			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
-			{
-				if (auto point = patch.controlPoints[i][j])
-				{
-					result["controlPoints"].push_back(json::object({ { "id", point->GetShapeId() } }));
-				}
-			}
-		}
+		result["controlPoints"].push_back(json::object({ { "id", point->GetShapeId() } }));
 	}
+
 	result["size"] = json::object({
-		{"u", u_patches * 4},
-		{"v", v_patches * 4},
+		{"u", u_patches + 3},
+		{"v", v_patches + 3},
 		});
 	result["samples"] = json::object({
 		{"u", u_subdivisions},
