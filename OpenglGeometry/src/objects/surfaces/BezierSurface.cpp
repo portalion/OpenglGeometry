@@ -316,6 +316,57 @@ std::shared_ptr<BezierSurface> BezierSurface::Deserialize(const json& j, ShapeLi
 	return result;
 }
 
+std::vector<std::shared_ptr<Point>> ReconstructFlatControlPointsFromPatches(
+	const std::vector<BezierPatchData>& bezierPatchesData,
+	int u_patches, int v_patches)
+{
+	constexpr int PATCH_SIZE = BezierPatchData::CONTROL_POINTS_PER_EDGE;
+	constexpr int STRIDE = PATCH_SIZE - 1; // For C0 continuity, stride is 3
+
+	int uSize = u_patches * STRIDE + 1;
+	int vSize = v_patches * STRIDE + 1;
+
+	// Step 1: reconstruct 2D grid with deduplication
+	std::vector<std::vector<std::shared_ptr<Point>>> controlPoints2D(
+		vSize, std::vector<std::shared_ptr<Point>>(uSize, nullptr));
+
+	for (int i = 0; i < v_patches; ++i)
+	{
+		for (int j = 0; j < u_patches; ++j)
+		{
+			const auto& patch = bezierPatchesData[i * u_patches + j];
+			for (int x = 0; x < PATCH_SIZE; ++x)
+			{
+				for (int y = 0; y < PATCH_SIZE; ++y)
+				{
+					int row = i * STRIDE + x;
+					int col = j * STRIDE + y;
+
+					// Only assign if not already set
+					if (!controlPoints2D[row][col])
+					{
+						controlPoints2D[row][col] = patch.controlPoints[x][y];
+					}
+				}
+			}
+		}
+	}
+
+	// Step 2: flatten the 2D vector to 1D row-major
+	std::vector<std::shared_ptr<Point>> controlPoints;
+	controlPoints.reserve(vSize * uSize);
+
+	for (int i = 0; i < vSize; ++i)
+	{
+		for (int j = 0; j < uSize; ++j)
+		{
+			controlPoints.push_back(controlPoints2D[i][j]);
+		}
+	}
+
+	return controlPoints;
+}
+
 json BezierSurface::Serialize() const
 {
 	json result;
@@ -324,22 +375,17 @@ json BezierSurface::Serialize() const
 	result["name"] = name;
 	result["controlPoints"] = json::array();
 
-	for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+	auto points = ReconstructFlatControlPointsFromPatches(
+		bezierPatchesData, u_patches, v_patches);
+
+	for (auto point : points)
 	{
-		for (auto& patch : this->bezierPatchesData)
-		{
-			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
-			{
-				if (auto point = patch.controlPoints[i][j])
-				{
-					result["controlPoints"].push_back(json::object({ { "id", point->GetShapeId() } }));
-				}
-			}
-		}
+		result["controlPoints"].push_back(json::object({ { "id", point->GetShapeId() } }));
 	}
+
 	result["size"] = json::object({
-	{"u", u_patches * 4},
-	{"v", v_patches * 4},
+	{"u", u_patches * 3 + 1},
+	{"v", v_patches * 3 + 1},
 		});
 	result["samples"] = json::object({
 		{"u", u_subdivisions},
