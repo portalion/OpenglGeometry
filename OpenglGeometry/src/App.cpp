@@ -302,12 +302,15 @@ void App::GetClickedPoint()
 void App::Render()
 {
 	glDisable(GL_DEPTH_TEST);
-    if (showGrid)
-    {
-	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
-    }
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
+    glDisable(GL_BLEND);
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);    // Allow depth writes
+    glDisable(GL_BLEND);
     if (!drawStereo)
     {
         HandleResize();
@@ -320,5 +323,12 @@ void App::Render()
         RenderScene();
         SetRightEyeProjectionMatrix();
         RenderScene();
+    }
+    if (showGrid)
+    {
+        glEnable(GL_BLEND);
+        glDepthFunc(GL_GREATER);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
     }
 }
