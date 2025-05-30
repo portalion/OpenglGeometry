@@ -365,3 +365,4 @@ FodyWeavers.xsd
 build/
 
 Dependencies/
+OpenglGeometry/*.json
