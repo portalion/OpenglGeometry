@@ -91,7 +91,7 @@ void App::HandleResize()
 	float aspect = newWidth / newHeight;
     float fov = 3.14f / 2.f;
     float firstZ = 0.1f;
-    float lastZ = 10000.f;
+    float lastZ = 1000.f;
 
     projectionMatrix = Algebra::Matrix4::Projection(aspect, firstZ, lastZ, fov);
 	auto matrices = StereoscopicProjection(aspect, lastZ, firstZ, fov, interocularDistance, convergenceDistance);
@@ -282,8 +282,8 @@ std::pair<Algebra::Matrix4, Algebra::Matrix4> App::StereoscopicProjection(float 
         };
 
     std::pair<Algebra::Matrix4, Algebra::Matrix4> matrices;
-    matrices.first = makeOffAxis(lL, rL) * Algebra::Matrix4::Translation(d * 0.5f, 0.f, 0.f);
-    matrices.second = makeOffAxis(lR, rR) * Algebra::Matrix4::Translation(-d * 0.5f, 0.f, 0.f);;
+    matrices.first = makeOffAxis(lL, rL) * Algebra::Matrix4::Translation(-d * 0.5f, 0.f, 0.f);
+    matrices.second = makeOffAxis(lR, rR) * Algebra::Matrix4::Translation(d * 0.5f, 0.f, 0.f);;
 
     return matrices;
 }

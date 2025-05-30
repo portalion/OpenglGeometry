@@ -65,10 +65,12 @@ std::shared_ptr<Torus> Torus::Deserialize(const json& j)
 		j["rotation"]["y"].get<float>(),
 		j["rotation"]["z"].get<float>(),
 		j["rotation"]["w"].get<float>());
+	auto scale = j["scale"]["x"].get<float>();
 	auto result = std::make_shared<Torus>();
 	result->InitName(id, name);
 	result->SetPosition(position);
 	result->SetRotation(rotation);
+	result->SetScale(scale);
 	result->tubeRadius = j["smallRadius"].get<float>();
 	result->radius = j["largeRadius"].get<float>();
 	result->radiusSegments = j["samples"]["u"].get<unsigned int>();

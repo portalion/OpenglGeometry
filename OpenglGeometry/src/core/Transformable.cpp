@@ -1,8 +1,9 @@
 #include "Transformable.h"
 
-void ScaleComponent::Scale(float scale)
+void ScaleComponent::Scale(float scale, bool isTorus)
 {
-//	this->scale *= scale;
+	if(isTorus)
+	this->scale *= scale;
 }
 
 void PositionComponent::Move(Algebra::Vector4 translation)
@@ -10,8 +11,9 @@ void PositionComponent::Move(Algebra::Vector4 translation)
 	position += translation;
 }
 
-void RotationComponent::Rotate(Algebra::Quaternion rotation)
+void RotationComponent::Rotate(Algebra::Quaternion rotation, bool isTorus)
 {
-//	this->rotation = this->rotation * rotation;
+	if (isTorus)
+	this->rotation = this->rotation * rotation;
 	this->rotation.Normalize();
 }

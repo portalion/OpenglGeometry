@@ -24,7 +24,7 @@ public:
 	inline Algebra::Quaternion GetRotation() const { return rotation; }
 	inline void SetRotation(Algebra::Quaternion rot) { rotation = rot.Normalize(); }
 
-	void Rotate(Algebra::Quaternion rotation);
+	void Rotate(Algebra::Quaternion rotation, bool isTorus = false);
 };
 
 class ScaleComponent
@@ -37,7 +37,7 @@ public:
 	inline float GetScale() const { return scale; }
 	inline void SetScale(float scale) { this->scale = scale; }
 
-	void Scale(float scale);
+	void Scale(float scale, bool isTorus = false);
 };
 
 class Transformable : public virtual PositionComponent, public virtual RotationComponent, public virtual ScaleComponent
