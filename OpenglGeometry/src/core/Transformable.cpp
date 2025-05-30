@@ -1,9 +1,13 @@
 #include "Transformable.h"
 
-void ScaleComponent::Scale(float scale, bool isTorus)
+void ScaleComponent::Scale(Algebra::Vector4  scale, bool isTorus)
 {
-	if(isTorus)
-	this->scale *= scale;
+	if (isTorus)
+	{
+		this->scale.x *= scale.x;
+		this->scale.y *= scale.y;
+		this->scale.z *= scale.z;
+	}
 }
 
 void PositionComponent::Move(Algebra::Vector4 translation)

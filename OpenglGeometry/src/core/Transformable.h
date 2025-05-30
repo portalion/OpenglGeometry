@@ -30,14 +30,14 @@ public:
 class ScaleComponent
 {
 private:
-	float scale = 1.f;
+	Algebra::Vector4 scale = Algebra::Vector4(1.f, 1.f, 1.f, 1.f);
 public:
 	virtual ~ScaleComponent() = default;
-	inline virtual Algebra::Matrix4 GetModelMatrix() const { return Algebra::Matrix4::DiagonalScaling(scale, scale, scale); };
-	inline float GetScale() const { return scale; }
-	inline void SetScale(float scale) { this->scale = scale; }
+	inline virtual Algebra::Matrix4 GetModelMatrix() const { return Algebra::Matrix4::DiagonalScaling(scale.x, scale.y, scale.z); };
+	inline Algebra::Vector4  GetScale() const { return scale; }
+	inline void SetScale(Algebra::Vector4  scale) { this->scale = scale; }
 
-	void Scale(float scale, bool isTorus = false);
+	void Scale(Algebra::Vector4  scale, bool isTorus = false);
 };
 
 class Transformable : public virtual PositionComponent, public virtual RotationComponent, public virtual ScaleComponent

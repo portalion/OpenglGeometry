@@ -39,7 +39,7 @@ bool Polyline::DisplayParameters()
 {
 	SetPosition(Algebra::Vector4());
 	SetRotation(Algebra::Quaternion());
-	SetScale(1.f);
+	SetScale({ 1.f, 1.f, 1.f });
 
     ImGui::Text("Polyline Points (%zu)", points.size());
 

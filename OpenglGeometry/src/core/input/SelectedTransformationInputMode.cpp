@@ -82,7 +82,7 @@ void SelectedTransformationInputMode::HandleInput(const std::unordered_set<std::
 		{
 			selected->Move(direction);
 			selected->Rotate(rotation);
-			selected->Scale(scale);
+			selected->Scale({ scale, scale, scale });
 		}
 	}
 }

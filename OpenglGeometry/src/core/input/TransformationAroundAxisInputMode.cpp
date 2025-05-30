@@ -18,6 +18,6 @@ void TransformationAroundAxisInputMode::HandleInput(const std::unordered_set<std
 		selected->Rotate(rotation.Conjugate(), isTorus);
 
 		selected->SetPosition(cursor->GetPosition()  + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
-		selected->Scale(scale, isTorus);
+		selected->Scale({ scale, scale, scale }, isTorus);
 	}
 }

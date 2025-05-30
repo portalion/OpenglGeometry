@@ -41,7 +41,7 @@ bool BezierCurveC2::DisplayParameters()
 {
 	SetPosition(Algebra::Vector4());
 	SetRotation(Algebra::Quaternion());
-	SetScale(1.f);
+	SetScale({ 1.f, 1.f, 1.f });
 
 	ImGui::Checkbox(this->GenerateLabelWithId("Draw Polyline").c_str(), &displayPolyline);
 	ImGui::Checkbox(this->GenerateLabelWithId("Draw Bernstein Points").c_str(), &displayBezierPoints);

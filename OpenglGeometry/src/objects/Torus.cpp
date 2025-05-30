@@ -59,13 +59,16 @@ std::shared_ptr<Torus> Torus::Deserialize(const json& j)
 	auto position = Algebra::Vector4(
 		j["position"]["x"].get<float>(),
 		j["position"]["y"].get<float>(),
-		j["position"]["z"].get<float>(), 1.f);
+		j["position"]["z"].get<float>(), 1.f); 	 
 	auto rotation = Algebra::Quaternion(
 		j["rotation"]["x"].get<float>(),
 		j["rotation"]["y"].get<float>(),
 		j["rotation"]["z"].get<float>(),
 		j["rotation"]["w"].get<float>());
-	auto scale = j["scale"]["x"].get<float>();
+	auto scale = Algebra::Vector4(
+		j["scale"]["x"].get<float>(),
+		j["scale"]["y"].get<float>(),
+		j["scale"]["z"].get<float>(), 1.f);
 	auto result = std::make_shared<Torus>();
 	result->InitName(id, name);
 	result->SetPosition(position);
@@ -94,9 +97,9 @@ json Torus::Serialize() const
 		{ "z", GetRotation().z },
 		{ "w", GetRotation().w } });
 	result["scale"] = json::object({
-		{ "x", GetScale() },
-		{ "y", GetScale() },
-		{ "z", GetScale() } });
+		{ "x", GetScale().x },
+		{ "y", GetScale().y },
+		{ "z", GetScale().z } });
 	result["samples"] = json::object({
 		{ "u", radiusSegments },
 		{ "v", tubeSegments } });

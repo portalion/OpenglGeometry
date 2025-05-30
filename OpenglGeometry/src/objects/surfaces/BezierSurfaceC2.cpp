@@ -94,7 +94,7 @@ bool BezierSurfaceC2::DisplayParameters()
 {
 	SetPosition(Algebra::Vector4());
 	SetRotation(Algebra::Quaternion());
-	SetScale(1.f);
+	SetScale({ 1.f, 1.f, 1.f });
 
 	ImGui::DragInt(GenerateLabelWithId("u subdivision").c_str(), &u_subdivisions, 1, 2, 50);
 	ImGui::DragInt(GenerateLabelWithId("v subdivision").c_str(), &v_subdivisions, 1, 2, 50);

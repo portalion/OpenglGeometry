@@ -26,6 +26,6 @@ void TransformationAroundPointInputMode::HandleInput(const std::unordered_set<st
 		selected->Rotate(rotation.Conjugate());
 
 		selected->SetPosition(middlePoint + translationAfterRotation * Algebra::Matrix4::DiagonalScaling(scale, scale, scale));
-		selected->Scale(scale);
+		selected->Scale({ scale, scale, scale });
 	}
 }

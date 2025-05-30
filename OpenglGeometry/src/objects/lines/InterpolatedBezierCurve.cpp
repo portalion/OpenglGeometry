@@ -143,7 +143,7 @@ bool InterpolatedBezierCurve::DisplayParameters()
 {
 	SetPosition(Algebra::Vector4());
 	SetRotation(Algebra::Quaternion());
-	SetScale(1.f);
+	SetScale({ 1.f, 1.f, 1.f });
 
 	ImGui::Checkbox(this->GenerateLabelWithId("Draw Polyline").c_str(), &displayPolyline);
 	if (ImGui::Button(GenerateLabelWithId("Add Selected Points").c_str()))
