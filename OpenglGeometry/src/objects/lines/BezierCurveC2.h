@@ -189,5 +189,5 @@ public:
 	static std::shared_ptr<BezierCurveC2> Deserialize(const json& j, ShapeList* list);
 	json Serialize() const override;
 
-	void ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint) override {}
+	void ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint) override;
 };
