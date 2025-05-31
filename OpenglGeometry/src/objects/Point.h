@@ -1,10 +1,13 @@
 #pragma once
 #include "core/RenderableOnScene.h"
 
+class Point;
+
 class IObserver {
 public:
 	virtual ~IObserver() {};
 	virtual void Update(const std::string& message_from_subject) = 0;
+	virtual void ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint) = 0;
 };
 
 class Point : public RenderableOnScene
@@ -65,6 +68,8 @@ public:
 
 	json Serialize() const override;
 	static std::shared_ptr<Point> Deserialize(const json& j);
+
+	void ChangeToAnotherPoint(std::shared_ptr<Point> changeTo);
 };
 
 

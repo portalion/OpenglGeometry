@@ -55,6 +55,8 @@ private:
 	bool drawStereo = false;
 	void RenderScene();
 
+	void MergeSelectedPoints();
+
 	std::shared_ptr<Shader> defaultShader;
 	void SetProjectionMatrix();
 	void SetLeftEyeProjectionMatrix();

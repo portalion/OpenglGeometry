@@ -123,3 +123,20 @@ json Polyline::Serialize() const
 
     return result;
 }
+
+void Polyline::ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint)
+{
+	somethingChanged = true;
+	for (int i = 0; i < points.size(); i++)
+	{
+		if (auto pt = points[i].lock())
+		{
+			if (pt->GetShapeId() == idFrom)
+			{
+				pt->Detach(this);
+				points[i] = toPoint;
+				toPoint->Attach(this);
+			}
+		}
+	}
+}

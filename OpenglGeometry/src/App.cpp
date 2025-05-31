@@ -159,8 +159,8 @@ void App::DisplayParameters()
     ImGui::Begin("Main Menu", nullptr, window_flags);
     if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
     {
-		ImGui::Checkbox("Show grid", &showGrid);
-		ImGui::Checkbox("Show stereoscopy", &drawStereo);
+        ImGui::Checkbox("Show grid", &showGrid);
+        ImGui::Checkbox("Show stereoscopy", &drawStereo);
         ImGui::SliderFloat("Interocular Distance (d)",
             &interocularDistance,
             0.05f,
@@ -195,20 +195,24 @@ void App::DisplayParameters()
         axis.DisplayMenu();
     }
     //TODO: Add iterator to selectedShapes
-    
+
     shapeList.DisplayUI();
-    
+
     //TODO: Change to json manager
     if (ImGui::Button("Save scene"))
     {
-		saveFileBrowser.Open();
+        saveFileBrowser.Open();
     }
-	ImGui::SameLine();
+    ImGui::SameLine();
     if (ImGui::Button("Load scene"))
     {
         openFileBrowser.Open();
     }
-
+    ImGui::SameLine();
+    if (ImGui::Button("Merge Points"))
+    {
+        MergeSelectedPoints();
+    }
     if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
     {
         for (auto& renderable : selectedShapes.GetSelectedWithType<RenderableOnScene>())
@@ -250,6 +254,33 @@ void App::RenderScene()
     }
 
     defaultShader->UnBind();
+}
+
+void App::MergeSelectedPoints()
+{
+    auto selectedPoints = selectedShapes.GetSelectedWithType<Point>();
+    if (selectedPoints.empty())
+    {
+        return;
+    }
+    Algebra::Vector4 middlePos = Algebra::Vector4();
+    for (auto& point : selectedPoints)
+    {
+        middlePos += point->GetPosition();
+    }
+    middlePos = middlePos / selectedPoints.size();
+    auto newPoint = std::make_shared<Point>();
+    newPoint->InitName();
+    shapeList.AddPoint(newPoint);
+    newPoint->removable = true;
+    newPoint->SetPosition(middlePos);
+
+    for (auto& point : selectedPoints)
+    {
+        point->ChangeToAnotherPoint(newPoint);
+        selectedShapes.RemoveShape(point);
+        shapeList.RemovePoint(point);
+    }
 }
 
 std::pair<Algebra::Matrix4, Algebra::Matrix4> App::StereoscopicProjection(float aspect, float f, float n, float fov, float d, float c)

@@ -58,3 +58,11 @@ std::shared_ptr<Point> Point::Deserialize(const json& j)
 
     return point;
 }
+
+void Point::ChangeToAnotherPoint(std::shared_ptr<Point> changeTo)
+{
+    for (auto& observer : observers)
+    {
+        observer->ChangePoint(GetShapeId(), changeTo);
+    }
+}
