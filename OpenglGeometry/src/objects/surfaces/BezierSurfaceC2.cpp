@@ -102,6 +102,20 @@ bool BezierSurfaceC2::DisplayParameters()
 	ImGui::Checkbox(GenerateLabelWithId("Draw Boor Polygon").c_str(), &drawBoorPolygon);
 	ImGui::Checkbox(GenerateLabelWithId("Draw Bezier Polygon").c_str(), &drawBezierPolygon);
 
+	if (ImGui::Button(GenerateLabelWithId("Select all control points").c_str()))
+	{
+		for (const auto& patch : bezierPatchesData)
+		{
+			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+				{
+					shapeList->GetSelectedShapes()->AddShape(patch.controlPoints[i][j]);
+				}
+			}
+		}
+	}
+
 	return false;
 }
 

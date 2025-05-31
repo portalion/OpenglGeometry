@@ -203,11 +203,11 @@ void ShapeList::DisplayUI()
                             if (!p->removable) return false;
                         }
                         bool shouldRemove = selectedShapes->IsSelected(shape);
+						selectedShapes->RemoveShape(shape);
                         return shouldRemove;
                     }),
                 shapes.end()
             );
-            selectedShapes->Clear();
         }
         ImGui::EndDisabled();
     }
