@@ -276,7 +276,7 @@ BezierSurfaceC2::BezierSurfaceC2(std::vector<std::shared_ptr<Point>> controlPoin
 
 	for (int i = 0; i < bezierPatchesData.size(); i++)
 	{
-		AddPolygonsc2(bezierPolygon, bezierPatchesData[i]);
+		AddPolygonsc2(boorPolygon, bezierPatchesData[i]);
 	}
 }
 
@@ -445,4 +445,28 @@ json BezierSurfaceC2::Serialize() const
 		});
 
 	return result;
+}
+
+void BezierSurfaceC2::ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint)
+{
+	for (auto& patch : bezierPatchesData)
+	{
+		for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+		{
+			for (int j = 0; j < BezierPatchData::CONTROL_POINTS_PER_EDGE; j++)
+			{
+				if (patch.controlPoints[i][j]->GetShapeId() == idFrom)
+				{
+					patch.controlPoints[i][j]->Detach(this);
+					patch.controlPoints[i][j] = toPoint;
+					toPoint->Attach(this);
+				}
+			}
+		}
+	}
+
+	for (auto& polygon : boorPolygon)
+	{
+		polygon->ChangePoint(idFrom, toPoint);
+	}
 }
