@@ -272,7 +272,7 @@ void App::MergeSelectedPoints()
     auto newPoint = std::make_shared<Point>();
     newPoint->InitName();
     shapeList.AddPoint(newPoint);
-    newPoint->removable = true;
+    newPoint->removable = 0;
     newPoint->SetPosition(middlePos);
 
     for (auto& point : selectedPoints)

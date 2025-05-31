@@ -316,7 +316,7 @@ std::shared_ptr<BezierSurface> BezierSurface::Deserialize(const json& j, ShapeLi
 		auto point = list->GetPointWithId(pt["id"].get<unsigned int>());
 		if (point)
 		{
-			point->removable = false;
+			point->removable++;
 			controlPoints.push_back(point);
 		}
 	}
@@ -418,8 +418,10 @@ void BezierSurface::ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPo
 			{
 				if (patch.controlPoints[i][j]->GetShapeId() == idFrom)
 				{
+					patch.controlPoints[i][j]->removable--;
 					patch.controlPoints[i][j]->Detach(this);
 					patch.controlPoints[i][j] = toPoint;
+					toPoint->removable++;
 					toPoint->Attach(this);
 				}
 			}

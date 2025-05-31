@@ -200,10 +200,11 @@ void ShapeList::DisplayUI()
                     [&](const std::shared_ptr<RenderableOnScene>& shape) {
                         if (const auto& p = std::dynamic_pointer_cast<Point>(shape))
                         {
-                            if (!p->removable) return false;
+                            if (!(p->removable == 0)) return false;
                         }
                         bool shouldRemove = selectedShapes->IsSelected(shape);
-						selectedShapes->RemoveShape(shape);
+                        if(shouldRemove)
+						    selectedShapes->RemoveShape(shape);
                         return shouldRemove;
                     }),
                 shapes.end()
@@ -233,12 +234,12 @@ void ShapeList::Render()
 void ShapeList::AddPoint(std::shared_ptr<Point> point)
 {
     shapes.push_back(point);
-    point->removable = false;
+    point->removable++;
 }
 
 void ShapeList::RemovePoint(std::shared_ptr<Point> point)
 {
-    point->removable = true;
+    point->removable--;
 }
 
 void ShapeList::RemoveShape(std::shared_ptr<RenderableOnScene> shape)
