@@ -35,6 +35,7 @@ public:
 	void Render();
 	void AddPoint(std::shared_ptr<Point> point);
 	void RemovePoint(std::shared_ptr<Point> point);
+	void RemoveShape(std::shared_ptr<RenderableOnScene> shape);
 	inline SelectedShapes* GetSelectedShapes() { return selectedShapes; }
 	
 	std::shared_ptr<Point> GetPointWithId(unsigned int id);

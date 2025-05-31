@@ -241,6 +241,21 @@ void ShapeList::RemovePoint(std::shared_ptr<Point> point)
     point->removable = true;
 }
 
+void ShapeList::RemoveShape(std::shared_ptr<RenderableOnScene> shape)
+{
+	for (auto it = shapes.begin(); it != shapes.end();)
+	{
+		if (*it == shape)
+		{
+			it = shapes.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
 std::shared_ptr<Point> ShapeList::GetPointWithId(unsigned int id)
 {
     for (const auto& shape : shapes)

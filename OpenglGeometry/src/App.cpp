@@ -279,7 +279,7 @@ void App::MergeSelectedPoints()
     {
         point->ChangeToAnotherPoint(newPoint);
         selectedShapes.RemoveShape(point);
-        shapeList.RemovePoint(point);
+        shapeList.RemoveShape(point);
     }
 }
 
