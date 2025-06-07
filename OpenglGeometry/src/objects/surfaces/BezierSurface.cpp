@@ -232,6 +232,7 @@ BezierSurface::BezierSurface(std::vector<std::shared_ptr<Point>> controlPoints, 
 				for (int y = 0; y < BezierPatchData::CONTROL_POINTS_PER_EDGE; y++)
 				{
 					patch.controlPoints[x][y] = controlPoints2D[i * 4 + x][j * 4 + y];
+					patch.controlPoints[x][y]->removable++;
 				}
 			}
 			bezierPatchesData.push_back(patch);
@@ -316,7 +317,6 @@ std::shared_ptr<BezierSurface> BezierSurface::Deserialize(const json& j, ShapeLi
 		auto point = list->GetPointWithId(pt["id"].get<unsigned int>());
 		if (point)
 		{
-			point->removable++;
 			controlPoints.push_back(point);
 		}
 	}

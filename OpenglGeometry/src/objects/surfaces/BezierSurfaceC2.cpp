@@ -275,6 +275,8 @@ BezierSurfaceC2::BezierSurfaceC2(std::vector<std::shared_ptr<Point>> controlPoin
 				int index = (startingI + i) * uSize + (startingJ + j) % uSize;
 				patch.controlPoints[i][j] = controlPoints[index];
 				controlPoints[index]->Attach(this);
+				controlPoints[index]->removable++;
+
 			}
 		}
 
@@ -372,7 +374,6 @@ std::shared_ptr<BezierSurfaceC2> BezierSurfaceC2::Deserialize(const json& j, Sha
 		auto point = list->GetPointWithId(pt["id"].get<unsigned int>());
 		if (point)
 		{
-			point->removable++;
 			controlPoints.push_back(point);
 		}
 	}
