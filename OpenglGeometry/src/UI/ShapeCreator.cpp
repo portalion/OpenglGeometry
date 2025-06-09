@@ -7,6 +7,45 @@
 #include <objects/surfaces/BezierSurface.h>
 #include <objects/surfaces/BezierSurfaceC2.h>
 
+std::vector<GraphTriangle> ShapeCreator::GetTriangles(const Graph& graph) const
+{
+    std::vector<GraphTriangle> triangles;
+    const auto& neighbours = graph.neighbours;
+
+    size_t n = graph.vertices.size();
+
+    for (size_t i = 0; i < n; ++i) {
+        for (unsigned int j : neighbours[i]) 
+        {
+            if (j <= i) continue;  
+
+            for (unsigned int k : neighbours[j])
+            {
+				auto a = graph.vertices[i], b = graph.vertices[j], c = graph.vertices[k];
+
+                if (k <= j || k == i) continue;
+                GraphTriangle tri{
+                        graph.vertices[i],
+                        graph.vertices[j],
+                        graph.vertices[k]
+                };
+
+                if (a.vertex1 == c.vertex2 && a.vertex2 == b.vertex1 && b.vertex2 == c.vertex1) triangles.push_back(tri);
+                else if (a.vertex1 == c.vertex1 && a.vertex2 == b.vertex1 && b.vertex2 == c.vertex2) triangles.push_back(tri);
+                else if (a.vertex1 == c.vertex1 && a.vertex2 == b.vertex2 && b.vertex1 == c.vertex2) triangles.push_back(tri);
+                else if (a.vertex1 == c.vertex2 && a.vertex2 == b.vertex2 && b.vertex1 == c.vertex1) triangles.push_back(tri);
+
+                else if (a.vertex2 == c.vertex2 && a.vertex1 == b.vertex1 && b.vertex2 == c.vertex1) triangles.push_back(tri);
+                else if (a.vertex2 == c.vertex1 && a.vertex1 == b.vertex1 && b.vertex2 == c.vertex2) triangles.push_back(tri);
+                else if (a.vertex2 == c.vertex1 && a.vertex1 == b.vertex2 && b.vertex1 == c.vertex2) triangles.push_back(tri);
+                else if (a.vertex2 == c.vertex2 && a.vertex1 == b.vertex2 && b.vertex1 == c.vertex1) triangles.push_back(tri);
+            }
+        }
+    }
+
+    return triangles;
+}
+
 std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape, ShapeList* shapeList) const
 {
     switch (shape)
@@ -28,6 +67,10 @@ std::shared_ptr<RenderableOnScene> ShapeCreator::GetShapeByType(ShapeEnum shape,
         return nullptr;
     case ShapeEnum::BezierSurfaceC2:
         shapeList->StartCreationMode(true);
+        return nullptr;
+    case ShapeEnum::GregoryPatch:
+        auto graph = shapeList->GetSelectedShapes()->GetGraph();
+        auto triangles = GetTriangles(graph);
         return nullptr;
     }
     throw std::runtime_error("Invalid shape");
@@ -94,6 +137,7 @@ const std::vector<std::pair<ShapeEnum, std::string>>& ShapeCreator::GetShapeList
 		 { ShapeEnum::InterpolatedBezierCurve, "Interpolated Bezier Curve" },
 		 { ShapeEnum::BezierSurface, "Bezier Surface" },
 		 { ShapeEnum::BezierSurfaceC2, "Bezier Surface C2" },
+         { ShapeEnum::GregoryPatch, "Gregory patch"}
     };
     return shapeList;
 }

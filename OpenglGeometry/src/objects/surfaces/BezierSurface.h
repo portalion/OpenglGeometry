@@ -11,6 +11,26 @@ struct BezierPatchData
 	std::shared_ptr<Point> controlPoints[CONTROL_POINTS_PER_EDGE][CONTROL_POINTS_PER_EDGE];
 };
 
+struct GraphVertex
+{
+	std::shared_ptr<Point> vertex1;
+	std::shared_ptr<Point> vertex2;
+	std::shared_ptr<Point> controlPoints[4];
+};
+
+struct Graph
+{
+	std::vector<GraphVertex> vertices;
+	std::vector<std::vector<unsigned int>> neighbours;
+};
+
+struct GraphTriangle
+{
+	GraphVertex first;
+	GraphVertex second;
+	GraphVertex third;
+};
+
 class BezierSurface : public RenderableOnScene, public IObserver
 {
 private:
@@ -42,5 +62,9 @@ public:
 	json Serialize() const override;
 
 	void ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPoint) override;
+
+	static Graph GenerateGraph(const std::vector<std::shared_ptr<BezierSurface>>& surfaces);
+	static std::vector<std::vector<unsigned int>> GenerateEdgeMatrix(const std::vector<GraphVertex>& vertices);
+	static std::vector<GraphVertex> GenerateGraphVertices(const std::vector<std::shared_ptr<BezierSurface>>& surfaces);
 };
 

@@ -433,3 +433,89 @@ void BezierSurface::ChangePoint(unsigned int idFrom, std::shared_ptr<Point> toPo
 		polygon->ChangePoint(idFrom, toPoint);
 	}
 }
+
+Graph BezierSurface::GenerateGraph(const std::vector<std::shared_ptr<BezierSurface>>& surfaces)
+{
+	Graph result;
+	result.vertices = GenerateGraphVertices(surfaces);
+	result.neighbours = GenerateEdgeMatrix(result.vertices);
+
+	return result;
+}
+
+std::vector<std::vector<unsigned int>> BezierSurface::GenerateEdgeMatrix(const std::vector<GraphVertex>& vertices)
+{
+	std::vector<std::vector<unsigned int>> result(vertices.size());
+
+	for(int i = 0; i < vertices.size(); i++)
+	{
+		for(int j = 0; j < vertices.size(); j++)
+		{
+			if(i == j 
+				|| (vertices[i].vertex1->GetShapeId() == vertices[j].vertex1->GetShapeId()
+					&& vertices[i].vertex2->GetShapeId() == vertices[j].vertex2->GetShapeId())
+				|| (vertices[i].vertex2->GetShapeId() == vertices[j].vertex1->GetShapeId() 
+					&& vertices[i].vertex1->GetShapeId() == vertices[j].vertex2->GetShapeId()))
+				continue;
+
+			if(vertices[i].vertex1->GetShapeId() == vertices[j].vertex1->GetShapeId() ||
+			   vertices[i].vertex1->GetShapeId() == vertices[j].vertex2->GetShapeId() ||
+			   vertices[i].vertex2->GetShapeId() == vertices[j].vertex1->GetShapeId() ||
+			   vertices[i].vertex2->GetShapeId() == vertices[j].vertex2->GetShapeId())
+			{
+				result[i].push_back(j);
+			}
+		}
+	}
+
+	return result;
+}
+
+std::vector<GraphVertex> BezierSurface::GenerateGraphVertices(const std::vector<std::shared_ptr<BezierSurface>>& surfaces)
+{
+	std::vector<GraphVertex> result;
+	for (const auto& surface : surfaces)
+	{
+		for(const auto& patch : surface->bezierPatchesData)
+		{
+			GraphVertex vertex;
+			vertex.vertex1 = patch.controlPoints[0][0];
+			vertex.vertex2 = patch.controlPoints[3][0];
+			for(int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				vertex.controlPoints[i] = patch.controlPoints[i][0];
+			}
+
+			result.push_back(vertex);
+
+			vertex.vertex1 = patch.controlPoints[3][0];
+			vertex.vertex2 = patch.controlPoints[3][3];
+			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				vertex.controlPoints[i] = patch.controlPoints[3][i];
+			}
+
+			result.push_back(vertex);
+
+			vertex.vertex1 = patch.controlPoints[0][0];
+			vertex.vertex2 = patch.controlPoints[0][3];
+			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				vertex.controlPoints[i] = patch.controlPoints[0][i];
+			}
+
+			result.push_back(vertex);
+
+			vertex.vertex1 = patch.controlPoints[0][3];
+			vertex.vertex2 = patch.controlPoints[3][3];
+			for (int i = 0; i < BezierPatchData::CONTROL_POINTS_PER_EDGE; i++)
+			{
+				vertex.controlPoints[i] = patch.controlPoints[i][3];
+			}
+
+			result.push_back(vertex);
+		}
+	}
+
+	return result;
+}

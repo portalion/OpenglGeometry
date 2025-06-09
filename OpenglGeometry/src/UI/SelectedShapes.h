@@ -4,6 +4,8 @@
 #include <core/RenderableOnScene.h>
 #include <optional>
 
+struct Graph;
+
 class SelectedShapes
 {
 private:
@@ -16,6 +18,7 @@ public:
 	bool IsSelected(std::shared_ptr<RenderableOnScene> shapePtr) const;
 	inline bool IsEmpty() const { return selectedShapes.empty(); }
 	std::optional<Algebra::Vector4> GetAveragePosition() const;
+	Graph GetGraph();
 
 	template<typename T>
 	inline std::vector<std::shared_ptr<T>> GetSelectedWithType() const;

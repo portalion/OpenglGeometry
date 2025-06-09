@@ -14,9 +14,11 @@ enum class ShapeEnum
 	InterpolatedBezierCurve = 5,
 	BezierSurface = 6,
 	BezierSurfaceC2 = 7,
+	GregoryPatch = 8
 };
 
 class ShapeList;
+struct GraphTriangle;
 
 class ShapeCreator
 {
@@ -24,6 +26,7 @@ private:
 	SelectedShapes* selectedShapes;
 	AxisCursor* cursor;
 	std::shared_ptr<RenderableOnScene> GetShapeByType(ShapeEnum shape, ShapeList* shapeList) const;
+	std::vector<GraphTriangle> GetTriangles(const Graph& graph) const;
 public:
 	ShapeCreator(SelectedShapes* selectedShapes, AxisCursor* cursor) : selectedShapes{ selectedShapes }, cursor{ cursor } {}
 

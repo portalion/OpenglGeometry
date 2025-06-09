@@ -1,5 +1,6 @@
 #include "SelectedShapes.h"
 #include "core/Transformable.h"
+#include "objects/surfaces/BezierSurface.h"
 
 void SelectedShapes::Clear()
 {
@@ -52,4 +53,10 @@ std::optional<Algebra::Vector4> SelectedShapes::GetAveragePosition() const
 	}
 	result = result / selectedWithPosition.size();
 	return result;
+}
+
+Graph SelectedShapes::GetGraph()
+{
+	auto selectedSurfaces = GetSelectedWithType<BezierSurface>();
+	return BezierSurface::GenerateGraph(selectedSurfaces);
 }
