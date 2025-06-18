@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\objects\surfaces\GregoryPatch.cpp" />
     <ClCompile Include="src\managers\JsonManager.cpp" />
     <ClCompile Include="src\objects\surfaces\BezierSurface.cpp" />
     <ClCompile Include="src\objects\surfaces\BezierSurfaceC2.cpp" />
@@ -233,6 +234,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\objects\surfaces\GregoryPatch.h" />
     <ClInclude Include="src\managers\JsonManager.h" />
     <ClInclude Include="src\objects\lines\ILine.h" />
     <ClInclude Include="src\objects\surfaces\BezierSurface.h" />
