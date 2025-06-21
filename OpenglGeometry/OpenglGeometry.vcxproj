@@ -263,6 +263,7 @@
     <ClInclude Include="src\objects\Torus.h" />
     <ClInclude Include="src\core\input\TransformationAroundAxisInputMode.h" />
     <ClInclude Include="src\core\input\TransformationAroundPointInputMode.h" />
+    <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
