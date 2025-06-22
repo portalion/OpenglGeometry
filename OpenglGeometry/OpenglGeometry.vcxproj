@@ -202,7 +202,7 @@
     <ClCompile Include="src\core\Camera.cpp" />
     <ClCompile Include="src\engine\IndexBuffer.cpp" />
     <ClCompile Include="src\engine\Renderer.ipp" />
-    <ClCompile Include="src\engine\VertexLayout.cpp" />
+    <ClCompile Include="src\engine\VertexData.h" />
     <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\UI\ShapeCreator.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
@@ -222,7 +222,6 @@
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
     <ClCompile Include="src\engine\VertexBuffer.cpp" />
-    <ClCompile Include="src\engine\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Algebra\Algebra.vcxproj">
@@ -234,6 +233,8 @@
     <ClInclude Include="src\engine\Notifier.h" />
     <ClInclude Include="src\core\transformations\EmptyTransformationComponents.h" />
     <ClInclude Include="src\core\transformations\IExposesTransformationComponents.h" />
+    <ClInclude Include="src\engine\VertexArray.ipp" />
+    <ClInclude Include="src\engine\VertexAttribLayout.h" />
     <ClInclude Include="src\objects\BezierCurve.h" />
     <ClInclude Include="src\UI\SelectedShapes.h" />
     <ClInclude Include="src\UI\ShapeList.h" />

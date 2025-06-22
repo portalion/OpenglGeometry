@@ -2,7 +2,7 @@
 #include <managers/IdManager.h>
 
 RenderableOnScene::RenderableOnScene()
-	: Renderable<PositionVertexData>(VertexDataType::PositionVertexData)
+	: Renderable<PositionVertexData>()
 {
 	renderingMode = RenderingMode::LINES;
 	somethingChanged = true;

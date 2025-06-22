@@ -1,17 +1,20 @@
 #pragma once
 #include "VertexBuffer.h"
-#include "VertexLayout.h"
 #include "IndexBuffer.h"
+#include "VertexAttribLayout.h"
+
+template<typename VertexData>
 class VertexArray
 {
 public:
-	VertexArray(const VertexBuffer& vbo, VertexDataType dataType);
-	VertexArray(const VertexBuffer& vbo, VertexDataType dataType, const IndexBuffer& ibo);
+	inline VertexArray(const VertexBuffer& vbo);
+	inline VertexArray(const VertexBuffer& vbo, const IndexBuffer& ibo);
 	~VertexArray();
 
-	void Bind() const;
-	void UnBind() const;
+	inline void Bind() const;
+	inline void UnBind() const;
 private:
 	unsigned int id;
 };
 
+#include "VertexArray.ipp"

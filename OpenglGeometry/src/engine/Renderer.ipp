@@ -2,26 +2,26 @@
 #include "Renderer.h"
 
 template<class T>
-inline Renderer<T>::Renderer(VertexDataType dataType)
-	:vbo{}, ibo{}, vao{ vbo, dataType, ibo }
+inline Renderer<T>::Renderer()
+	:vbo{}, ibo{}, vao{ vbo, ibo }
 {
 }
 
 template<class T>
-inline Renderer<T>::Renderer(VertexDataType dataType, std::vector<unsigned int> indices)
-	: vbo{}, ibo{ indices }, vao{ vbo, dataType, ibo }
+inline Renderer<T>::Renderer(std::vector<unsigned int> indices)
+	: vbo{}, ibo{ indices }, vao{ vbo, ibo }
 {
 }
 
 template<class T>
-inline Renderer<T>::Renderer(VertexDataType dataType, std::vector<T> vertices)
-	:vbo{ vertices }, ibo{}, vao{ vbo, dataType, ibo }
+inline Renderer<T>::Renderer(std::vector<T> vertices)
+	: vbo{ vertices }, ibo{}, vao{ vbo, ibo }
 {
 }
 
 template<class T>
-inline Renderer<T>::Renderer(VertexDataType dataType, std::vector<T> vertices, std::vector<unsigned int> indices)
-	:vbo{ vertices }, ibo{ indices }, vao{ vbo, dataType, ibo }
+inline Renderer<T>::Renderer(std::vector<T> vertices, std::vector<unsigned int> indices)
+	: vbo{ vertices }, ibo{ indices }, vao{ vbo, ibo }
 {
 }
 

@@ -10,8 +10,8 @@ inline void Renderable<T>::SaveMesh()
 }
 
 template<typename T>
-inline Renderable<T>::Renderable(VertexDataType dataType)
-	: renderer(dataType)
+inline Renderable<T>::Renderable()
+	: renderer()
 {
 }
 

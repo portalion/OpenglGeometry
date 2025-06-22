@@ -1,5 +1,5 @@
 #pragma once
-#include <engine/Renderer.h>
+#include "Renderer.h"
 
 template<typename T>
 struct RenderableMesh
@@ -20,7 +20,7 @@ protected:
 	virtual RenderableMesh<T> GenerateMesh() = 0;
 public:
 	virtual ~Renderable() = default;
-	inline Renderable(VertexDataType dataType);
+	inline Renderable();
 	inline virtual void Render() const;
 };
 

@@ -13,7 +13,7 @@ const std::vector<unsigned int> squareIndices = {
 };
 
 InfiniteGrid::InfiniteGrid()
-	:renderer{ VertexDataType::PositionVertexData, squareData, squareIndices }
+	:renderer{squareData, squareIndices }
 {
 	shader = ShaderManager::GetInstance().GetShader(AvailableShaders::InfiniteGrid);
 	renderer.AssignIndices(squareIndices);
