@@ -180,6 +180,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\Scene\Entity.cpp" />
+    <ClCompile Include="src\core\Scene\Scene.cpp" />
     <ClCompile Include="src\core\transformations\ObservableTransformationComponents.cpp" />
     <ClCompile Include="src\engine\Notifier.cpp" />
     <ClCompile Include="src\core\transformations\ITransformationComponents.h" />
@@ -229,6 +231,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\Scene\Entity.h" />
+    <ClInclude Include="src\core\Scene\Scene.h" />
     <ClInclude Include="src\core\transformations\ObservableTransformationComponents.h" />
     <ClInclude Include="src\engine\Notifier.h" />
     <ClInclude Include="src\core\transformations\EmptyTransformationComponents.h" />
