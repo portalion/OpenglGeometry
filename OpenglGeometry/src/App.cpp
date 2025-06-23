@@ -8,6 +8,7 @@
 #include <core/InfiniteGrid.h>
 #include <objects/Polyline.h>
 #include <objects/BezierCurve.h>
+#include <core/Scene/BaseScene.h>
 
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
@@ -28,6 +29,9 @@ App::App()
     }
     
     currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera, &axis);
+
+	currentScene = CreateRef<BaseScene>();
+	systemPipeline = CreateUnique<SystemPipeline>(currentScene);
 }
 
 App::~App()
@@ -52,11 +56,10 @@ void App::Run()
         ImGui::ShowDemoWindow();
 #endif 
 
-        HandleInput();
-        DisplayParameters();
-
-        Update();
-        Render();
+		if (systemPipeline)
+		{
+			systemPipeline->Update();
+		}
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

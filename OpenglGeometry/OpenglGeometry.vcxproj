@@ -180,8 +180,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\Scene\Entity.cpp" />
-    <ClCompile Include="src\core\Scene\Scene.cpp" />
+    <ClCompile Include="src\core\scene\BaseScene.cpp" />
+    <ClCompile Include="src\core\scene\Entity.cpp" />
+    <ClCompile Include="src\core\scene\Scene.cpp" />
     <ClCompile Include="src\core\transformations\ObservableTransformationComponents.cpp" />
     <ClCompile Include="src\engine\Notifier.cpp" />
     <ClCompile Include="src\core\transformations\ITransformationComponents.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="src\objects\Torus.cpp" />
     <ClCompile Include="src\core\input\TransformationAroundAxisInputMode.cpp" />
     <ClCompile Include="src\core\input\TransformationAroundPointInputMode.cpp" />
+    <ClCompile Include="src\core\scene\SystemPipeline.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
@@ -231,8 +233,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\Scene\Entity.h" />
-    <ClInclude Include="src\core\Scene\Scene.h" />
+    <ClInclude Include="src\core\scene\BaseScene.h" />
+    <ClInclude Include="src\core\scene\Entity.h" />
+    <ClInclude Include="src\core\scene\Scene.h" />
     <ClInclude Include="src\core\transformations\ObservableTransformationComponents.h" />
     <ClInclude Include="src\engine\Notifier.h" />
     <ClInclude Include="src\core\transformations\EmptyTransformationComponents.h" />
@@ -268,6 +271,8 @@
     <ClInclude Include="src\objects\Torus.h" />
     <ClInclude Include="src\core\input\TransformationAroundAxisInputMode.h" />
     <ClInclude Include="src\core\input\TransformationAroundPointInputMode.h" />
+    <ClInclude Include="src\core\scene\SystemPipeline.h" />
+    <ClInclude Include="src\core\Base.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />

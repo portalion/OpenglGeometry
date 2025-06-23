@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include "UI/SelectedShapes.h"
 #include <UI/ShapeCreator.h>
+#include "core/Base.h"
+#include "core/scene/SystemPipeline.h"
 
 class App {
 public:
@@ -45,4 +47,7 @@ private:
 
 	Algebra::Matrix4 projectionMatrix;
 	Algebra::Matrix4 viewMatrix;
+
+	Unique<SystemPipeline> systemPipeline;
+	Ref<Scene> currentScene;
 };
