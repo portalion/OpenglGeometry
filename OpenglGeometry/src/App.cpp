@@ -56,6 +56,11 @@ void App::Run()
         ImGui::ShowDemoWindow();
 #endif 
 
+        defaultShader->Bind();
+        defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
+        defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
+        defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
+
 		if (systemPipeline)
 		{
 			systemPipeline->Update();

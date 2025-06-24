@@ -3,5 +3,7 @@
 
 class BaseScene : public Scene
 {
+public:
+	BaseScene();
 };
 

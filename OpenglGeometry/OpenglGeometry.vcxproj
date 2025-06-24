@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\scene\systems\RenderingSystem.cpp" />
     <ClCompile Include="src\core\scene\BaseScene.cpp" />
     <ClCompile Include="src\core\scene\Entity.cpp" />
     <ClCompile Include="src\core\scene\Scene.cpp" />
@@ -233,7 +234,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\scene\systems\RenderingSystem.h" />
     <ClInclude Include="src\core\scene\BaseScene.h" />
+    <ClInclude Include="src\core\scene\Components.h" />
     <ClInclude Include="src\core\scene\Entity.h" />
     <ClInclude Include="src\core\scene\Scene.h" />
     <ClInclude Include="src\core\transformations\ObservableTransformationComponents.h" />
