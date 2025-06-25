@@ -5,7 +5,7 @@
 BaseScene::BaseScene()
 {
 	{
-		float aspect = static_cast<float>(Globals::startingSceneWidthn) / static_cast<float>(Globals::startingSceneHeight);
+		float aspect = static_cast<float>(Globals::startingSceneWidth) / static_cast<float>(Globals::startingSceneHeight);
 		auto camera = CreateEntity();
 		auto& cc = camera.AddComponent<CameraComponent>();
 		cc.active = true;
