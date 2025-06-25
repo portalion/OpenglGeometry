@@ -13,15 +13,12 @@
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
     running{true},
-	camera{ Globals::startingCameraPosition, 1.f},
 	shapeCreator{ &selectedShapes, &axis }
 {
     InitImgui(window.GetWindowPointer());
     window.SetAppPointerData(this);
-	viewMatrix = Algebra::Matrix4::Identity();
 
     HandleResize();
-    defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
 
     for (auto& renderable : sceneRenderables)
     {
@@ -55,11 +52,6 @@ void App::Run()
         ImGui::ShowDemoWindow();
 #endif 
 
-        defaultShader->Bind();
-        defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-        defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
-        defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
-
 		if (systemPipeline)
 		{
 			systemPipeline->Update();
@@ -91,7 +83,6 @@ void App::HandleResize()
 	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
 	float newHeight = static_cast<float>(window.GetHeight());
 	float aspect = newWidth / newHeight;
-    projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
 }
 
 void App::Update()
@@ -257,15 +248,6 @@ void App::GetClickedPoint()
 
 void App::Render()
 {
-    if (showGrid)
-    {
-	    grid.Render(camera.GetViewMatrix(), projectionMatrix, camera.GetPosition());
-    }
-
-	defaultShader->Bind();
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-    defaultShader->SetUniformMat4f("u_projectionMatrix", projectionMatrix);
-    defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
     for (auto& renderable : sceneRenderables)
     {
         //defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
@@ -273,11 +255,8 @@ void App::Render()
     }
 
     //defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
     axis.Render();
     
-    defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetViewMatrix());
-    defaultShader->SetUniformVec4f("u_color", Globals::defaultMiddlePointColor);
 
     if (!selectedShapes.IsEmpty())
     {
@@ -285,5 +264,4 @@ void App::Render()
         middleSelectionPoint.Render();
     }
 
-    defaultShader->UnBind();
 }

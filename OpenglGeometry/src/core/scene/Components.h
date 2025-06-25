@@ -46,6 +46,7 @@ struct RotationComponent
 
 struct CameraComponent
 {
+	bool active = false;
 	Algebra::Matrix4 projectionMatrix;
 
 	CameraComponent() = default;
