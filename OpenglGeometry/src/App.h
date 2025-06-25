@@ -8,7 +8,6 @@
 #include "objects/Torus.h"
 #include "objects/AxisCursor.h"
 #include <objects/Point.h>
-#include <core/input/InputMode.h>
 #include <unordered_set>
 #include "UI/SelectedShapes.h"
 #include <UI/ShapeCreator.h>
@@ -35,7 +34,6 @@ private:
 	Window window;
 	Camera camera;
 	Point middleSelectionPoint;
-	std::unique_ptr<InputMode> currentInputMode;
 
 	SelectedShapes selectedShapes;
 	std::vector<std::shared_ptr<RenderableOnScene>> sceneRenderables;

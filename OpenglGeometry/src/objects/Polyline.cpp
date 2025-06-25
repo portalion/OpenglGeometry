@@ -14,7 +14,7 @@ RenderableMesh<PositionVertexData> Polyline::GenerateMesh()
 		PositionVertexData vertex;
 		if (auto ptr = it->lock())
 		{
-			vertex.Position = ptr->GetPositionComponent()->GetPosition();
+			//vertex.Position = ptr->GetPositionComponent()->GetPosition();
 			vertex.Position.w = 1.f;
 			result.vertices.push_back(vertex);
 			++it;

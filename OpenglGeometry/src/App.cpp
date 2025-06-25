@@ -28,7 +28,6 @@ App::App()
         renderable->InitName();
     }
     
-    currentInputMode = InputMode::CreateInputMode(InputModeEnum::Default, &window, &camera, &axis);
 
 	currentScene = CreateRef<BaseScene>();
 	systemPipeline = CreateUnique<SystemPipeline>(currentScene);
@@ -85,7 +84,6 @@ void App::HandleInput()
     }
 	//TODO: Add iterator to selectedShapes
     auto shapes = selectedShapes.GetSelectedWithType<RenderableOnScene>();
-    currentInputMode->HandleInput({shapes.begin(), shapes.end()});
 }
 
 void App::HandleResize()
@@ -105,59 +103,13 @@ void App::Update()
     axis.Update();
     middleSelectionPoint.Update();
 
-    if(auto middlePoint = selectedShapes.GetAveragePosition())
-        middleSelectionPoint.GetPositionComponent()->SetPosition(*middlePoint);
+    /*if(auto middlePoint = selectedShapes.GetAveragePosition())
+        middleSelectionPoint.GetPositionComponent()->SetPosition(*middlePoint);*/
 
 }
 
 void App::DisplayParameters()
 {
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoResize;
-    window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoDocking;
-
-    ImGui::SetNextWindowPos(ImVec2(static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth), 0.f));
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(Globals::rightInterfaceWidth), static_cast<float>(window.GetHeight())));
-
-    ImGui::Begin("Main Menu", nullptr, window_flags);
-    if (ImGui::CollapsingHeader("Main Menu", ImGuiTreeNodeFlags_Leaf))
-    {
-		ImGui::Checkbox("Show grid", &showGrid);
-        static int currentModeIndex = 0;
-        const auto& modes = InputMode::GetModeList();
-
-        std::vector<const char*> modeNames;
-        std::vector<InputModeEnum> modeEnums;
-
-        for (const auto& [enumVal, modeName] : modes) {
-            modeEnums.push_back(enumVal);
-            modeNames.push_back(modeName.c_str());
-        }
-
-        if (ImGui::IsKeyPressed(ImGuiKey_Tab))
-        {
-            currentModeIndex = (currentModeIndex + 1) % static_cast<int>(InputModeEnum::Size);
-            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
-        }
-
-        if (ImGui::Combo("Input Mode", &currentModeIndex, modeNames.data(), static_cast<int>(modeNames.size()))) {
-            currentInputMode = InputMode::CreateInputMode(modeEnums[currentModeIndex], &window, &camera, &axis);
-        }
-        //axis.DisplayMenu();
-    }
-    //TODO: Add iterator to selectedShapes
-    this->CreateShape();
-    if (ImGui::CollapsingHeader("Selected items parameters", ImGuiTreeNodeFlags_Leaf))
-    {
-        for (auto& renderable : selectedShapes.GetSelectedWithType<RenderableOnScene>())
-        {
-            renderable->DisplayMenu();
-        }
-    }
-    ImGui::End();
 }
 
 void App::CreateShape()
@@ -198,7 +150,7 @@ void App::CreateShape()
         {
             auto newShape = shapeCreator.CreateShape(availableShapes[currentShapeIndex].first);
             newShape->InitName();
-            newShape->GetPositionComponent()->Move(axis.GetPositionComponent()->GetPosition());
+            //newShape->GetPositionComponent()->Move(axis.GetPositionComponent()->GetPosition());
             sceneRenderables.push_back(newShape);
 
             if (availableShapes[currentShapeIndex].first == ShapeEnum::Point)
@@ -271,7 +223,7 @@ void App::GetClickedPoint()
 
     for (const auto& shape : sceneRenderables)
     {
-        std::shared_ptr<RenderableOnScene> shapePtr = shape;
+        /*std::shared_ptr<RenderableOnScene> shapePtr = shape;
         if (auto point = std::dynamic_pointer_cast<Point>(shape))
         {
             Algebra::Vector4 worldPos(0.f, 0.f, 0.f, 1.f);
@@ -298,7 +250,7 @@ void App::GetClickedPoint()
                     selectedShapes.AddShape(shapePtr);
                 }
             }
-        }
+        }*/
     }
 }
 
@@ -316,11 +268,11 @@ void App::Render()
     defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
     for (auto& renderable : sceneRenderables)
     {
-        defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
+        //defaultShader->SetUniformMat4f("u_modelMatrix", renderable->GetModelMatrix());
         renderable->Render();
     }
 
-    defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
+    //defaultShader->SetUniformMat4f("u_modelMatrix", axis.GetModelMatrix());
     defaultShader->SetUniformMat4f("u_viewMatrix", camera.GetRotationMatrix() * camera.GetTranslationMatrix());
     axis.Render();
     
@@ -329,7 +281,7 @@ void App::Render()
 
     if (!selectedShapes.IsEmpty())
     {
-        defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
+        //defaultShader->SetUniformMat4f("u_modelMatrix", middleSelectionPoint.GetModelMatrix());
         middleSelectionPoint.Render();
     }
 

@@ -23,9 +23,3 @@ RenderableMesh<PositionVertexData> AxisCursor::GenerateMesh()
     };
     return result;
 }
-
-IPositionComponent* AxisCursor::GetPositionComponent()
-{
-    return &positionComponent;
-}
-

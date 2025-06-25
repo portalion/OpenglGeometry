@@ -4,12 +4,10 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include "engine/Renderable.h"
-#include "core/transformations/IExposesTransformationComponents.h"
-#include "core/transformations/EmptyTransformationComponents.h"
 
 //TODO: ADD ID MANAGER
 //TODO: Move IMGUI / Menus / ID into composition?
-class RenderableOnScene : public Renderable<PositionVertexData>, public IExposesTransformationComponents
+class RenderableOnScene : public Renderable<PositionVertexData>
 {
 private:
 	unsigned int id;
@@ -33,8 +31,4 @@ public:
 	inline ImGuiID GetId() const { return ImGui::GetID(name.c_str()); }
 
 	std::string GenerateLabelWithId(std::string label);
-	virtual Algebra::Matrix4 GetModelMatrix() override;
-	virtual inline IPositionComponent* GetPositionComponent() override { return EmptyPositionComponent::GetInstance(); }
-	virtual inline IRotationComponent* GetRotationComponent() override { return EmptyRotationComponent::GetInstance(); }
-	virtual inline IScaleComponent* GetScaleComponent() override { return EmptyScaleComponent::GetInstance(); }
 };
