@@ -33,6 +33,11 @@ void Shader::SetUniformVec4f(const std::string& name, const Algebra::Vector4& ve
     GLCall(glUniform4f(GetUniformLocation(name), vector.x, vector.y, vector.z, vector.w));
 }
 
+bool Shader::HasUniform(const std::string& name)
+{
+    return m_UniformLocationCache.find(name) != m_UniformLocationCache.end();
+}
+
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
