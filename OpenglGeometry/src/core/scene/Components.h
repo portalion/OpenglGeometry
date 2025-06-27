@@ -1,13 +1,6 @@
 #pragma once
-#include "engine/Renderable.h"
-
-struct MeshComponent
-{
-	RenderableMesh<PositionVertexData> mesh;
-
-	MeshComponent() = default;
-	MeshComponent(const MeshComponent& other) = default;
-};
+#include <vector>
+#include "Algebra.h"
 
 struct PositionComponent
 {

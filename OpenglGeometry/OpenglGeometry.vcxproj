@@ -185,14 +185,12 @@
     <ClCompile Include="src\core\scene\Entity.cpp" />
     <ClCompile Include="src\core\scene\Scene.cpp" />
     <ClCompile Include="src\engine\Notifier.cpp" />
-    <ClCompile Include="src\engine\Renderable.ipp" />
     <ClCompile Include="src\engine\ShaderBuilder.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
     <ClCompile Include="src\core\Camera.cpp" />
     <ClCompile Include="src\engine\IndexBuffer.cpp" />
-    <ClCompile Include="src\engine\Renderer.ipp" />
     <ClCompile Include="src\engine\VertexData.h" />
     <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
@@ -227,11 +225,9 @@
     <ClInclude Include="src\engine\Notifier.h" />
     <ClInclude Include="src\engine\VertexArray.ipp" />
     <ClInclude Include="src\engine\VertexAttribLayout.h" />
-    <ClInclude Include="src\engine\Renderable.h" />
     <ClInclude Include="src\engine\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />
-    <ClInclude Include="src\engine\Renderer.h" />
     <ClInclude Include="src\core\Camera.h" />
     <ClInclude Include="src\engine\IndexBuffer.h" />
     <ClInclude Include="src\engine\VertexLayout.h" />

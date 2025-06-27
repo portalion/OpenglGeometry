@@ -51,13 +51,4 @@ void RenderingSystem::Process()
 		defaultShader->SetUniformMat4f("u_projectionMatrix", cameraComponent.projectionMatrix);
 		defaultShader->SetUniformMat4f("u_viewMatrix", viewMatrix);
 	}
-
-
-	for (auto entity : scene->GetAllEntitiesWith<MeshComponent>())
-	{
-		Entity e{ entity, scene.get() };
-		auto& meshComponent = e.GetComponent<MeshComponent>();
-		Renderer r(meshComponent.mesh.vertices, meshComponent.mesh.indices);
-		r.Render();
-	}
 }

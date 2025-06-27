@@ -2,7 +2,6 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Components.h"
-#include "engine/Renderer.h"
 
 SystemPipeline::SystemPipeline(Ref<Scene> scene)
 {
