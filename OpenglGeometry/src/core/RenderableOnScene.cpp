@@ -4,7 +4,7 @@
 RenderableOnScene::RenderableOnScene()
 	: Renderable<PositionVertexData>()
 {
-	renderingMode = RenderingMode::LINES;
+	renderingMode = RenderingModeLegacy::LINES;
 	somethingChanged = true;
 }
 

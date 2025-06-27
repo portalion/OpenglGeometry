@@ -3,22 +3,24 @@
 #include "utils/GlCall.h"
 
 template<typename VertexData>
-inline VertexArray<VertexData>::VertexArray(const VertexBuffer& vbo)
-	: id{ 0 }
+inline VertexArray VertexArray::Create(const VertexBuffer& vbo)
 {
-	GLCall(glGenVertexArrays(1, &id));
+	VertexArray result;
+	GLCall(glGenVertexArrays(1, &result.id));
 	Bind();
 	vbo.Bind();
 	VertexAttribLayout<VertexData>::Enable();
 	UnBind();
 	vbo.UnBind();
+
+	return result;
 }
 
 template<typename VertexData>
-inline VertexArray<VertexData>::VertexArray(const VertexBuffer& vbo, const IndexBuffer& ibo)
-	: id{ 0 }
+inline VertexArray VertexArray::Create(const VertexBuffer& vbo, const IndexBuffer& ibo)
 {
-	GLCall(glGenVertexArrays(1, &id));
+	VertexArray result;
+	GLCall(glGenVertexArrays(1, &result.id));
 	Bind();
 	vbo.Bind();
 	ibo.Bind();
@@ -26,22 +28,21 @@ inline VertexArray<VertexData>::VertexArray(const VertexBuffer& vbo, const Index
 	UnBind();
 	vbo.UnBind();
 	ibo.UnBind();
+
+	return result;
 }
 
-template<typename VertexData>
-inline VertexArray<VertexData>::~VertexArray()
+inline VertexArray::~VertexArray()
 {
 	glDeleteVertexArrays(1, &id);
 }
 
-template<typename VertexData>
-inline void VertexArray<VertexData>::Bind() const
+inline void VertexArray::Bind() const
 {
 	GLCall(glBindVertexArray(id));
 }
 
-template<typename VertexData>
-inline void VertexArray<VertexData>::UnBind() const
+inline void VertexArray::UnBind() const
 {
 	GLCall(glBindVertexArray(0));
 }

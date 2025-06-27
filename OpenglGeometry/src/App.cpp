@@ -16,6 +16,7 @@ App::App()
 	shapeCreator{ &selectedShapes, &axis }
 {
     InitImgui(window.GetWindowPointer());
+    ImGui::StyleColorsDark();
     window.SetAppPointerData(this);
 
     HandleResize();

@@ -18,6 +18,6 @@ void SystemPipeline::Update()
 {
 	if (renderingSystem)
 	{
-		renderingSystem->Process();
+		//renderingSystem->Process();
 	}
 }

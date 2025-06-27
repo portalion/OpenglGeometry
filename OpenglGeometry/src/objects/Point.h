@@ -11,6 +11,6 @@ private:
 	inline bool DisplayParameters() override { return false; }
 
 public:
-	inline Point() { renderingMode = RenderingMode::TRIANGLES; };
+	inline Point() { renderingMode = RenderingModeLegacy::TRIANGLES; };
 };
 

@@ -232,6 +232,8 @@
     <ClInclude Include="src\core\scene\Components.h" />
     <ClInclude Include="src\core\scene\Entity.h" />
     <ClInclude Include="src\core\scene\Scene.h" />
+    <ClInclude Include="src\engine\MeshApplier.h" />
+    <ClInclude Include="src\engine\MeshApplier.ipp" />
     <ClInclude Include="src\engine\Notifier.h" />
     <ClInclude Include="src\engine\VertexArray.ipp" />
     <ClInclude Include="src\engine\VertexAttribLayout.h" />

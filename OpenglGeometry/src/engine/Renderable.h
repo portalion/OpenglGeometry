@@ -13,7 +13,7 @@ class Renderable
 {
 protected:
 	Renderer<T> renderer;
-	RenderingMode renderingMode = RenderingMode::TRIANGLES;
+	RenderingModeLegacy renderingMode = RenderingModeLegacy::TRIANGLES;
 
 	void SaveMesh();
 

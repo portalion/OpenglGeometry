@@ -1,7 +1,8 @@
 #pragma once
 #include "VertexArray.h"
+#include <memory>
 
-enum class RenderingMode
+enum class RenderingModeLegacy
 {
 	LINES = GL_LINES,
 	TRIANGLES = GL_TRIANGLES,
@@ -13,7 +14,6 @@ template <class T> class Renderer
 private:
 	VertexBuffer vbo;
 	IndexBuffer ibo;
-	VertexArray<T> vao;
 public:
 	Renderer();
 	Renderer(std::vector<unsigned int> indices);
@@ -23,7 +23,7 @@ public:
 	void AssignIndices(std::vector<unsigned int> indices);
 	void AssignVertices(std::vector<T> vertices);
 
-	void Render(RenderingMode mode = RenderingMode::TRIANGLES) const;
+	void Render(RenderingModeLegacy mode = RenderingModeLegacy::TRIANGLES) const;
 };
 
 #include "Renderer.ipp"
