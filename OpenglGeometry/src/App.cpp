@@ -1,7 +1,6 @@
 #include "App.h"
 #include <string>
 #include <stdexcept>
-#include "engine/Shader.h"
 #include <iostream>
 #include "core/Globals.h"
 #include <core/Scene/BaseScene.h>

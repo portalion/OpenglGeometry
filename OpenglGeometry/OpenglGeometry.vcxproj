@@ -186,8 +186,8 @@
     <ClCompile Include="src\core\scene\BaseScene.cpp" />
     <ClCompile Include="src\core\scene\Entity.cpp" />
     <ClCompile Include="src\core\scene\Scene.cpp" />
-    <ClCompile Include="src\engine\Shader.cpp" />
-    <ClCompile Include="src\engine\ShaderBuilder.cpp" />
+    <ClCompile Include="src\renderer\Shader.cpp" />
+    <ClCompile Include="src\renderer\ShaderBuilder.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
@@ -222,8 +222,8 @@
     <ClInclude Include="src\core\scene\Components.h" />
     <ClInclude Include="src\core\scene\Entity.h" />
     <ClInclude Include="src\core\scene\Scene.h" />
-    <ClInclude Include="src\engine\Shader.h" />
-    <ClInclude Include="src\engine\ShaderBuilder.h" />
+    <ClInclude Include="src\renderer\Shader.h" />
+    <ClInclude Include="src\renderer\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />
     <ClInclude Include="src\core\Camera.h" />
