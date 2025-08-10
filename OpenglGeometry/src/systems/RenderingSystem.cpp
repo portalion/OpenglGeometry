@@ -58,6 +58,9 @@ void RenderingSystem::Process()
 
 		auto& meshComponent = e.GetComponent<StaticMeshComponent>();
 		m_Renderer->SetShader(meshComponent.shaderType);
+
+		auto modelMatrix = GetModelMatrix(e);
+		m_Renderer->SetTransformations(modelMatrix);
 		m_Renderer->SetMesh(meshComponent.mesh);
 		m_Renderer->Render(RenderingMode::Triangles);
 	}

@@ -17,6 +17,11 @@ void Renderer::SetMesh(Ref<VertexArray> mesh)
 	m_ActualMesh = mesh;
 }
 
+void Renderer::SetTransformations(Algebra::Matrix4 modelMatrix)
+{
+	m_ActualModelMatrix = modelMatrix;
+}
+
 void Renderer::Render(RenderingMode mode)
 {
 	if (!m_ActualShader) return;
@@ -24,6 +29,7 @@ void Renderer::Render(RenderingMode mode)
 	m_ActualShader->Bind();
 	m_ActualShader->SetUniformMat4f("u_projectionMatrix", m_ActualProjectionMatrix);
 	m_ActualShader->SetUniformMat4f("u_viewMatrix", m_ActualViewMatrix);
+	m_ActualShader->SetUniformMat4f("u_modelMatrix", m_ActualModelMatrix);
 	
 	m_ActualMesh->Bind();
 
