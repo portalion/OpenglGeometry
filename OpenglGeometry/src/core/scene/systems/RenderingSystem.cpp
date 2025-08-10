@@ -4,6 +4,9 @@
 #include <managers/ShaderManager.h>
 #include <core/Globals.h>
 
+#include "renderer/VertexArray.h"
+#include <GL/glew.h>
+
 Algebra::Matrix4 RenderingSystem::GetModelMatrix(Entity entity)
 {
 	Algebra::Matrix4 result = Algebra::Matrix4::Identity();
@@ -28,27 +31,44 @@ Algebra::Matrix4 RenderingSystem::GetModelMatrix(Entity entity)
 	return result;
 }
 
-RenderingSystem::RenderingSystem(Ref<Scene> scene)
-	: scene(scene)
+RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
+	: m_Scene(m_Scene)
 {
-	defaultShader = ShaderManager::GetInstance().GetShader(AvailableShaders::Default);
+	m_Renderer = CreateRef<Renderer>();
+	m_Renderer->SetShader(AvailableShaders::Default);
 }
 
 void RenderingSystem::Process()
 {
-	if (!defaultShader) return;
-	defaultShader->Bind();
-	defaultShader->SetUniformVec4f("u_color", Globals::defaultPointsColor);
-
-	for (auto entity : scene->GetAllEntitiesWith<CameraComponent>())
+	for (auto entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
-		Entity e{ entity, scene.get() };
+		Entity e{ entity, m_Scene.get() };
 		auto cameraComponent = e.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
 		auto viewMatrix = GetModelMatrix(e);
 
-		defaultShader->SetUniformMat4f("u_projectionMatrix", cameraComponent.projectionMatrix);
-		defaultShader->SetUniformMat4f("u_viewMatrix", viewMatrix);
+		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
+
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+
+	uint32_t indices[3] = { 0, 1, 2 };
+	auto indexBuffer = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint32_t));
+
+	auto vertexBuffer = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
+	BufferLayout layout = {
+		{ ShaderDataType::Float3, "position" }
+	};
+	vertexBuffer->SetLayout(layout);
+	auto vertexArray = CreateRef<VertexArray>();
+	vertexArray->AddVertexBuffer(vertexBuffer);
+	vertexArray->SetIndexBuffer(indexBuffer);
+
+	m_Renderer->SetMesh(vertexArray);
+	m_Renderer->Render(RenderingMode::Triangles);
 }

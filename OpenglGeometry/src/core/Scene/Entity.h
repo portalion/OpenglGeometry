@@ -9,7 +9,7 @@ private:
 	entt::entity m_EntityHandle;
 	Scene* m_Scene;
 public:
-	Entity(entt::entity entity, Scene* scene);
+	Entity(entt::entity entity, Scene* m_Scene);
 
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)

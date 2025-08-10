@@ -3,10 +3,10 @@
 #include "Entity.h"
 #include "Components.h"
 
-SystemPipeline::SystemPipeline(Ref<Scene> scene)
+SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
-	this->scene = scene;
-	renderingSystem = CreateRef<RenderingSystem>(scene);
+	this->m_Scene = m_Scene;
+	renderingSystem = CreateRef<RenderingSystem>(m_Scene);
 }
 
 SystemPipeline::~SystemPipeline()
@@ -17,6 +17,6 @@ void SystemPipeline::Update()
 {
 	if (renderingSystem)
 	{
-		//renderingSystem->Process();
+		renderingSystem->Process();
 	}
 }

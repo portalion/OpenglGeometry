@@ -1,7 +1,6 @@
 #pragma once
 #include "core/Base.h"
 #include "systems/RenderingSystem.h"
-#include "engine/MeshApplier.h"
 
 class Scene;
 
@@ -10,9 +9,9 @@ class SystemPipeline
 private:
 	Ref<RenderingSystem> renderingSystem;
 
-	Ref<Scene> scene;
+	Ref<Scene> m_Scene;
 public:
-	SystemPipeline(Ref<Scene> scene);
+	SystemPipeline(Ref<Scene> m_Scene);
 	~SystemPipeline();
 
 	void Update();
