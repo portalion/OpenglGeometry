@@ -180,19 +180,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\core\scene\systems\RenderingSystem.cpp" />
     <ClCompile Include="src\core\scene\BaseScene.cpp" />
     <ClCompile Include="src\core\scene\Entity.cpp" />
     <ClCompile Include="src\core\scene\Scene.cpp" />
-    <ClCompile Include="src\engine\Notifier.cpp" />
+    <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\engine\ShaderBuilder.cpp" />
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
     <ClCompile Include="src\core\Camera.cpp" />
-    <ClCompile Include="src\engine\IndexBuffer.cpp" />
-    <ClCompile Include="src\engine\VertexData.h" />
-    <ClCompile Include="src\engine\Shader.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -207,7 +205,8 @@
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
-    <ClCompile Include="src\engine\VertexBuffer.cpp" />
+    <ClCompile Include="src\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Algebra\Algebra.vcxproj">
@@ -215,24 +214,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\IndexBuffer.h" />
     <ClInclude Include="src\core\scene\systems\RenderingSystem.h" />
     <ClInclude Include="src\core\scene\BaseScene.h" />
     <ClInclude Include="src\core\scene\Components.h" />
     <ClInclude Include="src\core\scene\Entity.h" />
     <ClInclude Include="src\core\scene\Scene.h" />
-    <ClInclude Include="src\engine\MeshApplier.h" />
-    <ClInclude Include="src\engine\MeshApplier.ipp" />
-    <ClInclude Include="src\engine\Notifier.h" />
-    <ClInclude Include="src\engine\VertexArray.ipp" />
-    <ClInclude Include="src\engine\VertexAttribLayout.h" />
+    <ClInclude Include="src\engine\Shader.h" />
     <ClInclude Include="src\engine\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />
     <ClInclude Include="src\core\Camera.h" />
-    <ClInclude Include="src\engine\IndexBuffer.h" />
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
-    <ClInclude Include="src\engine\Shader.h" />
+    <ClInclude Include="src\renderer\Buffer.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />
@@ -250,8 +245,8 @@
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\core\Window.h" />
-    <ClInclude Include="src\engine\VertexBuffer.h" />
-    <ClInclude Include="src\engine\VertexArray.h" />
+    <ClInclude Include="src\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\default.frag" />

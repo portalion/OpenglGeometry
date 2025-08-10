@@ -4,7 +4,6 @@
 #include "engine/Shader.h"
 #include <iostream>
 #include "core/Globals.h"
-#include <engine/Renderer.h>
 #include <core/Scene/BaseScene.h>
 
 App::App()
