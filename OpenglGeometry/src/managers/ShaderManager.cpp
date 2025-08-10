@@ -5,14 +5,14 @@
 ShaderManager::ShaderManager()
 {
 	//TODO: Change into logger
-	std::cout << "INFO: Loading Shaders" << std::endl;
+	std::clog << "INFO: Loading Shaders" << std::endl;
 	AssignShader(AvailableShaders::Default, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "default")
 		.AddShader(ShaderType::Fragment, "default"));
 	AssignShader(AvailableShaders::InfiniteGrid, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "infiniteGrid")
 		.AddShader(ShaderType::Fragment, "infiniteGrid"));
-	std::cout << "INFO: Loaded Shaders" << std::endl;
+	std::clog << "INFO: Loaded Shaders" << std::endl;
 }
 
 ShaderManager& ShaderManager::GetInstance()
