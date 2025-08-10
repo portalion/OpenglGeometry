@@ -43,32 +43,22 @@ void RenderingSystem::Process()
 	for (auto entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
 		Entity e{ entity, m_Scene.get() };
-		auto cameraComponent = e.GetComponent<CameraComponent>();
+		auto& cameraComponent = e.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
+		//TODO: Change it, for now it is working bad
 		auto viewMatrix = GetModelMatrix(e);
 
 		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
 
-	float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-	};
+	for (auto entity : m_Scene->GetAllEntitiesWith<StaticMeshComponent>())
+	{
+		Entity e{ entity, m_Scene.get() };
 
-	uint32_t indices[3] = { 0, 1, 2 };
-	auto indexBuffer = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint32_t));
-
-	auto vertexBuffer = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
-	BufferLayout layout = {
-		{ ShaderDataType::Float3, "position" }
-	};
-	vertexBuffer->SetLayout(layout);
-	auto vertexArray = CreateRef<VertexArray>();
-	vertexArray->AddVertexBuffer(vertexBuffer);
-	vertexArray->SetIndexBuffer(indexBuffer);
-
-	m_Renderer->SetMesh(vertexArray);
-	m_Renderer->Render(RenderingMode::Triangles);
+		auto& meshComponent = e.GetComponent<StaticMeshComponent>();
+		m_Renderer->SetShader(meshComponent.shaderType);
+		m_Renderer->SetMesh(meshComponent.mesh);
+		m_Renderer->Render(RenderingMode::Triangles);
+	}
 }

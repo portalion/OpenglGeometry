@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include "core/Base.h"
+#include "renderer/VertexArray.h"
+#include "managers/ShaderManager.h"
 #include "Algebra.h"
 
 struct PositionComponent
@@ -44,4 +47,13 @@ struct CameraComponent
 
 	CameraComponent() = default;
 	CameraComponent(const CameraComponent& other) = default;
+};
+
+struct StaticMeshComponent
+{
+	Ref<VertexArray> mesh;
+	AvailableShaders shaderType = AvailableShaders::Default;
+
+	StaticMeshComponent() = default;
+	StaticMeshComponent(const StaticMeshComponent& other) = default;
 };
