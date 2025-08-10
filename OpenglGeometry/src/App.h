@@ -6,7 +6,7 @@
 #include "core/Camera.h"
 #include <unordered_set>
 #include "core/Base.h"
-#include "core/scene/SystemPipeline.h"
+#include "systems/SystemPipeline.h"
 
 class App {
 public:

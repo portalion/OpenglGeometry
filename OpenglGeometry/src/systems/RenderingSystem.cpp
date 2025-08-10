@@ -1,6 +1,6 @@
 #include "RenderingSystem.h"
-#include "core/scene/Scene.h"
-#include "core/scene/Entity.h"
+#include "scene/Scene.h"
+#include "scene/Entity.h"
 #include <managers/ShaderManager.h>
 #include <core/Globals.h>
 

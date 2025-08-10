@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "core/Globals.h"
-#include <core/Scene/BaseScene.h>
+#include <scene/BaseScene.h>
 
 App::App()
     : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
