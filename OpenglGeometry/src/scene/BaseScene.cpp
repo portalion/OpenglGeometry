@@ -17,7 +17,7 @@ BaseScene::BaseScene()
 	}
 
 	//Triangle entity setup
-	{
+	/*{
 		auto triangle = CreateEntity();
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f,
@@ -39,7 +39,7 @@ BaseScene::BaseScene()
 
 		auto& smc = triangle.AddComponent<MeshComponent>();
 		smc.mesh = vertexArray;
-	}
+	}*/
 	
 	//Torus entity setup
 	{

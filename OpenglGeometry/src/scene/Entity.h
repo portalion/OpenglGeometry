@@ -49,6 +49,12 @@ public:
 		m_Scene->m_Registry.remove<T>(m_EntityHandle);
 	}
 
+	template<typename T>
+	void RemoveTag()
+	{
+		this->RemoveComponent<T>();
+	}
+
 	friend Scene;
 };
 

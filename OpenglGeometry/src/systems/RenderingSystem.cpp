@@ -62,6 +62,6 @@ void RenderingSystem::Process()
 		auto modelMatrix = GetModelMatrix(e);
 		m_Renderer->SetTransformations(modelMatrix);
 		m_Renderer->SetMesh(meshComponent.mesh);
-		m_Renderer->Render(RenderingMode::Triangles);
+		m_Renderer->Render(meshComponent.renderingMode);
 	}
 }

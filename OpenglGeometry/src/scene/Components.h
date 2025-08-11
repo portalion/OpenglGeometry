@@ -5,6 +5,7 @@
 #include "managers/ShaderManager.h"
 #include "Algebra.h"
 #include "Tags.h"
+#include "renderer/Renderer.h"
 
 struct PositionComponent
 {
@@ -54,6 +55,7 @@ struct MeshComponent
 {
 	Ref<VertexArray> mesh;
 	AvailableShaders shaderType = AvailableShaders::Default;
+	RenderingMode renderingMode = RenderingMode::Triangles;
 
 	MeshComponent() = default;
 	MeshComponent(const MeshComponent& other) = default;
