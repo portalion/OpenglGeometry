@@ -16,7 +16,7 @@ BaseScene::BaseScene()
 		camera.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
 	}
 
-	//Triangle component setup
+	//Triangle entity setup
 	{
 		auto triangle = CreateEntity();
 		float vertices[] = {
@@ -37,8 +37,17 @@ BaseScene::BaseScene()
 		vertexArray->AddVertexBuffer(vertexBuffer);
 		vertexArray->SetIndexBuffer(indexBuffer);
 
-		auto& smc = triangle.AddComponent<StaticMeshComponent>();
+		auto& smc = triangle.AddComponent<MeshComponent>();
 		smc.mesh = vertexArray;
 	}
-
+	
+	//Torus entity setup
+	{
+		auto torus = CreateEntity();
+		torus.AddTag<IsDirtyTag>();
+		torus.AddComponent<TorusGenerationComponent>();
+		torus.AddComponent<PositionComponent>().position = { 0.f, 0.f, -5.f };
+		torus.AddComponent<RotationComponent>();
+		torus.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
+	}
 }

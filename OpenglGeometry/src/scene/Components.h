@@ -4,6 +4,7 @@
 #include "renderer/VertexArray.h"
 #include "managers/ShaderManager.h"
 #include "Algebra.h"
+#include "Tags.h"
 
 struct PositionComponent
 {
@@ -49,11 +50,21 @@ struct CameraComponent
 	CameraComponent(const CameraComponent& other) = default;
 };
 
-struct StaticMeshComponent
+struct MeshComponent
 {
 	Ref<VertexArray> mesh;
 	AvailableShaders shaderType = AvailableShaders::Default;
 
-	StaticMeshComponent() = default;
-	StaticMeshComponent(const StaticMeshComponent& other) = default;
+	MeshComponent() = default;
+	MeshComponent(const MeshComponent& other) = default;
+};
+
+struct TorusGenerationComponent
+{
+	float radius = 1.0f;
+	float tubeRadius = 0.2f;
+	unsigned int radialSegments = 16;
+	unsigned int tubularSegments = 32;
+	TorusGenerationComponent() = default;
+	TorusGenerationComponent(const TorusGenerationComponent& other) = default;
 };

@@ -11,6 +11,12 @@ private:
 public:
 	Entity(entt::entity entity, Scene* m_Scene);
 
+	template<typename T>
+	void AddTag()
+	{
+		m_Scene->m_Registry.emplace<T>(m_EntityHandle);
+	}
+
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{
