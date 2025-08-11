@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\systems\MeshGeneratingSystem.cpp" />
     <ClCompile Include="src\core\Notifier.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
@@ -216,6 +217,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\scene\Tags.h" />
+    <ClInclude Include="src\systems\MeshGeneratingSystem.h" />
     <ClInclude Include="src\core\Notifier.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\IndexBuffer.h" />

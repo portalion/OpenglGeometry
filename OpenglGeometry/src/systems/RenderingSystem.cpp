@@ -52,11 +52,11 @@ void RenderingSystem::Process()
 		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
 
-	for (auto entity : m_Scene->GetAllEntitiesWith<StaticMeshComponent>())
+	for (auto entity : m_Scene->GetAllEntitiesWith<MeshComponent>())
 	{
 		Entity e{ entity, m_Scene.get() };
 
-		auto& meshComponent = e.GetComponent<StaticMeshComponent>();
+		auto& meshComponent = e.GetComponent<MeshComponent>();
 		m_Renderer->SetShader(meshComponent.shaderType);
 
 		auto modelMatrix = GetModelMatrix(e);

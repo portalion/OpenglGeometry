@@ -6,7 +6,8 @@
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
 	this->m_Scene = m_Scene;
-	renderingSystem = CreateRef<RenderingSystem>(m_Scene);
+	m_RenderingSystem = CreateRef<RenderingSystem>(m_Scene);
+	m_MeshGeneratingSystem = CreateRef<MeshGeneratingSystem>(m_Scene);
 }
 
 SystemPipeline::~SystemPipeline()
@@ -15,8 +16,13 @@ SystemPipeline::~SystemPipeline()
 
 void SystemPipeline::Update()
 {
-	if (renderingSystem)
+	if (m_MeshGeneratingSystem)
 	{
-		renderingSystem->Process();
+		m_MeshGeneratingSystem->Process();
+	}
+
+	if (m_RenderingSystem)
+	{
+		m_RenderingSystem->Process();
 	}
 }

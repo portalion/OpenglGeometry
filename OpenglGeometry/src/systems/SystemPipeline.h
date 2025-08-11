@@ -1,13 +1,15 @@
 #pragma once
 #include "core/Base.h"
-#include "systems/RenderingSystem.h"
+#include "RenderingSystem.h"
+#include "MeshGeneratingSystem.h"
 
 class Scene;
 
 class SystemPipeline
 {
 private:
-	Ref<RenderingSystem> renderingSystem;
+	Ref<RenderingSystem> m_RenderingSystem;
+	Ref<MeshGeneratingSystem> m_MeshGeneratingSystem;
 
 	Ref<Scene> m_Scene;
 public:
