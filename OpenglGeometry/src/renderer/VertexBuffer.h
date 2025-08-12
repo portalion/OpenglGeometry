@@ -4,6 +4,7 @@
 class VertexBuffer
 {
 public:
+	VertexBuffer();
 	VertexBuffer(uint32_t size);
 	VertexBuffer(float* vertices, uint32_t size);
 	~VertexBuffer();
@@ -11,7 +12,8 @@ public:
 	void Bind() const ;
 	void Unbind() const ;
 
-	void SetData(const void* data, uint32_t size) ;
+	void SetSubData(const void* data, uint32_t size) ;
+	void SetData(const void* data, uint32_t size);
 
 	const BufferLayout& GetLayout() const  { return m_Layout; }
 	void SetLayout(const BufferLayout& layout)  { m_Layout = layout; }

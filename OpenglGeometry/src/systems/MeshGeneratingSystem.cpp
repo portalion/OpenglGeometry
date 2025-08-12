@@ -52,7 +52,7 @@ void MeshGeneratingSystem::TorusGeneration()
 			auto meshComponent = &e.AddComponent<MeshComponent>();
 
 			auto indexBuffer = CreateRef<IndexBuffer>(indices.data(), indices.size());
-			auto vertexBuffer = CreateRef<VertexBuffer>(vertices.size() * sizeof(Algebra::Vector4));
+			auto vertexBuffer = CreateRef<VertexBuffer>();
 			vertexBuffer->SetLayout(layout);
 			auto vertexArray = CreateRef<VertexArray>();
 			vertexArray->AddVertexBuffer(vertexBuffer);
