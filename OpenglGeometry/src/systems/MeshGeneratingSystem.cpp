@@ -1,5 +1,4 @@
 #include "MeshGeneratingSystem.h"
-#include "scene/Entity.h"
 
 Algebra::Vector4 GetPoint(float angleTube, float angleRadius, float radius, float tubeRadius)
 {
@@ -47,23 +46,7 @@ void MeshGeneratingSystem::TorusGeneration()
 			}
 		}
 
-		if (!e.HasComponent<MeshComponent>())
-		{
-			auto meshComponent = &e.AddComponent<MeshComponent>();
-			auto vertexArray = VertexArray::CreateWithBuffers(vertices, indices, layout);
-
-			meshComponent->mesh = vertexArray;
-			meshComponent->renderingMode = RenderingMode::Lines;
-		}
-		else
-		{
-			auto& mc = e.GetComponent<MeshComponent>();
-			mc.renderingMode = RenderingMode::Lines;
-			auto meshVAO = mc.mesh;
-			meshVAO->GetVertexBuffers()[0]->SetData(vertices.data(), vertices.size() * sizeof(Algebra::Vector4));
-			meshVAO->GetVertexBuffers()[0]->SetLayout(layout);
-			meshVAO->GetIndexBuffer()->SetIndices(indices.data(), indices.size());
-		}
+		ModifyOrCreateMesh(e, vertices, indices, layout);
 	}
 }
 

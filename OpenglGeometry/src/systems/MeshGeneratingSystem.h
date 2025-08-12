@@ -1,5 +1,6 @@
 #pragma once
 #include <scene/Scene.h>
+#include "scene/Entity.h"
 
 class MeshGeneratingSystem
 {
@@ -7,9 +8,36 @@ private:
 	Ref<Scene> m_Scene;
 
 	void TorusGeneration();
+
+	template<typename T>
+	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines);
 public:
 	MeshGeneratingSystem(Ref<Scene> m_Scene);
 
 	void Process();
 };
 
+template<typename T>
+inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode)
+{
+	if (e.HasComponent<MeshComponent>())
+	{
+		auto& meshComponent = e.GetComponent<MeshComponent>();
+		meshComponent.renderingMode = RenderingMode::Lines;
+
+		auto vertexArray = meshComponent.mesh;
+		vertexArray->GetVertexBuffers()[0]->SetData(vertices.data(),
+			static_cast<uint32_t>(vertices.size() * sizeof(Algebra::Vector4)));
+		vertexArray->GetVertexBuffers()[0]->SetLayout(layout);
+		vertexArray->GetIndexBuffer()->SetIndices(indices.data(), 
+			static_cast<uint32_t>(indices.size()));
+	}
+	else
+	{
+		auto meshComponent = &e.AddComponent<MeshComponent>();
+		auto vertexArray = VertexArray::CreateWithBuffers(vertices, indices, layout);
+
+		meshComponent->mesh = vertexArray;
+		meshComponent->renderingMode = RenderingMode::Lines;
+	}
+}
