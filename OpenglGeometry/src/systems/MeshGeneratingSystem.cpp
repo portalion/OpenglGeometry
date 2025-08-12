@@ -16,22 +16,19 @@ void MeshGeneratingSystem::TorusGeneration()
 
 		BufferLayout layout =
 		{
-			{ ShaderDataType::Float3, "position" }
+			{ ShaderDataType::Float4, "position" }
 		};
 
 		const auto& tgc = e.GetComponent<TorusGenerationComponent>();
 
-		std::vector<float> vertices;
+		std::vector<Algebra::Vector4> vertices;
 
 		for (unsigned int i = 0; i < tgc.radialSegments; i++)
 		{
 			for (unsigned int j = 0; j < tgc.tubularSegments; j++)
 			{
 				const auto& point = GetPoint(2 * 3.14f * j / tgc.tubularSegments, 2 * 3.14f * i / tgc.radialSegments, tgc.radius, tgc.tubeRadius);
-				vertices.push_back(point.x);
-				vertices.push_back(point.y);
-				vertices.push_back(point.z);
-				vertices.push_back(point.w);
+				vertices.push_back(point);
 			}
 		}
 
@@ -55,11 +52,12 @@ void MeshGeneratingSystem::TorusGeneration()
 			auto meshComponent = &e.AddComponent<MeshComponent>();
 
 			auto indexBuffer = CreateRef<IndexBuffer>(indices.data(), indices.size());
-			auto vertexBuffer = CreateRef<VertexBuffer>(vertices.data(), vertices.size());
+			auto vertexBuffer = CreateRef<VertexBuffer>(vertices.size() * sizeof(Algebra::Vector4));
 			vertexBuffer->SetLayout(layout);
 			auto vertexArray = CreateRef<VertexArray>();
 			vertexArray->AddVertexBuffer(vertexBuffer);
 			vertexArray->SetIndexBuffer(indexBuffer);
+			vertexBuffer->SetData(vertices.data(), vertices.size() * sizeof(Algebra::Vector4));
 
 			meshComponent->mesh = vertexArray;
 			meshComponent->renderingMode = RenderingMode::Lines;
@@ -69,7 +67,7 @@ void MeshGeneratingSystem::TorusGeneration()
 			auto& mc = e.GetComponent<MeshComponent>();
 			mc.renderingMode = RenderingMode::Lines;
 			auto meshVAO = mc.mesh;
-			meshVAO->GetVertexBuffers()[0]->SetData(vertices.data(), vertices.size());
+			meshVAO->GetVertexBuffers()[0]->SetData(vertices.data(), vertices.size() * sizeof(Algebra::Vector4));
 			meshVAO->GetVertexBuffers()[0]->SetLayout(layout);
 			meshVAO->GetIndexBuffer()->SetIndices(indices.data(), indices.size());
 		}
