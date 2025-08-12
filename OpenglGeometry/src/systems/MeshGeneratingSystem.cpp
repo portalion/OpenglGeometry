@@ -50,14 +50,7 @@ void MeshGeneratingSystem::TorusGeneration()
 		if (!e.HasComponent<MeshComponent>())
 		{
 			auto meshComponent = &e.AddComponent<MeshComponent>();
-
-			auto indexBuffer = CreateRef<IndexBuffer>(indices.data(), indices.size());
-			auto vertexBuffer = CreateRef<VertexBuffer>();
-			vertexBuffer->SetLayout(layout);
-			auto vertexArray = CreateRef<VertexArray>();
-			vertexArray->AddVertexBuffer(vertexBuffer);
-			vertexArray->SetIndexBuffer(indexBuffer);
-			vertexBuffer->SetData(vertices.data(), vertices.size() * sizeof(Algebra::Vector4));
+			auto vertexArray = VertexArray::CreateWithBuffers(vertices, indices, layout);
 
 			meshComponent->mesh = vertexArray;
 			meshComponent->renderingMode = RenderingMode::Lines;
