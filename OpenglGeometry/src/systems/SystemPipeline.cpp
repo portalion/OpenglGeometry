@@ -20,6 +20,7 @@ void SystemPipeline::Update()
 {
 	GUI::DisplayCreationButtons(m_Scene);
 	GUI::DisplayShapeList(m_Scene);
+	GUI::DisplaySelectedShapesProperties(m_Scene);
 
 	if (m_MeshGeneratingSystem)
 	{
