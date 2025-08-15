@@ -6,7 +6,7 @@
 
 namespace Archetypes
 {
-	Entity CreateTorus(Scene* scene)
+	inline Entity CreateTorus(Scene* scene)
 	{
 		auto resultTorus = scene->CreateEntity();
 

@@ -236,6 +236,9 @@
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
+    <ClInclude Include="src\UI\ShapeCreator.h" />
+    <ClInclude Include="src\UI\ShapeList.h" />
+    <ClInclude Include="src\UI\Utils.h" />
     <ClInclude Include="src\utils\GlCall.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\utils\Initialization.h" />

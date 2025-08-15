@@ -3,6 +3,10 @@
 #include "scene/Entity.h"
 #include "scene/Components.h"
 
+#include "imgui/imgui.h"
+#include "UI/Utils.h"
+#include "UI/ShapeCreator.h"
+
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
 	this->m_Scene = m_Scene;
@@ -16,6 +20,8 @@ SystemPipeline::~SystemPipeline()
 
 void SystemPipeline::Update()
 {
+	GUI::DisplayCreationButtons(m_Scene);
+
 	if (m_MeshGeneratingSystem)
 	{
 		m_MeshGeneratingSystem->Process();

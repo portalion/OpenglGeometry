@@ -55,6 +55,11 @@ public:
 		this->RemoveComponent<T>();
 	}
 
+	std::string GetID() const
+	{
+		return std::to_string(static_cast<uint32_t>(m_EntityHandle));
+	}
+
 	friend Scene;
 };
 
