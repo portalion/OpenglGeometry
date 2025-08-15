@@ -17,25 +17,6 @@ BaseScene::BaseScene()
 		camera.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
 	}
 
-	//Triangle entity setup
-	{
-		auto triangle = CreateEntity();
-		std::vector<float> vertices = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.0f,  0.5f, 0.0f
-		};
-		std::vector<uint32_t> indices = { 0, 1, 2 };
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float3, "position" }
-		};
-
-		auto VAO = VertexArray::CreateWithBuffers(vertices, indices, layout);
-		auto& smc = triangle.AddComponent<MeshComponent>();
-		smc.mesh = VAO;
-	}
-	
 	//Torus entity setup
 	Archetypes::CreateTorus(this);
 }
