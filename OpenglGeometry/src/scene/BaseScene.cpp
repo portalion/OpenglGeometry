@@ -38,6 +38,7 @@ BaseScene::BaseScene()
 	//Torus entity setup
 	{
 		auto torus = CreateEntity();
+		torus.AddComponent<IdComponent>();
 		torus.AddTag<IsDirtyTag>();
 		torus.AddComponent<TorusGenerationComponent>();
 		torus.AddComponent<PositionComponent>().position = { 0.f, 0.f, -5.f };
