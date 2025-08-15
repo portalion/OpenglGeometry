@@ -16,13 +16,19 @@ IdManager& IdManager::GetInstance()
     return instance;
 }
 
-unsigned int IdManager::GetNewId(std::string name)
+ID IdManager::GetNewId()
 {
-    ids[name] = ids[name] + 1;
+    if (m_FreeIds.empty())
+    {
+        return m_CurrentFreeId++;
+    }
 
-    return ids[name];
+    ID result = m_FreeIds.front();
+	m_FreeIds.pop();
+	return result;
 }
 
-void IdManager::FreeId(std::string name, unsigned int id)
+void IdManager::FreeId(ID id)
 {
+	m_FreeIds.push(id);
 }

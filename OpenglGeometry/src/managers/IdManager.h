@@ -1,13 +1,16 @@
 #pragma once
-#include <unordered_map>
 #include <string>
-#include <set>
+#include <queue>
+
+using ID = long long;
+
 class IdManager
 {
 private:
 	IdManager();
 
-	std::unordered_map<std::string, unsigned int> ids;
+	ID m_CurrentFreeId = 0;
+	std::queue<ID> m_FreeIds;
 public:
 	~IdManager();
 	IdManager(IdManager& other) = delete;
@@ -15,7 +18,7 @@ public:
 
 	static IdManager& GetInstance();
 
-	unsigned int GetNewId(std::string name);
-	void FreeId(std::string name, unsigned int id);
+	ID GetNewId();
+	void FreeId(ID id);
 };
 
