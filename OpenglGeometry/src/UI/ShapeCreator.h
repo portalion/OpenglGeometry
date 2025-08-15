@@ -14,6 +14,11 @@ namespace GUI
 			Archetypes::CreateTorus(scene.get());
 		}
 
+		if (ImGui::Button("Create Point##Creation menu"))
+		{
+			Archetypes::CreatePoint(scene.get());
+		}
+
 		ImGui::End();
 	}
 }

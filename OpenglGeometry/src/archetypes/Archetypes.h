@@ -22,4 +22,33 @@ namespace Archetypes
 
 		return resultTorus;
 	}
+
+	inline Entity CreatePoint(Scene* scene)
+	{
+		auto resultPoint = scene->CreateEntity();
+		auto id = resultPoint.AddComponent<IdComponent>().id;
+		resultPoint.AddComponent<NameComponent>().name = "Point" + std::to_string(id);
+
+		resultPoint.AddComponent<PositionComponent>().position = { 0.f, 0.f, 0.f };
+
+		//TODO: Change to use meshmanager or something
+		std::vector<float> vertices = {
+			0.0f, 0.0f, 0.0f,
+			1.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,
+			1.0f, 0.0f, 0.0f,
+		};
+		std::vector<unsigned int> indices =
+		{
+			0, 3, 2,
+			1, 2, 3
+		};
+		BufferLayout layout = 
+		{
+			{ ShaderDataType::Float3, "position" }
+		};
+		resultPoint.AddComponent<MeshComponent>().mesh = VertexArray::CreateWithBuffers(vertices, indices, layout);
+
+		return resultPoint;
+	}
 }
