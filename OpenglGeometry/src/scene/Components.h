@@ -84,3 +84,9 @@ struct IdComponent
 	}
 };
 
+struct NameComponent
+{
+	std::string name;
+	NameComponent() = default;
+	NameComponent(const NameComponent& other) = default;
+};

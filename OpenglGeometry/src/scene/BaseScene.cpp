@@ -1,6 +1,7 @@
 #include "BaseScene.h"
 #include "Entity.h"
 #include "core/Globals.h"
+#include "archetypes/Archetypes.h"
 
 BaseScene::BaseScene()
 {
@@ -36,13 +37,5 @@ BaseScene::BaseScene()
 	}
 	
 	//Torus entity setup
-	{
-		auto torus = CreateEntity();
-		torus.AddComponent<IdComponent>();
-		torus.AddTag<IsDirtyTag>();
-		torus.AddComponent<TorusGenerationComponent>();
-		torus.AddComponent<PositionComponent>().position = { 0.f, 0.f, -5.f };
-		torus.AddComponent<RotationComponent>();
-		torus.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
-	}
+	Archetypes::CreateTorus(this);
 }

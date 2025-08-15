@@ -217,6 +217,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\archetypes\Archetypes.h" />
     <ClInclude Include="src\scene\Tags.h" />
     <ClInclude Include="src\systems\MeshGeneratingSystem.h" />
     <ClInclude Include="src\core\Notifier.h" />
