@@ -7,27 +7,7 @@
 #include "Tags.h"
 #include "renderer/Renderer.h"
 #include "managers/IdManager.h"
-
-#include "Entity.h"
-
-template <typename T>
-class Observable
-{
-public:
-	T value;
-	Entity entity;
-
-	void Set(const T& newValue)
-	{
-		if (value != newValue)
-		{
-			value = newValue;
-			entity.AddTag<IsNotifiedTag>();
-		}
-	}
-	operator const T& () const { return value; }
-};
-
+#include "Observable.h"
 
 struct PositionComponent
 {
