@@ -1,6 +1,5 @@
 #pragma once
 #include <entt/entt.hpp>
-#include "Components.h"
 
 class Entity;
 

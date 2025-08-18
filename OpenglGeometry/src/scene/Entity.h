@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include <entt/entt.hpp>
 #include <utility>
+#include <string>
 
 class Entity
 {

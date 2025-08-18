@@ -1,6 +1,7 @@
 #pragma once
 #include "scene/Scene.h"
 #include "scene/Entity.h"
+#include "scene/Components.h"
 
 //TODO: Move it to other files etc
 

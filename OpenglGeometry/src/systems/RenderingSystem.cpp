@@ -6,6 +6,7 @@
 
 #include "renderer/VertexArray.h"
 #include <GL/glew.h>
+#include "scene/Components.h"
 
 Algebra::Matrix4 RenderingSystem::GetModelMatrix(Entity entity)
 {

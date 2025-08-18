@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "core/Globals.h"
 #include "archetypes/Archetypes.h"
+#include "scene/Components.h"
 
 BaseScene::BaseScene()
 {
