@@ -10,12 +10,16 @@ private:
 	entt::entity m_EntityHandle;
 	Scene* m_Scene;
 public:
+	Entity() = default;
 	Entity(entt::entity entity, Scene* m_Scene);
 
 	template<typename T>
 	void AddTag()
 	{
-		m_Scene->m_Registry.emplace<T>(m_EntityHandle);
+		if (!this->HasComponent<T>())
+		{
+			m_Scene->m_Registry.emplace<T>(m_EntityHandle);
+		}
 	}
 
 	template<typename T, typename... Args>

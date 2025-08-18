@@ -23,8 +23,12 @@ namespace GUI
 
 			if (e.HasComponent<PositionComponent>())
 			{
+				Algebra::Vector4 tmpPosition = e.GetComponent<PositionComponent>().position;
 				auto& position = e.GetComponent<PositionComponent>().position;
-				ImGui::DragFloat3(GenerateLabel(e, "Position").c_str(), &position.x, 0.1f);
+				if (ImGui::DragFloat3(GenerateLabel(e, "Position").c_str(), &tmpPosition.x, 0.1f))
+				{
+					position.Set(tmpPosition);
+				}
 
 			}
 

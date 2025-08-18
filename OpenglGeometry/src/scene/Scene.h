@@ -7,9 +7,10 @@ class Scene
 {
 private:
 	entt::registry m_Registry;
+	void OnPositionCreated(entt::registry& registry, entt::entity entity);
 public:
-	Scene() = default;
-	~Scene() = default;
+	Scene();
+	~Scene();
 	
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;

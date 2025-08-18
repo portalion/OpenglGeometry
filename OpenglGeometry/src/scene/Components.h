@@ -8,16 +8,37 @@
 #include "renderer/Renderer.h"
 #include "managers/IdManager.h"
 
+#include "Entity.h"
+
+template <typename T>
+class Observable
+{
+public:
+	T value;
+	Entity entity;
+
+	void Set(const T& newValue)
+	{
+		if (value != newValue)
+		{
+			value = newValue;
+			entity.AddTag<IsNotifiedTag>();
+		}
+	}
+	operator const T& () const { return value; }
+};
+
+
 struct PositionComponent
 {
-	Algebra::Vector4 position;
+	Observable<Algebra::Vector4> position;
 
 	PositionComponent() = default;
 	PositionComponent(const PositionComponent& other) = default;
 
 	void Move(Algebra::Vector4 offset)
 	{
-		position += offset;
+		position.Set(offset);
 	}
 };
 

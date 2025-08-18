@@ -17,7 +17,7 @@ namespace Archetypes
 		resultTorus.AddTag<IsDirtyTag>();
 		resultTorus.AddComponent<TorusGenerationComponent>();
 
-		resultTorus.AddComponent<PositionComponent>().position = { 0.f, 0.f, 0.f };
+		resultTorus.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
 		resultTorus.AddComponent<RotationComponent>();
 		resultTorus.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
 
@@ -30,7 +30,7 @@ namespace Archetypes
 		auto id = resultPoint.AddComponent<IdComponent>().id;
 		resultPoint.AddComponent<NameComponent>().name = "Point" + std::to_string(id);
 
-		resultPoint.AddComponent<PositionComponent>().position = { 0.f, 0.f, 0.f };
+		resultPoint.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
 
 		//TODO: Change to use meshmanager or something
 		std::vector<float> vertices = {
