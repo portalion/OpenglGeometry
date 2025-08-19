@@ -21,8 +21,9 @@ namespace GUI
 
 		if (ImGui::Button("Create Polyline##Creation menu"))
 		{
-			std::list<Entity> pointsView;
-			Archetypes::CreatePolyline(scene.get(), pointsView.begin(), pointsView.end());
+			auto pointsView = scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
+			std::vector<Entity> pointsVector(pointsView.begin(), pointsView.end());
+			Archetypes::CreatePolyline(scene.get(), pointsVector.begin(), pointsVector.end());
 		}
 
 		ImGui::End();

@@ -49,6 +49,43 @@ void MeshGeneratingSystem::TorusGeneration()
 	}
 }
 
+void MeshGeneratingSystem::PolylineGeneration()
+{
+	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+		BufferLayout layout =
+		{
+			{ ShaderDataType::Float4, "position" }
+		};
+
+		auto& lineComponent = entity.GetComponent<LineGenerationComponent>();
+		
+		std::vector<Algebra::Vector4> vertices;
+		std::vector<uint32_t> indices;
+
+		for(auto it = lineComponent.controlPoints.begin(); it != lineComponent.controlPoints.end(); )
+		{
+			if (!it->IsValid() || !it->HasComponent<PositionComponent>())
+			{
+				it = lineComponent.controlPoints.erase(it);
+				continue;
+			}
+
+			Algebra::Vector4 position = it->GetComponent<PositionComponent>().position;
+			position.w = 1.f;
+			vertices.push_back(position);
+			indices.push_back(static_cast<uint32_t>(vertices.size() - 1));
+			indices.push_back(static_cast<uint32_t>(vertices.size()));
+			it++;
+		}
+
+		indices.pop_back(); 
+
+		ModifyOrCreateMesh(entity, vertices, indices, layout);
+	}
+}
+
 MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 	:m_Scene {m_Scene}
 {
@@ -56,5 +93,6 @@ MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 
 void MeshGeneratingSystem::Process()
 {
+	PolylineGeneration();
 	TorusGeneration();
 }

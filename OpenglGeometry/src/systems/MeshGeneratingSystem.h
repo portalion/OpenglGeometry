@@ -9,6 +9,7 @@ private:
 	Ref<Scene> m_Scene;
 
 	void TorusGeneration();
+	void PolylineGeneration();
 
 	template<typename T>
 	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines);
