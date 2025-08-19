@@ -21,7 +21,12 @@ public:
 	template<typename... Components>
 	auto GetAllEntitiesWith()
 	{
-		return m_Registry.view<Components...>();
+		auto view = m_Registry.view<Components...>();
+
+		return view | std::views::transform([this](entt::entity e) 
+		{
+			return Entity{ e, this };
+		});
 	}
 
 	friend Entity;

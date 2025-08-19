@@ -2,6 +2,8 @@
 #include "scene/Scene.h"
 #include "scene/Entity.h"
 #include "scene/Components.h"
+#include <concepts>
+#include <iterator>
 
 //TODO: Move it to other files etc
 
@@ -36,6 +38,7 @@ namespace Archetypes
 		auto resultPoint = CreateShape(scene, "Point");
 
 		resultPoint.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
+		resultPoint.AddComponent<NotificationComponent>();
 
 		//TODO: Change to use meshmanager or something
 		std::vector<float> vertices = {
@@ -56,5 +59,31 @@ namespace Archetypes
 		resultPoint.AddComponent<MeshComponent>().mesh = VertexArray::CreateWithBuffers(vertices, indices, layout);
 
 		return resultPoint;
+	}
+
+	template<std::forward_iterator Iter>
+		requires std::same_as<std::iter_value_t<Iter>, Entity>
+	inline Entity CreatePolyline(Scene* scene, Iter pointsBegin, const Iter& pointsEnd)
+	{
+		auto resultPolyline = CreateShape(scene, "Polyline");
+
+		resultPolyline.AddTag<IsDirtyTag>();
+		auto& controlPoints = resultPolyline.AddComponent<LineGenerationComponent>().controlPoints;
+
+		for (auto it = pointsBegin; it != pointsEnd; )
+		{
+			if (!it->IsValid() || !it->HasComponent<NotificationComponent>())
+			{
+				continue;
+			}
+
+			auto& notificationList = it->GetComponent<NotificationComponent>().entitiesToNotify;
+			notificationList.push_back(resultPolyline);
+			controlPoints.push_back(*it);
+
+			it++;
+		}
+
+		return resultPolyline;
 	}
 }

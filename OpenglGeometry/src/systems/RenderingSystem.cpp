@@ -41,26 +41,23 @@ RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
 
 void RenderingSystem::Process()
 {
-	for (auto entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
+	for (Entity entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
-		Entity e{ entity, m_Scene.get() };
-		auto& cameraComponent = e.GetComponent<CameraComponent>();
+		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
 		//TODO: Change it, for now it is working bad
-		auto viewMatrix = GetModelMatrix(e);
+		auto viewMatrix = GetModelMatrix(entity);
 
 		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
 
-	for (auto entity : m_Scene->GetAllEntitiesWith<MeshComponent>())
+	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>())
 	{
-		Entity e{ entity, m_Scene.get() };
-
-		auto& meshComponent = e.GetComponent<MeshComponent>();
+		auto& meshComponent = entity.GetComponent<MeshComponent>();
 		m_Renderer->SetShader(meshComponent.shaderType);
 
-		auto modelMatrix = GetModelMatrix(e);
+		auto modelMatrix = GetModelMatrix(entity);
 		m_Renderer->SetTransformations(modelMatrix);
 		m_Renderer->SetMesh(meshComponent.mesh);
 		m_Renderer->Render(meshComponent.renderingMode);

@@ -16,32 +16,30 @@ namespace GUI
 			ImGui::End();
 			return;
 		}
-		for (auto entity : selectedShapes)
+		for (Entity entity : selectedShapes)
 		{
-			Entity e{ entity, scene.get() };
-			ImGui::Text("Properties of %s", e.GetComponent<NameComponent>().name.c_str());
+			ImGui::Text("Properties of %s", entity.GetComponent<NameComponent>().name.c_str());
 
-			if (e.HasComponent<PositionComponent>())
+			if (entity.HasComponent<PositionComponent>())
 			{
-				Algebra::Vector4 tmpPosition = e.GetComponent<PositionComponent>().position;
-				auto& position = e.GetComponent<PositionComponent>().position;
-				if (ImGui::DragFloat3(GenerateLabel(e, "Position").c_str(), &tmpPosition.x, 0.1f))
+				Algebra::Vector4 tmpPosition = entity.GetComponent<PositionComponent>().position;
+				auto& position = entity.GetComponent<PositionComponent>().position;
+				if (ImGui::DragFloat3(GenerateLabel(entity, "Position").c_str(), &tmpPosition.x, 0.1f))
 				{
 					position.Set(tmpPosition);
 				}
-
 			}
 
-			if (e.HasComponent<RotationComponent>())
+			if (entity.HasComponent<RotationComponent>())
 			{
-				auto& rotation = e.GetComponent<RotationComponent>().rotation;
-				ImGui::DragFloat3(GenerateLabel(e, "Rotation").c_str(), &rotation.x, 0.1f);
+				auto& rotation = entity.GetComponent<RotationComponent>().rotation;
+				ImGui::DragFloat3(GenerateLabel(entity, "Rotation").c_str(), &rotation.x, 0.1f);
 			}
 
-			if (e.HasComponent<ScaleComponent>())
+			if (entity.HasComponent<ScaleComponent>())
 			{
-				auto& scale = e.GetComponent<ScaleComponent>().scale;
-				ImGui::DragFloat3(GenerateLabel(e, "Scale").c_str(), &scale.x, 0.1f);	
+				auto& scale = entity.GetComponent<ScaleComponent>().scale;
+				ImGui::DragFloat3(GenerateLabel(entity, "Scale").c_str(), &scale.x, 0.1f);
 			}
 		}
 		ImGui::End();

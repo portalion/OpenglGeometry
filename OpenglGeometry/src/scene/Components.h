@@ -99,3 +99,10 @@ struct NotificationComponent
 	NotificationComponent() = default;
 	NotificationComponent(const NotificationComponent& other) = default;
 };
+
+struct LineGenerationComponent
+{
+	std::list<Entity> controlPoints;
+	LineGenerationComponent() = default;
+	LineGenerationComponent(const LineGenerationComponent& other) = default;
+};

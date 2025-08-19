@@ -19,20 +19,19 @@ namespace GUI
 			return;
 		}
 
-		for (auto entity : shapes)
+		for (Entity entity : shapes)
 		{	
-			Entity e{ entity, scene.get() };
-			bool isSelected = e.HasComponent<IsSelectedTag>();
+			bool isSelected = entity.HasComponent<IsSelectedTag>();
 			
-			if (ImGui::Selectable(GenerateLabel(e, e.GetComponent<NameComponent>().name).c_str(), isSelected))
+			if (ImGui::Selectable(GenerateLabel(entity, entity.GetComponent<NameComponent>().name).c_str(), isSelected))
 			{
 				if (isSelected)
 				{
-					e.RemoveTag<IsSelectedTag>();
+					entity.RemoveTag<IsSelectedTag>();
 				}
 				else
 				{
-					e.AddTag<IsSelectedTag>();
+					entity.AddTag<IsSelectedTag>();
 				}
 			}
 		}

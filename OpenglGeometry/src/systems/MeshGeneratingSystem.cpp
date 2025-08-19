@@ -8,17 +8,16 @@ Algebra::Vector4 GetPoint(float angleTube, float angleRadius, float radius, floa
 
 void MeshGeneratingSystem::TorusGeneration()
 {
-	for (auto entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, TorusGenerationComponent>())
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, TorusGenerationComponent>())
 	{
-		Entity e{ entity, m_Scene.get() };
-		e.RemoveTag<IsDirtyTag>();
+		entity.RemoveTag<IsDirtyTag>();
 
 		BufferLayout layout =
 		{
 			{ ShaderDataType::Float4, "position" }
 		};
 
-		const auto& tgc = e.GetComponent<TorusGenerationComponent>();
+		const auto& tgc = entity.GetComponent<TorusGenerationComponent>();
 
 		std::vector<Algebra::Vector4> vertices;
 
@@ -46,7 +45,7 @@ void MeshGeneratingSystem::TorusGeneration()
 			}
 		}
 
-		ModifyOrCreateMesh(e, vertices, indices, layout);
+		ModifyOrCreateMesh(entity, vertices, indices, layout);
 	}
 }
 

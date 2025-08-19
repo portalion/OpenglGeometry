@@ -7,11 +7,10 @@
 
 void SystemPipeline::ProcessSignals()
 {
-	for (auto& entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
+	for (Entity entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
 	{
-		Entity e{ entity, m_Scene.get() };
-		e.RemoveComponent<ObserverChangedState>();
-		auto& notificationList = e.GetComponent<NotificationComponent>().entitiesToNotify;
+		entity.RemoveComponent<ObserverChangedState>();
+		auto& notificationList = entity.GetComponent<NotificationComponent>().entitiesToNotify;
 		for (auto it = notificationList.begin(); it != notificationList.end(); )
 		{
 			if (!it->IsValid())
