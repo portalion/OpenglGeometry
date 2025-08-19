@@ -19,6 +19,30 @@ namespace GUI
 			return;
 		}
 
+		if (ImGui::Button("Select All##Shape List"))
+		{
+			for (Entity entity : shapes)
+			{
+				if (!entity.HasComponent<IsSelectedTag>())
+				{
+					entity.AddTag<IsSelectedTag>();
+				}
+			}
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Deselect All##Shape List"))
+		{
+			for (Entity entity : shapes)
+			{
+				if (entity.HasComponent<IsSelectedTag>())
+				{
+					entity.RemoveTag<IsSelectedTag>();
+				}
+			}
+		}
+
 		for (Entity entity : shapes)
 		{	
 			bool isSelected = entity.HasComponent<IsSelectedTag>();
