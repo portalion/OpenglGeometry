@@ -17,7 +17,4 @@ BaseScene::BaseScene()
 		camera.AddComponent<RotationComponent>();
 		camera.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
 	}
-
-	//Torus entity setup
-	Archetypes::CreateTorus(this);
 }
