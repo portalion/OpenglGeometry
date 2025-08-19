@@ -7,12 +7,19 @@
 
 namespace Archetypes
 {
+	inline Entity CreateShape(Scene* scene, std::string shapeName)
+	{
+		auto resultShape = scene->CreateEntity();
+
+		auto id = resultShape.AddComponent<IdComponent>().id;
+		resultShape.AddComponent<NameComponent>().name = shapeName + std::to_string(id);
+
+		return resultShape;
+	}
+
 	inline Entity CreateTorus(Scene* scene)
 	{
-		auto resultTorus = scene->CreateEntity();
-
-		auto id = resultTorus.AddComponent<IdComponent>().id;
-		resultTorus.AddComponent<NameComponent>().name = "Torus" + std::to_string(id);
+		auto resultTorus = CreateShape(scene, "Torus");
 
 		resultTorus.AddTag<IsDirtyTag>();
 		resultTorus.AddComponent<TorusGenerationComponent>();
@@ -26,9 +33,7 @@ namespace Archetypes
 
 	inline Entity CreatePoint(Scene* scene)
 	{
-		auto resultPoint = scene->CreateEntity();
-		auto id = resultPoint.AddComponent<IdComponent>().id;
-		resultPoint.AddComponent<NameComponent>().name = "Point" + std::to_string(id);
+		auto resultPoint = CreateShape(scene, "Point");
 
 		resultPoint.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
 
