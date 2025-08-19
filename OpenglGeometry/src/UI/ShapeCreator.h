@@ -5,6 +5,12 @@
 
 namespace GUI
 {
+	inline std::vector<Entity> GetSelectedPoints(Ref<Scene> scene)
+	{
+		auto pointsView = scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
+		return std::vector<Entity>(pointsView.begin(), pointsView.end());
+	}
+
 	inline void DisplayCreationButtons(Ref<Scene> scene)
 	{
 		ImGui::Begin("Creation Menu##Creation menu");
@@ -21,9 +27,8 @@ namespace GUI
 
 		if (ImGui::Button("Create Polyline##Creation menu"))
 		{
-			auto pointsView = scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
-			std::vector<Entity> pointsVector(pointsView.begin(), pointsView.end());
-			Archetypes::CreatePolyline(scene.get(), pointsVector.begin(), pointsVector.end());
+			auto selectedPoints = GetSelectedPoints(scene);
+			Archetypes::CreatePolyline(scene.get(), selectedPoints.begin(), selectedPoints.end());
 		}
 
 		ImGui::End();
