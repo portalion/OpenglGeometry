@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include "core/Base.h"
 #include "renderer/VertexArray.h"
 #include "managers/ShaderManager.h"
@@ -90,4 +91,11 @@ struct NameComponent
 	std::string name;
 	NameComponent() = default;
 	NameComponent(const NameComponent& other) = default;
+};
+
+struct NotificationComponent
+{
+	std::list<Entity> entitiesToNotify;
+	NotificationComponent() = default;
+	NotificationComponent(const NotificationComponent& other) = default;
 };

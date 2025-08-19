@@ -5,6 +5,27 @@
 
 #include "UI/GUI.h"
 
+void SystemPipeline::ProcessSignals()
+{
+	for (auto& entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
+	{
+		Entity e{ entity, m_Scene.get() };
+		e.RemoveComponent<ObserverChangedState>();
+		auto& notificationList = e.GetComponent<NotificationComponent>().entitiesToNotify;
+		for (auto it = notificationList.begin(); it != notificationList.end(); )
+		{
+			if (!it->IsValid())
+			{
+				it = notificationList.erase(it);
+				continue;
+			}
+
+			it->AddTag<IsDirtyTag>();
+			it++;
+		}
+	}	
+}
+
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
 	this->m_Scene = m_Scene;
@@ -18,6 +39,8 @@ SystemPipeline::~SystemPipeline()
 
 void SystemPipeline::Update()
 {
+	ProcessSignals();
+
 	GUI::DisplayCreationButtons(m_Scene);
 	GUI::DisplayShapeList(m_Scene);
 	GUI::DisplaySelectedShapesProperties(m_Scene);

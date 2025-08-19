@@ -65,6 +65,11 @@ public:
 		return std::to_string(static_cast<uint32_t>(m_EntityHandle));
 	}
 
+	bool IsValid() const
+	{
+		return m_Scene->m_Registry.valid(m_EntityHandle);
+	}
+
 	friend Scene;
 };
 

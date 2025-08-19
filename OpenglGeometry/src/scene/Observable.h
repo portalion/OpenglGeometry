@@ -14,7 +14,7 @@ public:
 		if (value != newValue)
 		{
 			value = newValue;
-			entity.AddTag<IsNotifiedTag>();
+			entity.AddTag<ObserverChangedState>();
 		}
 	}
 	operator const T& () const { return value; }

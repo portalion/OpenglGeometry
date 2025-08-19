@@ -12,6 +12,8 @@ private:
 	Ref<MeshGeneratingSystem> m_MeshGeneratingSystem;
 
 	Ref<Scene> m_Scene;
+
+	void ProcessSignals();
 public:
 	SystemPipeline(Ref<Scene> m_Scene);
 	~SystemPipeline();
