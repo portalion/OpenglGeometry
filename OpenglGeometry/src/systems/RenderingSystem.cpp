@@ -52,7 +52,7 @@ void RenderingSystem::Process()
 		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
 
-	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>())
+	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvisibleTag>()))
 	{
 		auto& meshComponent = entity.GetComponent<MeshComponent>();
 		m_Renderer->SetShader(meshComponent.shaderType);
