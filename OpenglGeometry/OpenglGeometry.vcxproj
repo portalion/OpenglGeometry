@@ -199,6 +199,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\Initialization.cpp" />
     <ClCompile Include="src\systems\SystemPipeline.cpp" />
+    <ClCompile Include="src\managers\StaticMeshManager.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
     <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="src\utils\Initialization.h" />
     <ClInclude Include="src\systems\SystemPipeline.h" />
     <ClInclude Include="src\core\Base.h" />
+    <ClInclude Include="src\managers\StaticMeshManager.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />

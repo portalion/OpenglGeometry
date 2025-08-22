@@ -4,6 +4,7 @@
 #include "scene/Components.h"
 #include <concepts>
 #include <iterator>
+#include "managers/StaticMeshManager.h"
 
 //TODO: Move it to other files etc
 
@@ -40,24 +41,8 @@ namespace Archetypes
 		resultPoint.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
 		resultPoint.AddComponent<NotificationComponent>();
 
-		//TODO: Change to use meshmanager or something
-		std::vector<float> vertices = {
-			0.0f, 0.0f, 0.0f,
-			1.0f, 1.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			1.0f, 0.0f, 0.0f,
-		};
-		std::vector<unsigned int> indices =
-		{
-			0, 3, 2,
-			1, 2, 3
-		};
-		BufferLayout layout = 
-		{
-			{ ShaderDataType::Float3, "position" }
-		};
-		resultPoint.AddComponent<MeshComponent>().mesh = VertexArray::CreateWithBuffers(vertices, indices, layout);
-
+		resultPoint.AddComponent<MeshComponent>().mesh 
+			= StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
 		return resultPoint;
 	}
 
