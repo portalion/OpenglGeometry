@@ -15,7 +15,7 @@ namespace Archetypes
 		auto resultShape = scene->CreateEntity();
 
 		auto id = resultShape.AddComponent<IdComponent>().id;
-		resultShape.AddComponent<NameComponent>().name = shapeName + std::to_string(id);
+		resultShape.AddComponent<NameComponent>().name = shapeName + ' ' + std::to_string(id);
 
 		return resultShape;
 	}
@@ -54,6 +54,37 @@ namespace Archetypes
 
 		resultPolyline.AddTag<IsDirtyTag>();
 		auto& controlPoints = resultPolyline.AddComponent<LineGenerationComponent>().controlPoints;
+
+		for (auto it = pointsBegin; it != pointsEnd; )
+		{
+			if (!it->IsValid() || !it->HasComponent<NotificationComponent>())
+			{
+				continue;
+			}
+
+			auto& notificationList = it->GetComponent<NotificationComponent>().entitiesToNotify;
+			notificationList.push_back(resultPolyline);
+			controlPoints.push_back(*it);
+
+			it++;
+		}
+
+		return resultPolyline;
+	}
+
+	template<std::forward_iterator Iter>
+		requires std::same_as<std::iter_value_t<Iter>, Entity>
+	inline Entity CreateBezierC0(Scene* scene, Iter pointsBegin, const Iter& pointsEnd)
+	{
+		auto resultPolyline = CreateShape(scene, "Bezier C0");
+
+		resultPolyline.AddTag<IsDirtyTag>();
+		auto& bezierComponent = resultPolyline.AddComponent<BezierC0GenerationComponent>();
+		bezierComponent.drawPolyline = true;
+		bezierComponent.virtualPolyline = CreatePolyline(scene, pointsBegin, pointsEnd);
+		bezierComponent.virtualPolyline.AddComponent<VirtualEntityComponent>().realEntity = resultPolyline;
+
+		auto& controlPoints = bezierComponent.controlPoints;
 
 		for (auto it = pointsBegin; it != pointsEnd; )
 		{

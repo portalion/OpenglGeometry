@@ -80,9 +80,23 @@ void MeshGeneratingSystem::PolylineGeneration()
 			it++;
 		}
 
-		indices.pop_back(); 
+		if (!indices.empty())
+		{
+			indices.pop_back(); 
+		}
 
 		ModifyOrCreateMesh(entity, vertices, indices, layout);
+	}
+}
+
+void MeshGeneratingSystem::BezierC0Generation()
+{
+	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, BezierC0GenerationComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+
+
+
 	}
 }
 

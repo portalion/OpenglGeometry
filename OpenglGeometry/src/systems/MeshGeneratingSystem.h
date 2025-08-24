@@ -10,9 +10,10 @@ private:
 
 	void TorusGeneration();
 	void PolylineGeneration();
+	void BezierC0Generation();
 
 	template<typename T>
-	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines);
+	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines, const AvailableShaders shaderType = AvailableShaders::Default);
 public:
 	MeshGeneratingSystem(Ref<Scene> m_Scene);
 
@@ -20,12 +21,13 @@ public:
 };
 
 template<typename T>
-inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode)
+inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode, const AvailableShaders shaderType)
 {
 	if (e.HasComponent<MeshComponent>())
 	{
 		auto& meshComponent = e.GetComponent<MeshComponent>();
 		meshComponent.renderingMode = RenderingMode::Lines;
+		meshComponent.shaderType = shaderType;
 
 		auto vertexArray = meshComponent.mesh;
 		vertexArray->GetVertexBuffers()[0]->SetData(vertices.data(),
@@ -41,5 +43,6 @@ inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& v
 
 		meshComponent->mesh = vertexArray;
 		meshComponent->renderingMode = RenderingMode::Lines;
+		meshComponent->shaderType = shaderType;
 	}
 }

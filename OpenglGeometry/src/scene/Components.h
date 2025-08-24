@@ -106,3 +106,19 @@ struct LineGenerationComponent
 	LineGenerationComponent() = default;
 	LineGenerationComponent(const LineGenerationComponent& other) = default;
 };
+
+struct VirtualEntityComponent
+{
+	Entity realEntity;
+	VirtualEntityComponent() = default;
+	VirtualEntityComponent(const VirtualEntityComponent& other) = default;
+};
+
+struct BezierC0GenerationComponent
+{
+	bool drawPolyline = true;
+	Entity virtualPolyline;
+	std::list<Entity> controlPoints;
+	BezierC0GenerationComponent() = default;
+	BezierC0GenerationComponent(const BezierC0GenerationComponent& other) = default;
+};

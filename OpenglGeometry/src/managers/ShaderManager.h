@@ -7,6 +7,7 @@ enum class AvailableShaders
 {
 	Default = 0,
 	InfiniteGrid = 1,
+	BezierCurveC0 = 2,
 };
 
 class ShaderBuilder;

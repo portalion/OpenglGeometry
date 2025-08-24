@@ -31,6 +31,12 @@ namespace GUI
 			Archetypes::CreatePolyline(scene.get(), selectedPoints.begin(), selectedPoints.end());
 		}
 
+		if (ImGui::Button("Create Bezier C0##Creation menu"))
+		{
+			auto selectedPoints = GetSelectedPoints(scene);
+			Archetypes::CreateBezierC0(scene.get(), selectedPoints.begin(), selectedPoints.end());
+		}
+
 		ImGui::End();
 	}
 }

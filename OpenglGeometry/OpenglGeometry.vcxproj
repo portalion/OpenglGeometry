@@ -269,6 +269,10 @@
     <None Include="resources\shaders\default.vert" />
     <None Include="resources\shaders\infiniteGrid.frag" />
     <None Include="resources\shaders\infiniteGrid.vert" />
+    <None Include="resources\shaders\lines\bezierC0.frag" />
+    <None Include="resources\shaders\lines\bezierC0.vert" />
+    <None Include="resources\shaders\lines\bezierC0.tesc" />
+    <None Include="resources\shaders\lines\bezierC0.tese" />
     <None Include="vendor\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>
