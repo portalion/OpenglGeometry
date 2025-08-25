@@ -37,12 +37,18 @@ ShaderBuilder& ShaderBuilder::AddShader(ShaderType type, const std::string& file
     return *this;
 }
 
+ShaderBuilder& ShaderBuilder::ChangePatchSize(unsigned int patchSize)
+{
+    this->patchSize = patchSize;
+    return *this;
+}
+
 Shader ShaderBuilder::Build() const
 {
-    return Shader(shaderSourceCodes);
+    return Shader(shaderSourceCodes, patchSize);
 }
 
 std::shared_ptr<Shader> ShaderBuilder::BuildShared() const
 {
-    return std::make_shared<Shader>(shaderSourceCodes);
+    return std::make_shared<Shader>(shaderSourceCodes, patchSize);
 }

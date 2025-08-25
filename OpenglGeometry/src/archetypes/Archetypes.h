@@ -83,6 +83,7 @@ namespace Archetypes
 		bezierComponent.drawPolyline = true;
 		bezierComponent.virtualPolyline = CreatePolyline(scene, pointsBegin, pointsEnd);
 		bezierComponent.virtualPolyline.AddComponent<VirtualEntityComponent>().realEntity = resultPolyline;
+		bezierComponent.virtualPolyline.AddTag<IsInvisibleTag>();
 
 		auto& controlPoints = bezierComponent.controlPoints;
 

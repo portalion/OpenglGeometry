@@ -12,11 +12,12 @@ ShaderManager::ShaderManager()
 	AssignShader(AvailableShaders::InfiniteGrid, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "infiniteGrid")
 		.AddShader(ShaderType::Fragment, "infiniteGrid"));
-	AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/lines")
+	AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/lines/")
 		.AddShader(ShaderType::Vertex, "bezierC0")
 		.AddShader(ShaderType::TesselationControl, "bezierC0")
 		.AddShader(ShaderType::TesselationEvaluation, "bezierC0")
-		.AddShader(ShaderType::Fragment, "bezierC0"));
+		.AddShader(ShaderType::Fragment, "bezierC0")
+		.ChangePatchSize(4));
 	std::clog << "INFO: Loaded Shaders" << std::endl;
 }
 

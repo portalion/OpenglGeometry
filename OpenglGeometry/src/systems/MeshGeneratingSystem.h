@@ -26,7 +26,7 @@ inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& v
 	if (e.HasComponent<MeshComponent>())
 	{
 		auto& meshComponent = e.GetComponent<MeshComponent>();
-		meshComponent.renderingMode = RenderingMode::Lines;
+		meshComponent.renderingMode = mode;
 		meshComponent.shaderType = shaderType;
 
 		auto vertexArray = meshComponent.mesh;
@@ -38,11 +38,11 @@ inline void MeshGeneratingSystem::ModifyOrCreateMesh(Entity e, std::vector<T>& v
 	}
 	else
 	{
-		auto meshComponent = &e.AddComponent<MeshComponent>();
+		auto& meshComponent = e.AddComponent<MeshComponent>();
 		auto vertexArray = VertexArray::CreateWithBuffers(vertices, indices, layout);
 
-		meshComponent->mesh = vertexArray;
-		meshComponent->renderingMode = RenderingMode::Lines;
-		meshComponent->shaderType = shaderType;
+		meshComponent.mesh = vertexArray;
+		meshComponent.renderingMode = mode;
+		meshComponent.shaderType = shaderType;
 	}
 }

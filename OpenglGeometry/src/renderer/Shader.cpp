@@ -12,8 +12,8 @@ const std::unordered_map<ShaderType, ShaderTypeInfo> Shader::shaderInfoMap =
     { ShaderType::TesselationEvaluation, ShaderTypeInfo{.fileExtension = ".tese", .glShaderId = GL_TESS_EVALUATION_SHADER }},
 };
 
-Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes)
-    :m_RendererID{ 0 }
+Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes, unsigned int patchSize)
+    :m_RendererID{ 0 }, patchSize{ patchSize }
 {
     m_RendererID = CreateShader(sourceCodes);
 }
@@ -33,9 +33,14 @@ void Shader::SetUniformVec4f(const std::string& name, const Algebra::Vector4& ve
     GLCall(glUniform4f(GetUniformLocation(name), vector.x, vector.y, vector.z, vector.w));
 }
 
-bool Shader::HasUniform(const std::string& name)
+void Shader::SetUniformVec2f(const std::string& name, const Algebra::Vector4& vector)
 {
-    return m_UniformLocationCache.find(name) != m_UniformLocationCache.end();
+    GLCall(glUniform2f(GetUniformLocation(name), vector.x, vector.y));
+}
+
+void Shader::SetUniformVec1i(const std::string& name, const int& value)
+{
+    GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
@@ -83,6 +88,7 @@ unsigned int Shader::CreateShader(const std::unordered_map<ShaderType, std::stri
 void Shader::Bind() const
 {
     GLCall(glUseProgram(m_RendererID));
+    GLCall(glPatchParameteri(GL_PATCH_VERTICES, patchSize));
 }
 
 void Shader::UnBind() const

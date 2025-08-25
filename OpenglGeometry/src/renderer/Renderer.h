@@ -7,7 +7,8 @@
 enum class RenderingMode
 {
 	Triangles = GL_TRIANGLES,
-	Lines = GL_LINES
+	Lines = GL_LINES,
+	Patches = GL_PATCHES
 };
 
 class Renderer

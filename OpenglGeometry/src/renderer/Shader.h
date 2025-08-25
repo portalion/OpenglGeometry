@@ -25,16 +25,17 @@ private:
 	std::string m_FilePath;
 	unsigned int m_RendererID;
 	std::unordered_map<std::string, int> m_UniformLocationCache;
+	unsigned int patchSize;
 public:
 	static const std::unordered_map<ShaderType, ShaderTypeInfo> shaderInfoMap;
 
-	Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes);
+	Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes, unsigned int patchSize = 4);
 	~Shader();
 
 	void SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix);
+	void SetUniformVec1i(const std::string& name, const int& value);
 	void SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector);
-
-	bool HasUniform(const std::string& name);
+	void SetUniformVec2f(const std::string& name, const Algebra::Vector4& vector);
 
 	void Bind() const;
 	void UnBind() const;
