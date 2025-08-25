@@ -219,6 +219,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\archetypes\Archetypes.h" />
+    <ClInclude Include="src\archetypes\BezierCurveArchetypeCreation.h" />
+    <ClInclude Include="src\archetypes\PointArchetypeCreation.h" />
+    <ClInclude Include="src\archetypes\PolylineArchetypeCreation.h" />
+    <ClInclude Include="src\archetypes\SimpleArchetypeCreation.h" />
+    <ClInclude Include="src\archetypes\TorusArchetypeCreation.h" />
     <ClInclude Include="src\scene\Observable.h" />
     <ClInclude Include="src\scene\Tags.h" />
     <ClInclude Include="src\systems\MeshGeneratingSystem.h" />
