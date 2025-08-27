@@ -5,31 +5,12 @@
 
 #include "UI/GUI.h"
 
-void SystemPipeline::ProcessSignals()
-{
-	for (Entity entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
-	{
-		entity.RemoveComponent<ObserverChangedState>();
-		auto& notificationList = entity.GetComponent<NotificationComponent>().entitiesToNotify;
-		for (auto it = notificationList.begin(); it != notificationList.end(); )
-		{
-			if (!it->IsValid())
-			{
-				it = notificationList.erase(it);
-				continue;
-			}
-
-			it->AddTag<IsDirtyTag>();
-			it++;
-		}
-	}	
-}
-
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
 	this->m_Scene = m_Scene;
 	m_RenderingSystem = CreateRef<RenderingSystem>(m_Scene);
 	m_MeshGeneratingSystem = CreateRef<MeshGeneratingSystem>(m_Scene);
+	m_NotificationSystem = CreateRef<NotificationSystem>(m_Scene);
 }
 
 SystemPipeline::~SystemPipeline()
@@ -38,7 +19,10 @@ SystemPipeline::~SystemPipeline()
 
 void SystemPipeline::Update()
 {
-	ProcessSignals();
+	if (m_NotificationSystem)
+	{
+		m_NotificationSystem->Process();
+	}
 
 	GUI::DisplayCreationButtons(m_Scene);
 	GUI::DisplayShapeList(m_Scene);
