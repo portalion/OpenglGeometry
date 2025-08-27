@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\systems\GUISystem.cpp" />
     <ClCompile Include="src\systems\NotificationSystem.cpp" />
     <ClCompile Include="src\systems\MeshGeneratingSystem.cpp" />
     <ClCompile Include="src\core\Notifier.cpp" />
@@ -219,6 +220,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\systems\GUISystem.h" />
     <ClInclude Include="src\systems\NotificationSystem.h" />
     <ClInclude Include="src\archetypes\Archetypes.h" />
     <ClInclude Include="src\archetypes\BezierCurveArchetypeCreation.h" />
@@ -245,6 +247,7 @@
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
+    <ClInclude Include="src\systems\ISystem.h" />
     <ClInclude Include="src\UI\GUI.h" />
     <ClInclude Include="src\UI\SelectedShapesProperties.h" />
     <ClInclude Include="src\UI\ShapeCreator.h" />

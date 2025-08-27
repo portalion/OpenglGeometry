@@ -2,12 +2,13 @@
 #include "core/Base.h"
 #include "Algebra.h"
 #include "renderer/Renderer.h"
+#include "ISystem.h"
 
 class Scene;
 class Shader;
 class Entity;
 
-class RenderingSystem
+class RenderingSystem : public ISystem
 {
 private:
 	Ref<Scene> m_Scene;

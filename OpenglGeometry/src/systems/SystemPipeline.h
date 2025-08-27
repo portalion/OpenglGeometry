@@ -1,17 +1,14 @@
 #pragma once
 #include "core/Base.h"
-#include "RenderingSystem.h"
-#include "MeshGeneratingSystem.h"
-#include "NotificationSystem.h"
+#include "ISystem.h"
+#include <vector>
 
 class Scene;
 
 class SystemPipeline
 {
 private:
-	Ref<RenderingSystem> m_RenderingSystem;
-	Ref<MeshGeneratingSystem> m_MeshGeneratingSystem;
-	Ref<NotificationSystem> m_NotificationSystem;
+	std::vector<Ref<ISystem>> m_Systems;
 
 	Ref<Scene> m_Scene;
 public:

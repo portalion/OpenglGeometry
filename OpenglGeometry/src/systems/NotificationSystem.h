@@ -1,9 +1,10 @@
 #pragma once
 #include "core/Base.h"
+#include "ISystem.h"
 
 class Scene;
 
-class NotificationSystem
+class NotificationSystem : public ISystem
 {
 private:
 	Ref<Scene> m_Scene;

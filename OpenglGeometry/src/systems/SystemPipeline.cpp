@@ -3,14 +3,22 @@
 #include "scene/Entity.h"
 #include "scene/Components.h"
 
-#include "UI/GUI.h"
+#include "RenderingSystem.h"
+#include "MeshGeneratingSystem.h"
+#include "NotificationSystem.h"
+#include "GUISystem.h"
 
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
 	this->m_Scene = m_Scene;
-	m_RenderingSystem = CreateRef<RenderingSystem>(m_Scene);
-	m_MeshGeneratingSystem = CreateRef<MeshGeneratingSystem>(m_Scene);
-	m_NotificationSystem = CreateRef<NotificationSystem>(m_Scene);
+
+	m_Systems =
+	{
+		CreateRef<NotificationSystem>(m_Scene),
+		CreateRef<GUISystem>(m_Scene),
+		CreateRef<MeshGeneratingSystem>(m_Scene),
+		CreateRef<RenderingSystem>(m_Scene)
+	};
 }
 
 SystemPipeline::~SystemPipeline()
@@ -19,22 +27,8 @@ SystemPipeline::~SystemPipeline()
 
 void SystemPipeline::Update()
 {
-	if (m_NotificationSystem)
+	for(auto& system : m_Systems)
 	{
-		m_NotificationSystem->Process();
-	}
-
-	GUI::DisplayCreationButtons(m_Scene);
-	GUI::DisplayShapeList(m_Scene);
-	GUI::DisplaySelectedShapesProperties(m_Scene);
-
-	if (m_MeshGeneratingSystem)
-	{
-		m_MeshGeneratingSystem->Process();
-	}
-
-	if (m_RenderingSystem)
-	{
-		m_RenderingSystem->Process();
+		system->Process();
 	}
 }
