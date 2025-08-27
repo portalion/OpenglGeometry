@@ -9,13 +9,13 @@ namespace MeshGenerator
 		std::vector<Algebra::Vector4> GenerateVertices(
 			float radius,
 			float tubeRadius,
-			unsigned int radialSegments = 16,
-			unsigned int tubularSegments = 32
+			unsigned int radialSegments,
+			unsigned int tubularSegments
 		);
 
 		std::vector<uint32_t> GenerateIndices(
-			unsigned int radialSegments = 16,
-			unsigned int tubularSegments = 32
+			unsigned int radialSegments,
+			unsigned int tubularSegments
 		);
 
 		GeneratedMesh<Algebra::Vector4> GenerateMesh(

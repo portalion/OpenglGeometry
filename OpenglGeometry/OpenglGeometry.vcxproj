@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\meshGenerators\PolylineMeshGenerator.cpp" />
     <ClCompile Include="src\meshGenerators\TorusMeshGenerator.cpp" />
     <ClCompile Include="src\systems\GUISystem.cpp" />
     <ClCompile Include="src\systems\NotificationSystem.cpp" />
@@ -223,6 +224,7 @@
   <ItemGroup>
     <ClInclude Include="src\meshGenerators\Base.h" />
     <ClInclude Include="src\meshGenerators\MeshGenerators.h" />
+    <ClInclude Include="src\meshGenerators\PolylineMeshGenerator.h" />
     <ClInclude Include="src\meshGenerators\TorusMeshGenerator.h" />
     <ClInclude Include="src\systems\GUISystem.h" />
     <ClInclude Include="src\systems\NotificationSystem.h" />

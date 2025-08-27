@@ -22,15 +22,11 @@ void MeshGeneratingSystem::PolylineGeneration()
 	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent>())
 	{
 		entity.RemoveTag<IsDirtyTag>();
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Float4, "position" }
-		};
 
 		auto& lineComponent = entity.GetComponent<LineGenerationComponent>();
 		
-		std::vector<Algebra::Vector4> vertices;
-		std::vector<uint32_t> indices;
+		std::vector<Algebra::Vector4> positions;
+		positions.reserve(lineComponent.controlPoints.size());
 
 		for(auto it = lineComponent.controlPoints.begin(); it != lineComponent.controlPoints.end(); )
 		{
@@ -42,18 +38,14 @@ void MeshGeneratingSystem::PolylineGeneration()
 
 			Algebra::Vector4 position = it->GetComponent<PositionComponent>().position;
 			position.w = 1.f;
-			vertices.push_back(position);
-			indices.push_back(static_cast<uint32_t>(vertices.size() - 1));
-			indices.push_back(static_cast<uint32_t>(vertices.size()));
+			positions.push_back(position);
 			it++;
 		}
 
-		if (!indices.empty())
-		{
-			indices.pop_back(); 
-		}
+		auto generatedMesh = MeshGenerator::Polyline::GenerateMesh(positions);
 
-		ModifyOrCreateMesh(entity, vertices, indices, layout);
+		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
+			generatedMesh.layout, generatedMesh.renderingMode, generatedMesh.shaderType);
 	}
 }
 
