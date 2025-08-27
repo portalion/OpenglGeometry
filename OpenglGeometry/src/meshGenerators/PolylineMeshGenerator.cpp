@@ -14,7 +14,7 @@ std::vector<uint32_t> MeshGenerator::Polyline::GenerateIndices(unsigned int vert
 }
 
 MeshGenerator::GeneratedMesh<Algebra::Vector4> MeshGenerator::Polyline::
-    GenerateMesh(std::vector<Algebra::Vector4> controlPoints)
+    GenerateMesh(const std::vector<Algebra::Vector4>& controlPoints)
 {
     GeneratedMesh<Algebra::Vector4> result;
 

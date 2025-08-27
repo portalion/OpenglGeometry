@@ -17,6 +17,29 @@ void MeshGeneratingSystem::TorusGeneration()
 	}
 }
 
+std::vector<Algebra::Vector4> MeshGeneratingSystem::
+	CopyValidPointsToVector(std::list<Entity>& pointEntities)
+{
+	std::vector<Algebra::Vector4> positions;
+	positions.reserve(pointEntities.size());
+
+	for (auto it = pointEntities.begin(); it != pointEntities.end(); )
+	{
+		if (!it->IsValid() || !it->HasComponent<PositionComponent>())
+		{
+			it = pointEntities.erase(it);
+			continue;
+		}
+
+		Algebra::Vector4 position = it->GetComponent<PositionComponent>().position;
+		position.w = 1.f;
+		positions.push_back(position);
+		it++;
+	}
+
+	return positions;
+}
+
 void MeshGeneratingSystem::PolylineGeneration()
 {
 	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent>())
@@ -25,23 +48,9 @@ void MeshGeneratingSystem::PolylineGeneration()
 
 		auto& lineComponent = entity.GetComponent<LineGenerationComponent>();
 		
-		std::vector<Algebra::Vector4> positions;
-		positions.reserve(lineComponent.controlPoints.size());
-
-		for(auto it = lineComponent.controlPoints.begin(); it != lineComponent.controlPoints.end(); )
-		{
-			if (!it->IsValid() || !it->HasComponent<PositionComponent>())
-			{
-				it = lineComponent.controlPoints.erase(it);
-				continue;
-			}
-
-			Algebra::Vector4 position = it->GetComponent<PositionComponent>().position;
-			position.w = 1.f;
-			positions.push_back(position);
-			it++;
-		}
-
+		std::vector<Algebra::Vector4> positions = 
+			CopyValidPointsToVector(lineComponent.controlPoints);
+	
 		auto generatedMesh = MeshGenerator::Polyline::GenerateMesh(positions);
 
 		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,

@@ -9,6 +9,8 @@ class MeshGeneratingSystem : public ISystem
 private:
 	Ref<Scene> m_Scene;
 
+	std::vector<Algebra::Vector4> CopyValidPointsToVector(std::list<Entity>& pointEntities);
+
 	void TorusGeneration();
 	void PolylineGeneration();
 	void BezierC0Generation();
