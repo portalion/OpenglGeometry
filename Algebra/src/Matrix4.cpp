@@ -209,3 +209,43 @@ Matrix4 Algebra::Matrix4::Projection(float aspect, float lastZ, float firstZ, fl
 
 	return result;
 }
+
+std::vector<Vector4>Algebra::Matrix4::
+	SolveTrilinealEquation(std::vector<float> alpha, std::vector<float> beta, std::vector<Vector4> r)
+{
+	const std::size_t m = r.size();
+	std::vector<float> gamma(m);
+	std::vector<Vector4> delta(m), c(m);
+
+	if (r.size() == 1)
+	{
+		c[0] = r[0] / 2.f;
+		c[0].w = 0.0f;
+		return c;
+	}
+
+	float denom = 2.0f;
+	gamma[0] = beta[0] / denom;
+	delta[0] = r[0] / denom;
+	delta[0].w = 0.0f;
+
+	for (std::size_t i = 1; i < m; ++i) {
+		denom = 2.0f - alpha[i - 1] * gamma[i - 1];
+		if (i < m - 1) {
+			gamma[i] = beta[i] / denom;
+		}
+		Algebra::Vector4 tmp = r[i] - alpha[i - 1] * delta[i - 1];
+		delta[i] = tmp / denom;
+		delta[i].w = 0.0f;
+	}
+
+	c[m - 1] = delta[m - 1];
+	c[m - 1].w = 0.0f;
+	for (int i = static_cast<int>(m) - 2; i >= 0; --i) {
+		Algebra::Vector4 tmp = delta[i] - gamma[i] * c[i + 1];
+		c[i] = tmp;
+		c[i].w = 0.0f;
+	}
+
+	return c;
+}
