@@ -43,6 +43,17 @@ namespace GUI
 			}
 		}
 
+		if (ImGui::Button("Remove All Selected##Shape List"))
+		{
+			for (Entity entity : shapes)
+			{
+				if (entity.HasComponent<IsSelectedTag>())
+				{
+					entity.AddTag<ToBeDestroyedTag>();
+				}
+			}
+		}
+
 		for (Entity entity : shapes)
 		{	
 			bool isSelected = entity.HasComponent<IsSelectedTag>();

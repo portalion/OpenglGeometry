@@ -7,3 +7,5 @@ struct IsSelectedTag { };
 struct ObserverChangedState { };
 
 struct IsInvisibleTag { };
+
+struct ToBeDestroyedTag { };

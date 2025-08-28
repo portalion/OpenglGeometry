@@ -3,12 +3,14 @@
 #include "ISystem.h"
 
 class Scene;
+class Entity;
 
 class NotificationSystem : public ISystem
 {
 private:
 	Ref<Scene> m_Scene;
 
+	void NotifyWithNotificationComponent(Entity entity);
 public:
 	NotificationSystem(Ref<Scene> scene);
 

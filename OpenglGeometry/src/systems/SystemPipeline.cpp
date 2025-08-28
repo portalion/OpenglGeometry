@@ -7,6 +7,7 @@
 #include "MeshGeneratingSystem.h"
 #include "NotificationSystem.h"
 #include "GUISystem.h"
+#include "RemovalSystem.h"
 
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
@@ -15,6 +16,7 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 	m_Systems =
 	{
 		CreateRef<NotificationSystem>(m_Scene),
+		CreateRef<RemovalSystem>(m_Scene),
 		CreateRef<GUISystem>(m_Scene),
 		CreateRef<MeshGeneratingSystem>(m_Scene),
 		CreateRef<RenderingSystem>(m_Scene)

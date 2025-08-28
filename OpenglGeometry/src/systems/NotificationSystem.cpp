@@ -4,6 +4,22 @@
 #include "scene/Components.h"
 
 
+void NotificationSystem::NotifyWithNotificationComponent(Entity entity)
+{
+	auto& notificationList = entity.GetComponent<NotificationComponent>().entitiesToNotify;
+	for (auto it = notificationList.begin(); it != notificationList.end(); )
+	{
+		if (!it->IsValid())
+		{
+			it = notificationList.erase(it);
+			continue;
+		}
+
+		it->AddTag<IsDirtyTag>();
+		it++;
+	}
+}
+
 NotificationSystem::NotificationSystem(Ref<Scene> scene)
 {
 	m_Scene = scene;
@@ -14,17 +30,11 @@ void NotificationSystem::Process()
 	for (Entity entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
 	{
 		entity.RemoveComponent<ObserverChangedState>();
-		auto& notificationList = entity.GetComponent<NotificationComponent>().entitiesToNotify;
-		for (auto it = notificationList.begin(); it != notificationList.end(); )
-		{
-			if (!it->IsValid())
-			{
-				it = notificationList.erase(it);
-				continue;
-			}
+		NotifyWithNotificationComponent(entity);
+	}
 
-			it->AddTag<IsDirtyTag>();
-			it++;
-		}
+	for (Entity entity : m_Scene->GetAllEntitiesWith<ToBeDestroyedTag, NotificationComponent>())
+	{
+		NotifyWithNotificationComponent(entity);
 	}
 }
