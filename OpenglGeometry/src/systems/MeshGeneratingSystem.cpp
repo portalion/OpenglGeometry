@@ -76,6 +76,24 @@ void MeshGeneratingSystem::BezierC0Generation()
 	}
 }
 
+void MeshGeneratingSystem::InterpolatedBezierGeneration()
+{
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, InterpolatedBezierGenerationComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+		auto& bezierComponent = entity.GetComponent<InterpolatedBezierGenerationComponent>();
+		auto& points = bezierComponent.controlPoints;
+
+		std::vector<Algebra::Vector4> positions =
+			CopyValidPointsToVector(bezierComponent.controlPoints);
+
+		auto generatedMesh = MeshGenerator::InterpolatedBezierCurve::GenerateMesh(positions);
+
+		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
+			generatedMesh.layout, generatedMesh.renderingMode, generatedMesh.shaderType);
+	}
+}
+
 MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 	:m_Scene {m_Scene}
 {
@@ -83,6 +101,7 @@ MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 
 void MeshGeneratingSystem::Process()
 {
+	InterpolatedBezierGeneration();
 	BezierC0Generation();
 	PolylineGeneration();
 	TorusGeneration();

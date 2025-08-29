@@ -4,3 +4,4 @@
 #include "TorusArchetypeCreation.h"
 #include "PolylineArchetypeCreation.h"
 #include "BezierCurveArchetypeCreation.h"
+#include "InterpolatedBezierCurveArchetypeCreation.h"

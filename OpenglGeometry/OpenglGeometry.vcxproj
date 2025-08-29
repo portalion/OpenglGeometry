@@ -180,6 +180,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\meshGenerators\InterpolatedBezierCurveGenerator.cpp" />
     <ClCompile Include="src\systems\RemovalSystem.cpp" />
     <ClCompile Include="src\meshGenerators\BezierCurveGenerator.cpp" />
     <ClCompile Include="src\meshGenerators\PolylineMeshGenerator.cpp" />
@@ -224,6 +225,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\meshGenerators\InterpolatedBezierCurveGenerator.h" />
+    <ClInclude Include="src\archetypes\InterpolatedBezierCurveArchetypeCreation.h" />
     <ClInclude Include="src\systems\RemovalSystem.h" />
     <ClInclude Include="src\meshGenerators\Base.h" />
     <ClInclude Include="src\meshGenerators\BezierCurveGenerator.h" />

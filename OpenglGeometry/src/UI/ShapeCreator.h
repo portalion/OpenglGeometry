@@ -37,6 +37,12 @@ namespace GUI
 			Archetypes::CreateBezierC0(scene.get(), selectedPoints.begin(), selectedPoints.end());
 		}
 
+		if (ImGui::Button("Create Interpolated Bezier##Creation menu"))
+		{
+			auto selectedPoints = GetSelectedPoints(scene);
+			Archetypes::CreateInterpolatedBezier(scene.get(), selectedPoints.begin(), selectedPoints.end());
+		}
+
 		ImGui::End();
 	}
 }
