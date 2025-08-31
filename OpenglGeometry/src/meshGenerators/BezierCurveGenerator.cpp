@@ -55,3 +55,31 @@ std::vector<Algebra::Vector4> MeshGenerator::BezierCurveC0::GenerateVertices(con
 
     return result;
 }
+
+std::vector<Algebra::Vector4> MeshGenerator::BezierCurveC2::GenerateVertices(const std::vector<Algebra::Vector4>& bSplineControlPoints)
+{
+	if (bSplineControlPoints.size() < 4)
+	{
+		return { };
+	}
+
+	std::vector<Algebra::Vector4> result;
+	result.reserve(bSplineControlPoints.size() * 4);
+
+	for (size_t i = 0; i + 3 < bSplineControlPoints.size(); i++)
+	{
+		const Algebra::Vector4& P0 = bSplineControlPoints[i];
+		const Algebra::Vector4& P1 = bSplineControlPoints[i + 1];
+		const Algebra::Vector4& P2 = bSplineControlPoints[i + 2];
+		const Algebra::Vector4& P3 = bSplineControlPoints[i + 3];
+
+		Algebra::Vector4 B0 = (P0 + 4.0f * P1 + P2) / 6.0f;
+		Algebra::Vector4 B1 = (4.0f * P1 + 2.0f * P2) / 6.0f;
+		Algebra::Vector4 B2 = (2.0f * P1 + 4.0f * P2) / 6.0f;
+		Algebra::Vector4 B3 = (P1 + 4.0f * P2 + P3) / 6.0f;
+
+		result.insert(result.end(), { B0, B1, B2, B3 });
+	}
+
+	return result;
+}

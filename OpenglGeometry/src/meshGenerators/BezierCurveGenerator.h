@@ -10,4 +10,11 @@ namespace MeshGenerator
 			const std::vector<Algebra::Vector4>& controlPoints
 		);
 	}
+
+	namespace BezierCurveC2
+	{
+		std::vector<Algebra::Vector4> GenerateVertices(
+			const std::vector<Algebra::Vector4>& bSplineControlPoints
+		);
+	}
 }
