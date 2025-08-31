@@ -28,7 +28,7 @@ std::vector<uint32_t> MeshGeneratingSystem::GenerateLineIndices(unsigned int ver
 {
 	std::vector<uint32_t> result;
 	result.reserve(verticesSize);
-	for (int i = 0; i < static_cast<int>(verticesSize) - 1; i++)
+	for (int i = 0; i < static_cast<int>(verticesSize); i++)
 	{
 		result.push_back(i);
 	}

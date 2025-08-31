@@ -10,14 +10,14 @@ namespace Archetypes
 	{
 		entity.AddTag<IsDirtyTag>();
 
+		auto virtualPolyline = scene->CreateEntity();
+		AddVirtualToEntity(virtualPolyline, entity);
+		AddPolylineToEntity(virtualPolyline, pointsBegin, pointsEnd);
+		entity.AddComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity = virtualPolyline;
+
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
-		bezierComponent.generationFunction = 
-			[](const std::vector<Algebra::Vector4>& controlPoints)
-		{
-			return MeshGenerator::BezierCurve::GenerateMesh(controlPoints).vertices;
-		};
-
+		bezierComponent.generationFunction = MeshGenerator::BezierCurve::GenerateVertices;
 		return entity;
 	}
 

@@ -32,6 +32,27 @@ namespace GUI
 				}
 			}
 
+			if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+			{
+				auto virtualEntity = entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity;
+				if (virtualEntity.IsValid())
+				{
+					bool visible = !virtualEntity.HasComponent<IsInvisibleTag>();
+
+					if(ImGui::Checkbox(GenerateLabel(entity, "virtual visible").c_str(), &visible))
+					{
+						if (visible)
+						{
+							virtualEntity.RemoveTag<IsInvisibleTag>();
+						}
+						else
+						{
+							virtualEntity.AddTag<IsInvisibleTag>();
+						}
+					}
+				}
+			}
+
 			if (entity.HasComponent<PositionComponent>())
 			{
 				Algebra::Vector4 tmpPosition = entity.GetComponent<PositionComponent>().position;
