@@ -1,6 +1,6 @@
 #include "BezierCurveGenerator.h"
 
-void MeshGenerator::BezierCurve::FixVertices(std::vector<Algebra::Vector4>& vertices)
+void MeshGenerator::BezierCurveC0::FixVertices(std::vector<Algebra::Vector4>& vertices)
 {
 	int fix = vertices.size() % 4;
 	if (fix == 1) 
@@ -31,7 +31,7 @@ void MeshGenerator::BezierCurve::FixVertices(std::vector<Algebra::Vector4>& vert
 	}
 }
 
-std::vector<Algebra::Vector4> MeshGenerator::BezierCurve::GenerateVertices(const std::vector<Algebra::Vector4>& controlPoints)
+std::vector<Algebra::Vector4> MeshGenerator::BezierCurveC0::GenerateVertices(const std::vector<Algebra::Vector4>& controlPoints)
 {
 	std::vector<Algebra::Vector4> result;
 

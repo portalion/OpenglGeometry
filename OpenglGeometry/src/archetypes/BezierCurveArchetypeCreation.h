@@ -17,7 +17,7 @@ namespace Archetypes
 
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
-		bezierComponent.generationFunction = MeshGenerator::BezierCurve::GenerateVertices;
+		bezierComponent.generationFunction = MeshGenerator::BezierCurveC0::GenerateVertices;
 		return entity;
 	}
 
