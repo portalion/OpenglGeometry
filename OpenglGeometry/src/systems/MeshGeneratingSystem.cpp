@@ -24,6 +24,17 @@ CopyValidPointsToVector(std::list<Entity>& pointEntities)
 	return positions;
 }
 
+std::vector<uint32_t> MeshGeneratingSystem::GenerateLineIndices(unsigned int verticesSize)
+{
+	std::vector<uint32_t> result;
+	result.reserve(verticesSize);
+	for (int i = 0; i < static_cast<int>(verticesSize) - 1; i++)
+	{
+		result.push_back(i);
+	}
+	return result;
+}
+
 void MeshGeneratingSystem::TorusGeneration()
 {
 	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, TorusGenerationComponent>())
@@ -40,17 +51,17 @@ void MeshGeneratingSystem::TorusGeneration()
 	}
 }
 
-void MeshGeneratingSystem::PolylineGeneration()
+void MeshGeneratingSystem::LineGeneration()
 {
-	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent>())
+	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent>(Excluded<BezierLineGenerationComponent>()))
 	{
 		entity.RemoveTag<IsDirtyTag>();
 
 		auto& lineComponent = entity.GetComponent<LineGenerationComponent>();
-		
-		std::vector<Algebra::Vector4> positions = 
+
+		std::vector<Algebra::Vector4> positions =
 			CopyValidPointsToVector(lineComponent.controlPoints);
-	
+
 		auto generatedMesh = MeshGenerator::Polyline::GenerateMesh(positions);
 
 		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
@@ -58,39 +69,28 @@ void MeshGeneratingSystem::PolylineGeneration()
 	}
 }
 
-void MeshGeneratingSystem::BezierC0Generation()
+void MeshGeneratingSystem::BezierGeneration()
 {
-	for(Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, BezierC0GenerationComponent>())
+	BufferLayout bezierShaderLayout
+	({
+		{ ShaderDataType::Float4, "a_Position" }
+	});
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, LineGenerationComponent, BezierLineGenerationComponent>())
 	{
 		entity.RemoveTag<IsDirtyTag>();
-		auto& bezierComponent = entity.GetComponent<BezierC0GenerationComponent>();
-		auto& points = bezierComponent.controlPoints;
+
+		auto& controlPoints = entity.GetComponent<LineGenerationComponent>().controlPoints;
+		const auto& generatorFunction = entity.GetComponent<BezierLineGenerationComponent>().generationFunction;
 
 		std::vector<Algebra::Vector4> positions =
-			CopyValidPointsToVector(bezierComponent.controlPoints);
+			CopyValidPointsToVector(controlPoints);
 
-		auto generatedMesh = MeshGenerator::BezierCurve::GenerateMesh(positions);
+		auto vertices = generatorFunction(positions);
+		auto indices = GenerateLineIndices(vertices.size());
 
-		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
-			generatedMesh.layout, generatedMesh.renderingMode, generatedMesh.shaderType);
-	}
-}
-
-void MeshGeneratingSystem::InterpolatedBezierGeneration()
-{
-	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, InterpolatedBezierGenerationComponent>())
-	{
-		entity.RemoveTag<IsDirtyTag>();
-		auto& bezierComponent = entity.GetComponent<InterpolatedBezierGenerationComponent>();
-		auto& points = bezierComponent.controlPoints;
-
-		std::vector<Algebra::Vector4> positions =
-			CopyValidPointsToVector(bezierComponent.controlPoints);
-
-		auto generatedMesh = MeshGenerator::InterpolatedBezierCurve::GenerateMesh(positions);
-
-		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
-			generatedMesh.layout, generatedMesh.renderingMode, generatedMesh.shaderType);
+		ModifyOrCreateMesh(entity, vertices, indices,
+			bezierShaderLayout, RenderingMode::Patches, AvailableShaders::BezierCurveC0);
 	}
 }
 
@@ -101,8 +101,7 @@ MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 
 void MeshGeneratingSystem::Process()
 {
-	InterpolatedBezierGeneration();
-	BezierC0Generation();
-	PolylineGeneration();
+	BezierGeneration();
+	LineGeneration();
 	TorusGeneration();
 }

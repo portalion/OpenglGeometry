@@ -10,11 +10,11 @@ private:
 	Ref<Scene> m_Scene;
 
 	std::vector<Algebra::Vector4> CopyValidPointsToVector(std::list<Entity>& pointEntities);
+	std::vector<uint32_t> GenerateLineIndices(unsigned int verticesSize);
 
 	void TorusGeneration();
-	void PolylineGeneration();
-	void BezierC0Generation();
-	void InterpolatedBezierGeneration();
+	void LineGeneration();
+	void BezierGeneration();
 
 	template<typename T>
 	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines, const AvailableShaders shaderType = AvailableShaders::Default);

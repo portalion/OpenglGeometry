@@ -114,9 +114,22 @@ struct VirtualEntityComponent
 	VirtualEntityComponent(const VirtualEntityComponent& other) = default;
 };
 
+struct IsParentOfVirtualEntitiesComponent
+{
+	Entity virtualEntity;
+	IsParentOfVirtualEntitiesComponent() = default;
+	IsParentOfVirtualEntitiesComponent(const IsParentOfVirtualEntitiesComponent& other) = default;
+};
+
+struct BezierLineGenerationComponent
+{
+	std::function<std::vector<Algebra::Vector4>(const std::vector<Algebra::Vector4>&)> generationFunction;
+	BezierLineGenerationComponent() = default;
+	BezierLineGenerationComponent(const BezierLineGenerationComponent& other) = default;
+};
+
 struct BezierC0GenerationComponent
 {
-	bool drawPolyline = true;
 	Entity virtualPolyline;
 	std::list<Entity> controlPoints;
 	BezierC0GenerationComponent() = default;

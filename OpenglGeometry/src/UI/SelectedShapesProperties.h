@@ -20,6 +20,18 @@ namespace GUI
 		{
 			ImGui::Text("Properties of %s", entity.GetComponent<NameComponent>().name.c_str());
 
+			if (entity.HasComponent<LineGenerationComponent>())
+			{
+				auto& controlPoints = entity.GetComponent<LineGenerationComponent>().controlPoints;
+				ImGui::Text("Control Points: %zu", controlPoints.size());
+
+				for(Entity point : controlPoints)
+				{
+					if(point.HasComponent<NameComponent>())
+						ImGui::Text("Point Name: %s", point.GetComponent<NameComponent>().name.c_str());
+				}
+			}
+
 			if (entity.HasComponent<PositionComponent>())
 			{
 				Algebra::Vector4 tmpPosition = entity.GetComponent<PositionComponent>().position;
