@@ -127,18 +127,3 @@ struct BezierLineGenerationComponent
 	BezierLineGenerationComponent() = default;
 	BezierLineGenerationComponent(const BezierLineGenerationComponent& other) = default;
 };
-
-struct BezierC0GenerationComponent
-{
-	Entity virtualPolyline;
-	std::list<Entity> controlPoints;
-	BezierC0GenerationComponent() = default;
-	BezierC0GenerationComponent(const BezierC0GenerationComponent& other) = default;
-};
-
-struct InterpolatedBezierGenerationComponent
-{
-	std::list<Entity> controlPoints;
-	InterpolatedBezierGenerationComponent() = default;
-	InterpolatedBezierGenerationComponent(const InterpolatedBezierGenerationComponent& other) = default;
-};

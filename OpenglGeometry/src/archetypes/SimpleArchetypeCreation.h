@@ -43,4 +43,15 @@ namespace Archetypes
 
 		return parent;
 	}
+
+	template<std::forward_iterator Iter>
+		requires std::same_as<std::iter_value_t<Iter>, Entity>
+	inline Entity AddLineToEntity(Entity entity, Iter pointsBegin, const Iter& pointsEnd)
+	{
+		auto& controlPoints = entity.AddComponent<LineGenerationComponent>().controlPoints;
+
+		AddNotifiersToEntityContainer(entity, controlPoints, pointsBegin, pointsEnd);
+
+		return entity;
+	}
 }

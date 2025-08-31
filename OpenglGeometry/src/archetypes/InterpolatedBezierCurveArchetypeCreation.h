@@ -1,4 +1,6 @@
 #pragma once
+#include "SimpleArchetypeCreation.h"
+#include "meshGenerators/MeshGenerators.h"
 
 namespace Archetypes
 {
@@ -8,8 +10,13 @@ namespace Archetypes
 	{
 		entity.AddTag<IsDirtyTag>();
 
-		auto& bezierComponent = entity.AddComponent<InterpolatedBezierGenerationComponent>();
-		AddNotifiersToEntityContainer(entity, bezierComponent.controlPoints, pointsBegin, pointsEnd);
+		AddLineToEntity(entity, pointsBegin, pointsEnd);
+		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
+		bezierComponent.generationFunction =
+			[](const std::vector<Algebra::Vector4>& controlPoints)
+		{
+			return MeshGenerator::InterpolatedBezierCurve::GenerateMesh(controlPoints).vertices;
+		};
 
 		return entity;
 	}

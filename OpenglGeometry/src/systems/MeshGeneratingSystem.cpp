@@ -87,7 +87,7 @@ void MeshGeneratingSystem::BezierGeneration()
 			CopyValidPointsToVector(controlPoints);
 
 		auto vertices = generatorFunction(positions);
-		auto indices = GenerateLineIndices(vertices.size());
+		auto indices = GenerateLineIndices(static_cast<unsigned int>(vertices.size()));
 
 		ModifyOrCreateMesh(entity, vertices, indices,
 			bezierShaderLayout, RenderingMode::Patches, AvailableShaders::BezierCurveC0);

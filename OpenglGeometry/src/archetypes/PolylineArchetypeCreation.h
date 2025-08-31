@@ -9,9 +9,7 @@ namespace Archetypes
 	{
 		entity.AddTag<IsDirtyTag>();
 
-		auto& controlPoints = entity.AddComponent<LineGenerationComponent>().controlPoints;
-
-		AddNotifiersToEntityContainer(entity, controlPoints, pointsBegin, pointsEnd);
+		AddLineToEntity(entity, pointsBegin, pointsEnd);
 
 		return entity;
 	}
