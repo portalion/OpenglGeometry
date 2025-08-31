@@ -12,11 +12,7 @@ namespace Archetypes
 
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
-		bezierComponent.generationFunction =
-			[](const std::vector<Algebra::Vector4>& controlPoints)
-		{
-			return MeshGenerator::InterpolatedBezierCurve::GenerateMesh(controlPoints).vertices;
-		};
+		bezierComponent.generationFunction = MeshGenerator::InterpolatedBezierCurve::GenerateVertices;
 
 		return entity;
 	}

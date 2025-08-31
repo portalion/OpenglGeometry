@@ -1,22 +1,17 @@
 #include "InterpolatedBezierCurveGenerator.h"
 
-MeshGenerator::GeneratedMesh<Algebra::Vector4> MeshGenerator::InterpolatedBezierCurve::
-	GenerateMesh(const std::vector<Algebra::Vector4>& controlPoints)
+std::vector<Algebra::Vector4> MeshGenerator::InterpolatedBezierCurve::
+	GenerateVertices(const std::vector<Algebra::Vector4>& controlPoints)
 {
-	GeneratedMesh<Algebra::Vector4> mesh;
-	mesh.shaderType = AvailableShaders::BezierCurveC0;
-	mesh.renderingMode = RenderingMode::Patches;
-
 	if (controlPoints.size() < 2)
-		return mesh;
+		return { };
 
 	if (controlPoints.size() == 2)
 	{
-		mesh.vertices = controlPoints;
-		mesh.indices = { 0, 0, 1, 1 };
-		return mesh;
+		return { controlPoints[0], controlPoints[0], controlPoints[1], controlPoints[1] };
 	}
 
+	std::vector<Algebra::Vector4> result;
 	std::vector<float> d;
 	std::vector<float> alpha;
 	std::vector<float> beta;
@@ -72,14 +67,8 @@ MeshGenerator::GeneratedMesh<Algebra::Vector4> MeshGenerator::InterpolatedBezier
 		Algebra::Vector4 P3 = ai + bi + ci + di;
 		P0.w = P1.w = P2.w = P3.w = 1.0f;
 
-		mesh.vertices.push_back(P0);
-		mesh.indices.push_back(static_cast<uint32_t>(mesh.vertices.size() - 1));
-		mesh.vertices.push_back(P1);
-		mesh.indices.push_back(static_cast<uint32_t>(mesh.vertices.size() - 1));
-		mesh.vertices.push_back(P2);
-		mesh.indices.push_back(static_cast<uint32_t>(mesh.vertices.size() - 1));
-		mesh.vertices.push_back(P3);
-		mesh.indices.push_back(static_cast<uint32_t>(mesh.vertices.size() - 1));
+		result.insert(result.end(), { P0, P1, P2, P3 });
 	}
-	return mesh;
+
+	return result;
 }

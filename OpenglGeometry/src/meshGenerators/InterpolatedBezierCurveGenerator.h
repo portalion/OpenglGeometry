@@ -5,7 +5,7 @@ namespace MeshGenerator
 {
 	namespace InterpolatedBezierCurve
 	{
-		GeneratedMesh<Algebra::Vector4> GenerateMesh(
+		std::vector<Algebra::Vector4> GenerateVertices(
 			const std::vector<Algebra::Vector4>& controlPoints
 		);
 	}
