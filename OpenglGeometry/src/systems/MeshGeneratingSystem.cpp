@@ -47,7 +47,7 @@ void MeshGeneratingSystem::TorusGeneration()
 			tgc.radius, tgc.tubeRadius, tgc.radialSegments, tgc.tubularSegments);
 
 		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices, 
-			generatedMesh.layout, generatedMesh.renderingMode, { generatedMesh.shaderType });
+			generatedMesh.layout);
 	}
 }
 
@@ -65,7 +65,7 @@ void MeshGeneratingSystem::LineGeneration()
 		auto generatedMesh = MeshGenerator::Polyline::GenerateMesh(positions);
 
 		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices,
-			generatedMesh.layout, generatedMesh.renderingMode, { generatedMesh.shaderType });
+			generatedMesh.layout);
 	}
 }
 

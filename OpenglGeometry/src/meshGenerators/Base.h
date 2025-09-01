@@ -12,8 +12,6 @@ namespace MeshGenerator
 	{
 		std::vector<VertexType> vertices;
 		std::vector<uint32_t> indices;
-		AvailableShaders shaderType = AvailableShaders::Default;
-		RenderingMode renderingMode = RenderingMode::Lines;
 		BufferLayout layout = 
 		{
 			{ ShaderDataType::Float4, "position" }
