@@ -55,11 +55,14 @@ void RenderingSystem::Process()
 	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvisibleTag>()))
 	{
 		auto& meshComponent = entity.GetComponent<MeshComponent>();
-		m_Renderer->SetShader(meshComponent.shaderType);
 
 		auto modelMatrix = GetModelMatrix(entity);
 		m_Renderer->SetTransformations(modelMatrix);
 		m_Renderer->SetMesh(meshComponent.mesh);
-		m_Renderer->Render(meshComponent.renderingMode);
+		for(auto shaderType : meshComponent.shaderTypes)
+		{
+			m_Renderer->SetShader(shaderType);
+			m_Renderer->Render(meshComponent.renderingMode);
+		}
 	}
 }

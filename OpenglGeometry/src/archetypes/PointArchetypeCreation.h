@@ -8,8 +8,10 @@ namespace Archetypes
 	{
 		entity.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
 		entity.AddComponent<NotificationComponent>();
-		entity.AddComponent<MeshComponent>().mesh 
-			= StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
+		auto& meshComponent = entity.AddComponent<MeshComponent>();
+		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
+		meshComponent.shaderTypes.push_back(AvailableShaders::Default);
+
 		return entity;
 	}
 

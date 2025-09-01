@@ -57,7 +57,7 @@ struct CameraComponent
 struct MeshComponent
 {
 	Ref<VertexArray> mesh;
-	AvailableShaders shaderType = AvailableShaders::Default;
+	std::vector<AvailableShaders> shaderTypes;
 	RenderingMode renderingMode = RenderingMode::Triangles;
 
 	MeshComponent() = default;
