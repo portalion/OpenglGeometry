@@ -60,6 +60,41 @@ namespace Archetypes
 		return entity;
 	}
 
+	inline void AssignPointsToPatch(
+		Entity patch,
+		BezierPatchGenerationComponent& patchComponent,
+		const std::vector<Entity>& points)
+	{
+		auto& patchPoints = patchComponent.controlPoints;
+		for(int x = 0; x < CONTROL_PONTS_PER_EDGE; x++)
+		{
+			for(int y = 0; y < CONTROL_PONTS_PER_EDGE; y++)
+			{
+				auto point = points[x * CONTROL_PONTS_PER_EDGE + y];
+				if (point.HasComponent<NotificationComponent>())
+				{
+					point.GetComponent<NotificationComponent>()
+						.entitiesToNotify.push_back(patch);
+				}
+				patchPoints[x][y] = point;
+			}
+		}
+	}
+
+	inline std::vector<Entity> CreateLinearVectorFrom2D(size_t startX, size_t startY,
+		const std::vector<std::vector<Entity>>& points2D)
+	{
+		std::vector<Entity> result;
+		for (int x = 0; x < CONTROL_PONTS_PER_EDGE; x++)
+		{
+			for (int y = 0; y < CONTROL_PONTS_PER_EDGE; y++)
+			{
+				result.push_back(points2D[x + startX][y + startY]);
+			}
+		}
+		return result;
+	}
+
 	inline void FillRectangularBezierComponent(Scene* scene, Entity surface,
 		BezierSurfaceGenerationComponent& result, 
 		BezierSurfaceCreationParameters bezierParams)
@@ -75,17 +110,11 @@ namespace Archetypes
 			{
 				auto patch = CreateVirtualPatch(scene, surface);
 				result.bezierPatches[i][j] = patch;
-				auto& patchPoints = patch.GetComponent<BezierPatchGenerationComponent>().controlPoints;
+				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
+				auto pointsForPatch = CreateLinearVectorFrom2D(
+					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
 
-				for(int x = 0; x < CONTROL_PONTS_PER_EDGE; ++x)
-				{
-					for(int y = 0; y < CONTROL_PONTS_PER_EDGE; ++y)
-					{
-						patchPoints[x][y] = points[i * (CONTROL_PONTS_PER_EDGE - 1) + x]
-												   [j * (CONTROL_PONTS_PER_EDGE - 1) + y];
-						patchPoints[x][y].GetComponent<NotificationComponent>().entitiesToNotify.push_back(patch);
-					}
-				}
+				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
 			}
 		}
 	}
