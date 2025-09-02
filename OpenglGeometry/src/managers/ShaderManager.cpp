@@ -12,7 +12,7 @@ ShaderManager::ShaderManager()
 	AssignShader(AvailableShaders::InfiniteGrid, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "infiniteGrid")
 		.AddShader(ShaderType::Fragment, "infiniteGrid"));
-	AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/lines/")
+	AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/bezierLine/")
 		.AddShader(ShaderType::Vertex, "bezierC0")
 		.AddShader(ShaderType::TesselationControl, "bezierC0")
 		.AddShader(ShaderType::TesselationEvaluation, "bezierC0")
