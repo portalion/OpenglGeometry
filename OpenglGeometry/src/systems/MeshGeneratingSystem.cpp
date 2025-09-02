@@ -69,7 +69,7 @@ void MeshGeneratingSystem::LineGeneration()
 	}
 }
 
-void MeshGeneratingSystem::BezierGeneration()
+void MeshGeneratingSystem::BezierLineGeneration()
 {
 	BufferLayout bezierShaderLayout
 	({
@@ -94,6 +94,41 @@ void MeshGeneratingSystem::BezierGeneration()
 	}
 }
 
+void MeshGeneratingSystem::BezierSurfaceGeneration()
+{
+	BufferLayout bezierShaderLayout
+	({
+		{ ShaderDataType::Float4, "a_Position" }
+	});
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, BezierSurfaceGenerationComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+		std::vector<Algebra::Vector4> vertices;
+		auto patches = entity.GetComponent<BezierSurfaceGenerationComponent>().bezierPatches;
+
+		uint32_t indice = 0;
+		std::vector<uint32_t> indices;
+		for(auto patchRow : patches)
+			for(auto patch : patchRow)
+			{
+				for(int i = 0; i < 4; i++)
+					for (int j = 0; j < 4; j++)
+					{
+						vertices.push_back(
+							patch.GetComponent<BezierPatchGenerationComponent>()
+							.controlPoints[i][j].GetComponent<PositionComponent>()
+							.position);
+						indices.push_back(indice++);
+					}
+			}
+
+		ModifyOrCreateMesh(entity, vertices, indices,
+			bezierShaderLayout, RenderingMode::Patches, { AvailableShaders::BezierSurfaceHorizontal, AvailableShaders::BezierSurfaceVertical });
+	}
+
+}
+
 MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 	:m_Scene {m_Scene}
 {
@@ -101,7 +136,8 @@ MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 
 void MeshGeneratingSystem::Process()
 {
-	BezierGeneration();
+	BezierLineGeneration();
+	BezierSurfaceGeneration();
 	LineGeneration();
 	TorusGeneration();
 }

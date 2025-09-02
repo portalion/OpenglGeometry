@@ -14,7 +14,8 @@ private:
 
 	void TorusGeneration();
 	void LineGeneration();
-	void BezierGeneration();
+	void BezierLineGeneration();
+	void BezierSurfaceGeneration();
 
 	template<typename T>
 	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines, const std::initializer_list<AvailableShaders> shaderTypes = { AvailableShaders::Default });
