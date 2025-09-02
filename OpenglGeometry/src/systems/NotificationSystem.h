@@ -11,6 +11,7 @@ private:
 	Ref<Scene> m_Scene;
 
 	void NotifyWithNotificationComponent(Entity entity);
+	void NotifyWithVirtualComponent(Entity entity);
 public:
 	NotificationSystem(Ref<Scene> scene);
 

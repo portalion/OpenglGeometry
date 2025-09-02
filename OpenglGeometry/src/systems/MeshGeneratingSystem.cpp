@@ -124,7 +124,8 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 			}
 
 		ModifyOrCreateMesh(entity, vertices, indices,
-			bezierShaderLayout, RenderingMode::Patches, { AvailableShaders::BezierSurfaceHorizontal, AvailableShaders::BezierSurfaceVertical });
+			bezierShaderLayout, RenderingMode::Patches, 
+			{ AvailableShaders::BezierSurfaceHorizontal, AvailableShaders::BezierSurfaceVertical });
 	}
 
 }

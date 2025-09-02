@@ -83,6 +83,7 @@ namespace Archetypes
 					{
 						patchPoints[x][y] = points[i * (CONTROL_PONTS_PER_EDGE - 1) + x]
 												   [j * (CONTROL_PONTS_PER_EDGE - 1) + y];
+						patchPoints[x][y].GetComponent<NotificationComponent>().entitiesToNotify.push_back(patch);
 					}
 				}
 			}

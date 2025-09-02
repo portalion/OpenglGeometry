@@ -16,7 +16,24 @@ void NotificationSystem::NotifyWithNotificationComponent(Entity entity)
 		}
 
 		it->AddTag<IsDirtyTag>();
+		if(it->HasComponent<VirtualEntityComponent>())
+		{
+			it->AddTag<ObserverChangedState>();
+		}
 		it++;
+	}
+}
+
+void NotificationSystem::NotifyWithVirtualComponent(Entity entity)
+{
+	auto& parent = entity.GetComponent<VirtualEntityComponent>().realEntity;
+	if (parent.IsValid())
+	{
+		parent.AddTag<IsDirtyTag>();
+	}
+	else
+	{
+		entity.AddTag<ToBeDestroyedTag>();
 	}
 }
 
@@ -27,14 +44,24 @@ NotificationSystem::NotificationSystem(Ref<Scene> scene)
 
 void NotificationSystem::Process()
 {
+
 	for (Entity entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, NotificationComponent>())
 	{
-		entity.RemoveComponent<ObserverChangedState>();
 		NotifyWithNotificationComponent(entity);
 	}
 
 	for (Entity entity : m_Scene->GetAllEntitiesWith<ToBeDestroyedTag, NotificationComponent>())
 	{
 		NotifyWithNotificationComponent(entity);
+	}
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<ObserverChangedState, VirtualEntityComponent>())
+	{
+		NotifyWithVirtualComponent(entity);
+	}
+
+	for(auto entity : m_Scene->GetAllEntitiesWith<ObserverChangedState>())
+	{
+		entity.RemoveTag<ObserverChangedState>();
 	}
 }
