@@ -8,6 +8,8 @@ enum class AvailableShaders
 	Default = 0,
 	InfiniteGrid = 1,
 	BezierCurveC0 = 2,
+	BezierSurfaceHorizontal = 3,
+	BezierSurfaceVertical = 4
 };
 
 class ShaderBuilder;

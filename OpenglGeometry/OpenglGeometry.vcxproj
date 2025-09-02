@@ -289,14 +289,20 @@
     <ClInclude Include="src\renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\shaders\bezierSurface\default.frag" />
+    <None Include="resources\shaders\bezierSurface\defaultHorizontal.tesc" />
+    <None Include="resources\shaders\bezierSurface\defaultHorizontal.tese" />
+    <None Include="resources\shaders\bezierSurface\default.vert" />
+    <None Include="resources\shaders\bezierSurface\defaultVertical.tesc" />
+    <None Include="resources\shaders\bezierSurface\defaultVertical.tese" />
     <None Include="resources\shaders\default.frag" />
     <None Include="resources\shaders\default.vert" />
     <None Include="resources\shaders\infiniteGrid.frag" />
     <None Include="resources\shaders\infiniteGrid.vert" />
-    <None Include="resources\shaders\bezierLine\bezierC0.frag" />
-    <None Include="resources\shaders\bezierLine\bezierC0.vert" />
-    <None Include="resources\shaders\bezierLine\bezierC0.tesc" />
-    <None Include="resources\shaders\bezierLine\bezierC0.tese" />
+    <None Include="resources\shaders\bezierLine\default.frag" />
+    <None Include="resources\shaders\bezierLine\default.vert" />
+    <None Include="resources\shaders\bezierLine\default.tesc" />
+    <None Include="resources\shaders\bezierLine\default.tese" />
     <None Include="vendor\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>

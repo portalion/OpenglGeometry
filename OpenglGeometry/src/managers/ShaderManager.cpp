@@ -18,6 +18,18 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::TesselationEvaluation, "default")
 		.AddShader(ShaderType::Fragment, "default")
 		.ChangePatchSize(4));
+	AssignShader(AvailableShaders::BezierSurfaceHorizontal, ShaderBuilder("resources/shaders/bezierSurface/")
+		.AddShader(ShaderType::Vertex, "default")
+		.AddShader(ShaderType::TesselationControl, "defaultHorizontal")
+		.AddShader(ShaderType::TesselationEvaluation, "defaultHorizontal")
+		.AddShader(ShaderType::Fragment, "default")
+		.ChangePatchSize(16));
+	AssignShader(AvailableShaders::BezierSurfaceVertical, ShaderBuilder("resources/shaders/bezierSurface/")
+		.AddShader(ShaderType::Vertex, "default")
+		.AddShader(ShaderType::TesselationControl, "defaultVertical")
+		.AddShader(ShaderType::TesselationEvaluation, "defaultVertical")
+		.AddShader(ShaderType::Fragment, "default")
+		.ChangePatchSize(16));
 	std::clog << "INFO: Loaded Shaders" << std::endl;
 }
 
