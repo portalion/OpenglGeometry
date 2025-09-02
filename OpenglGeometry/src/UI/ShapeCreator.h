@@ -22,7 +22,7 @@ namespace GUI
 
 		if (ImGui::Button("Create Point##Creation menu"))
 		{
-			Archetypes::CreatePoint(scene.get());
+			Archetypes::CreatePoint(scene.get(), { 0.f, 0.f, 0.f });
 		}
 
 		if (ImGui::Button("Create Polyline##Creation menu"))

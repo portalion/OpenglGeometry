@@ -4,9 +4,9 @@
 
 namespace Archetypes
 {
-	inline Entity AddPointToEntity(Entity entity)
+	inline Entity AddPointToEntity(Entity entity, Algebra::Vector4 startingPosition)
 	{
-		entity.AddComponent<PositionComponent>().position.Set({ 0.f, 0.f, 0.f });
+		entity.AddComponent<PositionComponent>().position.Set(startingPosition);
 		entity.AddComponent<NotificationComponent>();
 		auto& meshComponent = entity.AddComponent<MeshComponent>();
 		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
@@ -15,12 +15,12 @@ namespace Archetypes
 		return entity;
 	}
 
-	inline Entity CreatePoint(Scene* scene)
+	inline Entity CreatePoint(Scene* scene, Algebra::Vector4 startingPosition)
 	{
 		auto resultPoint = scene->CreateEntity(); 
 
 		AddShapeToEntity(resultPoint, "Point");
-		AddPointToEntity(resultPoint);
+		AddPointToEntity(resultPoint, startingPosition);
 
 		return resultPoint;
 	}
