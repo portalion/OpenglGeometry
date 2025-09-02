@@ -48,7 +48,25 @@ namespace GUI
 			auto selectedPoints = GetSelectedPoints(scene);
 			Archetypes::CreateInterpolatedBezier(scene.get(), selectedPoints.begin(), selectedPoints.end());
 		}
-
+#pragma region BezierSurfaceCreation
+		{
+			static Archetypes::BezierSurfaceCreationParameters bezierParams;
+			ImGui::Separator();
+			ImGui::DragInt("x patches##Creation menu",
+				reinterpret_cast<int*>(&bezierParams.numberOfXPatches), 1, 1, 100);
+			ImGui::DragInt("y patches##Creation menu", 
+				reinterpret_cast<int*>(&bezierParams.numberOfYPatches), 1, 1, 100);
+			ImGui::DragFloat("x size##Creation menu", 
+				&bezierParams.sizeX, 1, 1, 100);
+			ImGui::DragFloat("y size##Creation menu",
+				&bezierParams.sizeY, 1, 1, 100);
+			if (ImGui::Button("Create Bezier Surface##Creation menu"))
+			{
+				Archetypes::CreateBezierSurface(scene.get(), bezierParams);
+			}
+			ImGui::Separator();
+		}
+#pragma endregion 
 		ImGui::End();
 	}
 }

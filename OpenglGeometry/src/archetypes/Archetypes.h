@@ -5,3 +5,4 @@
 #include "PolylineArchetypeCreation.h"
 #include "BezierCurveArchetypeCreation.h"
 #include "InterpolatedBezierCurveArchetypeCreation.h"
+#include "BezierSurfaceArchetypeCreation.h"

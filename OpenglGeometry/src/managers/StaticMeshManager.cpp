@@ -11,10 +11,10 @@ StaticMeshManager::StaticMeshManager()
 	{
 		std::vector<float> squareVertices =
 		{
-			-0.5f, -0.5f, 0.0f, 1.f,
-			 0.5f,  0.5f, 0.0f, 1.f,
-			-0.5f,  0.5f, 0.0f, 1.f,
-	  		 0.5f, -0.5f, 0.0f, 1.f
+			-0.05f, -0.05f, 0.00f, 1.f,
+			 0.05f,  0.05f, 0.00f, 1.f,
+			-0.05f,  0.05f, 0.00f, 1.f,
+	  		 0.05f, -0.05f, 0.00f, 1.f
 		};
 		std::vector<unsigned int> squareIndices =
 		{

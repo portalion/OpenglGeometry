@@ -127,3 +127,18 @@ struct BezierLineGenerationComponent
 	BezierLineGenerationComponent() = default;
 	BezierLineGenerationComponent(const BezierLineGenerationComponent& other) = default;
 };
+
+struct BezierPatchGenerationComponent
+{
+	std::array<std::array<Entity, 4>, 4> controlPoints;
+	BezierPatchGenerationComponent() = default;
+	BezierPatchGenerationComponent(const BezierPatchGenerationComponent& other) = default;
+};
+
+struct BezierSurfaceGenerationComponent
+{
+	std::vector<std::vector<Entity>> bezierPatches;
+	std::function<std::vector<Algebra::Vector4>(const std::vector<Algebra::Vector4>&)> generationFunction;
+	BezierSurfaceGenerationComponent() = default;
+	BezierSurfaceGenerationComponent(const BezierSurfaceGenerationComponent& other) = default;
+};
