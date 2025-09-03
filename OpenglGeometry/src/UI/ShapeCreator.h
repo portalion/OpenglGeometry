@@ -11,7 +11,7 @@ namespace GUI
 		return std::vector<Entity>(pointsView.begin(), pointsView.end());
 	}
 
-	inline void DisplayCreationButtons(Ref<Scene> scene)
+	inline void DisplayCreationButtons(Ref<Scene> scene, Algebra::Vector4 cursorPosition)
 	{
 		ImGui::Begin("Creation Menu##Creation menu");
 

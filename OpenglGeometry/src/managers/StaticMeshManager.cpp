@@ -55,6 +55,28 @@ StaticMeshManager::StaticMeshManager()
 		m_Meshes[StaticMeshType::Cube] = VertexArray::CreateWithBuffers(cubeVertices, cubeIndices, layout);
 	}
 
+	//Cursor
+	{
+		std::vector<float> cursorVertices =
+		{
+			 0.0f,  0.0f, 0.0f, 1.f,
+			 0.2f,  0.0f, 0.0f, 1.f,
+			 0.0f,  0.2f, 0.0f, 1.f,
+			 0.0f,  0.0f, 0.2f, 1.f
+		};
+		std::vector<unsigned int> cursorIndices =
+		{
+			0, 1, 
+			0, 2,
+			0, 3
+		};
+		BufferLayout layout =
+		{
+			{ ShaderDataType::Float4, "position" }
+		};
+		m_Meshes[StaticMeshType::Cursor] = VertexArray::CreateWithBuffers(cursorVertices, cursorIndices, layout);
+	}
+
 	std::clog << "INFO: Loaded Meshes" << std::endl;
 }
 
