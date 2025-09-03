@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleArchetypeCreation.h"
+#include <numbers>
 
 namespace Archetypes
 {
@@ -7,6 +8,7 @@ namespace Archetypes
 
 	struct BezierSurfaceCreationParameters
 	{
+		bool isCylinder = false;
 		float sizeX = 4;
 		float sizeY = 4;
 		unsigned int numberOfXPatches = 1;
@@ -124,11 +126,78 @@ namespace Archetypes
 
 #pragma endregion
 
+#pragma region Cylindrical C0 Patches
+
+	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, BezierSurfaceCreationParameters params)
+	{
+		//TODO: move out to params
+		auto [numberOfPointsX, numberOfPointsY] = CalculateNumberOfPointsInRectangularGrid(params);
+		
+		const float heightPerPoint = params.sizeY / (params.numberOfYPatches * 3);
+		const float anglePerPoint = 
+			2.f * std::numbers::pi_v<float> / static_cast<float>(numberOfPointsX - 1);
+
+		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
+		Algebra::Vector4 startingPosition;
+
+		for(int i = 0; i < numberOfPointsX - 1; i++)
+		{
+			for(int j = 0; j < numberOfPointsY; j++)
+			{
+				Algebra::Vector4 heightOffset = 
+					Algebra::Vector4(0.f, 0.f, j * heightPerPoint);
+				Algebra::Vector4 radiusOffset = 
+					Algebra::Matrix4::RotationZ(anglePerPoint * i) * 
+					Algebra::Vector4(params.sizeX, 0.f, 0.f);
+
+				auto point = CreatePoint(scene, startingPosition + heightOffset + radiusOffset);
+				result[i][j] = point;
+			}
+		}
+
+		for(int i = 0; i < numberOfPointsY; i++)
+		{
+			result[numberOfPointsX - 1][i] = result[0][i];
+		}
+
+		return result;
+	}
+
+	inline void FillCylindricalBezierComponent(Scene* scene, Entity surface,
+		BezierSurfaceGenerationComponent& result,
+		BezierSurfaceCreationParameters bezierParams)
+	{
+		auto points = GenerateCylindricalGridOfPoints(scene, bezierParams);
+		result.bezierPatches =
+			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
+				std::vector<Entity>(bezierParams.numberOfYPatches));
+
+		for (int i = 0; i < bezierParams.numberOfXPatches; i++)
+		{
+			for (int j = 0; j < bezierParams.numberOfYPatches; j++)
+			{
+				auto patch = CreateVirtualPatch(scene, surface);
+				result.bezierPatches[i][j] = patch;
+				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
+				auto pointsForPatch = CreateLinearVectorFrom2D(
+					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
+
+				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
+			}
+		}
+	}
+
+#pragma endregion
+
 	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams)
 	{
 		entity.AddTag<IsDirtyTag>();
 		auto& bezierComponent = entity.AddComponent<BezierSurfaceGenerationComponent>();
-		FillRectangularBezierComponent(scene, entity, bezierComponent, bezierParams);
+
+		if(bezierParams.isCylinder)
+			FillCylindricalBezierComponent(scene, entity, bezierComponent, bezierParams);
+		else
+			FillRectangularBezierComponent(scene, entity, bezierComponent, bezierParams);
 
 		return entity;
 	}

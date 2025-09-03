@@ -60,6 +60,9 @@ namespace GUI
 				&bezierParams.sizeX, 1, 1, 100);
 			ImGui::DragFloat("y size##Creation menu",
 				&bezierParams.sizeY, 1, 1, 100);
+			ImGui::Checkbox("Make cylinder##Creation menu", 
+				&bezierParams.isCylinder);
+
 			if (ImGui::Button("Create Bezier Surface##Creation menu"))
 			{
 				Archetypes::CreateBezierSurface(scene.get(), bezierParams);
