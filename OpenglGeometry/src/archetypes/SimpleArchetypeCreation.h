@@ -19,6 +19,8 @@ namespace Archetypes
 	{
 		auto& vec = entity.AddComponent<VirtualEntityComponent>();
 		vec.realEntity = parent;
+		parent.AddComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity = entity;
+		
 		return entity;
 	}
 

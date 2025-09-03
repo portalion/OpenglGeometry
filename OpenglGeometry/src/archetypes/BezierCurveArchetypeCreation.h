@@ -13,7 +13,6 @@ namespace Archetypes
 		auto virtualPolyline = scene->CreateEntity();
 		AddVirtualToEntity(virtualPolyline, entity);
 		AddPolylineToEntity(virtualPolyline, pointsBegin, pointsEnd);
-		entity.AddComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity = virtualPolyline;
 
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
@@ -42,7 +41,6 @@ namespace Archetypes
 		auto virtualPolyline = scene->CreateEntity();
 		AddVirtualToEntity(virtualPolyline, entity);
 		AddPolylineToEntity(virtualPolyline, pointsBegin, pointsEnd);
-		entity.AddComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity = virtualPolyline;
 
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();

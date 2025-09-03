@@ -20,7 +20,7 @@ namespace Archetypes
 		auto entity = scene->CreateEntity();
 
 		entity.AddComponent<BezierPatchGenerationComponent>();
-		entity.AddComponent<VirtualEntityComponent>().realEntity = parentEntity;
+		AddVirtualToEntity(entity, parentEntity);
 
 		return entity;
 	}

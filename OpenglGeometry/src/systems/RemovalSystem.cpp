@@ -11,6 +11,11 @@ void RemovalSystem::Process()
 {
 	for (auto entity : m_Scene->GetAllEntitiesWith<ToBeDestroyedTag>())
 	{
+		if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			entity.GetComponent<IsParentOfVirtualEntitiesComponent>()
+				.virtualEntity.AddTag<ToBeDestroyedTag>();
+		}
 		m_Scene->DestroyEntity(entity);
 	}
 }
