@@ -61,10 +61,9 @@ namespace Archetypes
 		return result;
 	}
 #pragma endregion
-
-#pragma region Rectangular C0 Patches
+#pragma region C0 Patches
 	inline std::pair<unsigned int, unsigned int>
-		CalculateNumberOfPointsInRectangularGrid(BezierSurfaceCreationParameters params)
+		CalculateNumberOfPointsForC0Surface(BezierSurfaceCreationParameters params)
 	{
 		const unsigned int numberOfPointsX =
 			(CONTROL_PONTS_PER_EDGE - 1) * params.numberOfXPatches + 1;
@@ -73,10 +72,34 @@ namespace Archetypes
 		return { numberOfPointsX, numberOfPointsY };
 	}
 
-	inline std::vector<std::vector<Entity>> GenerateRectangularGridOfPoints(Scene* scene, BezierSurfaceCreationParameters params)
+	inline void FillBezierComponent(Scene* scene, Entity surface,
+		BezierSurfaceGenerationComponent& result,
+		BezierSurfaceCreationParameters bezierParams,
+		const std::vector<std::vector<Entity>>& points)
 	{
-		//TODO: move out to params
-		auto [numberOfPointsX, numberOfPointsY] = CalculateNumberOfPointsInRectangularGrid(params);
+		result.bezierPatches =
+			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
+				std::vector<Entity>(bezierParams.numberOfYPatches));
+
+		for (int i = 0; i < bezierParams.numberOfXPatches; i++)
+		{
+			for (int j = 0; j < bezierParams.numberOfYPatches; j++)
+			{
+				auto patch = CreateVirtualPatch(scene, surface);
+				result.bezierPatches[i][j] = patch;
+				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
+				auto pointsForPatch = CreateLinearVectorFrom2D(
+					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
+
+				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
+			}
+		}
+	}
+
+	inline std::vector<std::vector<Entity>>GenerateRectangularGridOfPoints(Scene* scene, 
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints)
+	{
+		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
 
@@ -100,38 +123,10 @@ namespace Archetypes
 		return result;
 	}
 
-	inline void FillRectangularBezierComponent(Scene* scene, Entity surface,
-		BezierSurfaceGenerationComponent& result,
-		BezierSurfaceCreationParameters bezierParams)
+	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, 
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints)
 	{
-		auto points = GenerateRectangularGridOfPoints(scene, bezierParams);
-		result.bezierPatches =
-			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
-				std::vector<Entity>(bezierParams.numberOfYPatches));
-
-		for (int i = 0; i < bezierParams.numberOfXPatches; i++)
-		{
-			for (int j = 0; j < bezierParams.numberOfYPatches; j++)
-			{
-				auto patch = CreateVirtualPatch(scene, surface);
-				result.bezierPatches[i][j] = patch;
-				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
-				auto pointsForPatch = CreateLinearVectorFrom2D(
-					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
-
-				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
-			}
-		}
-	}
-
-#pragma endregion
-
-#pragma region Cylindrical C0 Patches
-
-	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, BezierSurfaceCreationParameters params)
-	{
-		//TODO: move out to params
-		auto [numberOfPointsX, numberOfPointsY] = CalculateNumberOfPointsInRectangularGrid(params);
+		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 		
 		const float heightPerPoint = params.sizeY / (params.numberOfYPatches * 3);
 		const float anglePerPoint = 
@@ -163,41 +158,21 @@ namespace Archetypes
 		return result;
 	}
 
-	inline void FillCylindricalBezierComponent(Scene* scene, Entity surface,
-		BezierSurfaceGenerationComponent& result,
-		BezierSurfaceCreationParameters bezierParams)
-	{
-		auto points = GenerateCylindricalGridOfPoints(scene, bezierParams);
-		result.bezierPatches =
-			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
-				std::vector<Entity>(bezierParams.numberOfYPatches));
-
-		for (int i = 0; i < bezierParams.numberOfXPatches; i++)
-		{
-			for (int j = 0; j < bezierParams.numberOfYPatches; j++)
-			{
-				auto patch = CreateVirtualPatch(scene, surface);
-				result.bezierPatches[i][j] = patch;
-				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
-				auto pointsForPatch = CreateLinearVectorFrom2D(
-					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
-
-				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
-			}
-		}
-	}
-
 #pragma endregion
-
 	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams)
 	{
 		entity.AddTag<IsDirtyTag>();
 		auto& bezierComponent = entity.AddComponent<BezierSurfaceGenerationComponent>();
 
-		if(bezierParams.isCylinder)
-			FillCylindricalBezierComponent(scene, entity, bezierComponent, bezierParams);
+		auto numberOfPoints = CalculateNumberOfPointsForC0Surface(bezierParams);
+
+		std::vector<std::vector<Entity>> points;
+		if (bezierParams.isCylinder)
+			points = GenerateCylindricalGridOfPoints(scene, bezierParams, numberOfPoints);
 		else
-			FillRectangularBezierComponent(scene, entity, bezierComponent, bezierParams);
+			points = GenerateRectangularGridOfPoints(scene, bezierParams, numberOfPoints);
+
+		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points);
 
 		return entity;
 	}
