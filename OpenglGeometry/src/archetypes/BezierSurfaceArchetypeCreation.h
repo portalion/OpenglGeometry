@@ -82,9 +82,9 @@ namespace Archetypes
 			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
 				std::vector<Entity>(bezierParams.numberOfYPatches));
 
-		for (int i = 0; i < bezierParams.numberOfXPatches; i++)
+		for (unsigned int i = 0; i < bezierParams.numberOfXPatches; i++)
 		{
-			for (int j = 0; j < bezierParams.numberOfYPatches; j++)
+			for (unsigned int j = 0; j < bezierParams.numberOfYPatches; j++)
 			{
 				auto patch = CreateVirtualPatch(scene, surface);
 				result.bezierPatches[i][j] = patch;
@@ -109,9 +109,9 @@ namespace Archetypes
 
 		const auto startingPosition = params.startingPosition;
 
-		for (int i = 0; i < numberOfPointsX; i++)
+		for (unsigned int i = 0; i < numberOfPointsX; i++)
 		{
-			for (int j = 0; j < numberOfPointsY; j++)
+			for (unsigned int j = 0; j < numberOfPointsY; j++)
 			{
 				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, j * sizeYPerPoint, 0.f);
 				auto point = CreatePoint(scene, startingPosition + offset);
@@ -134,9 +134,9 @@ namespace Archetypes
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
 		Algebra::Vector4 startingPosition = params.startingPosition;
 
-		for(int i = 0; i < numberOfPointsX - 1; i++)
+		for(unsigned int i = 0; i < numberOfPointsX - 1; i++)
 		{
-			for(int j = 0; j < numberOfPointsY; j++)
+			for(unsigned int j = 0; j < numberOfPointsY; j++)
 			{
 				Algebra::Vector4 heightOffset = 
 					Algebra::Vector4(0.f, 0.f, j * heightPerPoint);
@@ -149,7 +149,7 @@ namespace Archetypes
 			}
 		}
 
-		for(int i = 0; i < numberOfPointsY; i++)
+		for(unsigned int i = 0; i < numberOfPointsY; i++)
 		{
 			result[numberOfPointsX - 1][i] = result[0][i];
 		}

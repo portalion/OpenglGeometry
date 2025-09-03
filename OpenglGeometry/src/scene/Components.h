@@ -138,7 +138,6 @@ struct BezierPatchGenerationComponent
 struct BezierSurfaceGenerationComponent
 {
 	std::vector<std::vector<Entity>> bezierPatches;
-	std::function<std::vector<Algebra::Vector4>(const std::vector<Algebra::Vector4>&)> generationFunction;
 	BezierSurfaceGenerationComponent() = default;
 	BezierSurfaceGenerationComponent(const BezierSurfaceGenerationComponent& other) = default;
 };
