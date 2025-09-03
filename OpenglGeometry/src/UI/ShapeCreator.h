@@ -17,12 +17,12 @@ namespace GUI
 
 		if (ImGui::Button("Create Torus##Creation menu"))
 		{
-			Archetypes::CreateTorus(scene.get());
+			Archetypes::CreateTorus(scene.get(), cursorPosition);
 		}
 
 		if (ImGui::Button("Create Point##Creation menu"))
 		{
-			Archetypes::CreatePoint(scene.get(), { 0.f, 0.f, 0.f });
+			Archetypes::CreatePoint(scene.get(), cursorPosition);
 		}
 
 		if (ImGui::Button("Create Polyline##Creation menu"))
@@ -62,7 +62,7 @@ namespace GUI
 				&bezierParams.sizeY, 1, 1, 100);
 			ImGui::Checkbox("Make cylinder##Creation menu", 
 				&bezierParams.isCylinder);
-
+			bezierParams.startingPosition = cursorPosition;
 			if (ImGui::Button("Create Bezier Surface##Creation menu"))
 			{
 				Archetypes::CreateBezierSurface(scene.get(), bezierParams);

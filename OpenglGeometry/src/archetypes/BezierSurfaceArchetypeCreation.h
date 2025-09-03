@@ -13,6 +13,7 @@ namespace Archetypes
 		float sizeY = 4;
 		unsigned int numberOfXPatches = 1;
 		unsigned int numberOfYPatches = 1;
+		Algebra::Vector4 startingPosition;
 	};
 
 	inline Entity CreateVirtualPatch(Scene* scene, Entity parentEntity)
@@ -106,16 +107,14 @@ namespace Archetypes
 		const float sizeXPerPoint = params.sizeX / (numberOfPointsX - 1);
 		const float sizeYPerPoint = params.sizeY / (numberOfPointsY - 1);
 
+		const auto startingPosition = params.startingPosition;
+
 		for (int i = 0; i < numberOfPointsX; i++)
 		{
 			for (int j = 0; j < numberOfPointsY; j++)
 			{
-				auto point = CreatePoint(scene,
-					{
-						i * sizeXPerPoint,
-						j * sizeYPerPoint,
-						0.f
-					});
+				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, j * sizeYPerPoint, 0.f);
+				auto point = CreatePoint(scene, startingPosition + offset);
 				result[i][j] = point;
 			}
 		}
@@ -133,7 +132,7 @@ namespace Archetypes
 			2.f * std::numbers::pi_v<float> / static_cast<float>(numberOfPointsX - 1);
 
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
-		Algebra::Vector4 startingPosition;
+		Algebra::Vector4 startingPosition = params.startingPosition;
 
 		for(int i = 0; i < numberOfPointsX - 1; i++)
 		{
