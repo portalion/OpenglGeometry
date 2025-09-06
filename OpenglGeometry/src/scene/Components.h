@@ -116,7 +116,7 @@ struct VirtualEntityComponent
 
 struct IsParentOfVirtualEntitiesComponent
 {
-	Entity virtualEntity;
+	std::vector<Entity> virtualEntities;
 	IsParentOfVirtualEntitiesComponent() = default;
 	IsParentOfVirtualEntitiesComponent(const IsParentOfVirtualEntitiesComponent& other) = default;
 };

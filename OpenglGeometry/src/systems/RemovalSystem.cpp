@@ -13,8 +13,13 @@ void RemovalSystem::Process()
 	{
 		if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
 		{
-			entity.GetComponent<IsParentOfVirtualEntitiesComponent>()
-				.virtualEntity.AddTag<ToBeDestroyedTag>();
+			auto virtualEntities = entity.GetComponent<IsParentOfVirtualEntitiesComponent>()
+				.virtualEntities;
+			for (auto entity : virtualEntities)
+			{
+				if(entity.IsValid())
+					entity.AddTag<ToBeDestroyedTag>();
+			}
 		}
 		m_Scene->DestroyEntity(entity);
 	}

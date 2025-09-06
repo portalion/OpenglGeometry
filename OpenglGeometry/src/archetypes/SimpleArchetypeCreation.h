@@ -23,7 +23,7 @@ namespace Archetypes
 		if(!parent.HasComponent<IsParentOfVirtualEntitiesComponent>())
 			parent.AddComponent<IsParentOfVirtualEntitiesComponent>();
 
-		parent.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity = entity;
+		parent.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities.push_back(entity);
 		
 		return entity;
 	}

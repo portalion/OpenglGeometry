@@ -34,7 +34,8 @@ namespace GUI
 
 			if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
 			{
-				auto virtualEntity = entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntity;
+				auto virtualEntities = entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities;
+				for (Entity virtualEntity : virtualEntities)
 				if (virtualEntity.IsValid())
 				{
 					bool visible = !virtualEntity.HasComponent<IsInvisibleTag>();
