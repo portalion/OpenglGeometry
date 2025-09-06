@@ -97,8 +97,8 @@ namespace Archetypes
 		}
 	}
 
-	inline std::vector<std::vector<Entity>>GenerateRectangularGridOfPoints(Scene* scene, 
-		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints)
+	inline std::vector<std::vector<Entity>>GenerateRectangularGridOfPoints(Scene* scene, Entity entity,
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints, bool createVirtual)
 	{
 		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 
@@ -114,7 +114,15 @@ namespace Archetypes
 			for (unsigned int j = 0; j < numberOfPointsY; j++)
 			{
 				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, j * sizeYPerPoint, 0.f);
-				auto point = CreatePoint(scene, startingPosition + offset);
+				Entity point;
+				if (!createVirtual)
+					point = CreatePoint(scene, startingPosition + offset);
+				else
+				{
+					point = scene->CreateEntity();
+					AddVirtualToEntity(point, entity);
+					AddPointToEntity(point, startingPosition + offset);
+				}
 				result[i][j] = point;
 			}
 		}
@@ -122,8 +130,8 @@ namespace Archetypes
 		return result;
 	}
 
-	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, 
-		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints)
+	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, Entity entity,
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints, bool createVirtual)
 	{
 		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 		
@@ -144,7 +152,15 @@ namespace Archetypes
 					Algebra::Matrix4::RotationZ(anglePerPoint * i) * 
 					Algebra::Vector4(params.sizeX, 0.f, 0.f);
 
-				auto point = CreatePoint(scene, startingPosition + heightOffset + radiusOffset);
+				Entity point;
+				if(!createVirtual)
+					point = CreatePoint(scene, startingPosition + heightOffset + radiusOffset);
+				else
+				{
+					point = scene->CreateEntity();
+					AddVirtualToEntity(point, entity);
+					AddPointToEntity(point, startingPosition + heightOffset + radiusOffset);
+				}
 				result[i][j] = point;
 			}
 		}
@@ -158,7 +174,7 @@ namespace Archetypes
 	}
 
 #pragma endregion
-	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams)
+	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams, bool createVirtual = false)
 	{
 		entity.AddTag<IsDirtyTag>();
 		auto& bezierComponent = entity.AddComponent<BezierSurfaceGenerationComponent>();
@@ -167,9 +183,9 @@ namespace Archetypes
 
 		std::vector<std::vector<Entity>> points;
 		if (bezierParams.isCylinder)
-			points = GenerateCylindricalGridOfPoints(scene, bezierParams, numberOfPoints);
+			points = GenerateCylindricalGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual);
 		else
-			points = GenerateRectangularGridOfPoints(scene, bezierParams, numberOfPoints);
+			points = GenerateRectangularGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual);
 
 		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points);
 
