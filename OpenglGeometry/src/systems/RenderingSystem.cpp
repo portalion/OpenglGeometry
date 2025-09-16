@@ -48,7 +48,10 @@ void RenderingSystem::Process()
 
 		//TODO: Change it, for now it is working bad
 		auto viewMatrix = GetModelMatrix(entity);
-
+		auto s = ShaderManager::GetInstance().GetShader(AvailableShaders::InfiniteGrid);
+		s->Bind();
+		if(entity.HasComponent<PositionComponent>())
+			s->SetUniformVec4f("uCameraPos", entity.GetComponent<PositionComponent>().position.value);
 		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
 	}
 

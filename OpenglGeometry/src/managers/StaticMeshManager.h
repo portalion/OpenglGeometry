@@ -7,7 +7,8 @@ enum class StaticMeshType
 {
 	Cube,
 	Square,
-	Cursor
+	Cursor,
+	Grid
 };
 
 class StaticMeshManager

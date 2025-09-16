@@ -1,24 +1,30 @@
 #version 460 core
 
-layout(location = 0) in vec4 in_position;
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec3 color;
 
-layout(location = 0) out vec3 out_worldPosition;
+layout(location = 0) out vec3 out_color;
+layout(location = 1) out vec4 out_worldPos;
 
-uniform mat4 u_projectionMatrix;
+uniform mat4 u_modelMatrix = mat4(1.0);
 uniform mat4 u_viewMatrix;
-uniform vec4 u_CameraWorldPosition;
-
-uniform float u_GridSize = 10000.f;
-
+uniform mat4 u_projectionMatrix;
+uniform vec4 uCameraPos;
 void main()
 {
-    vec3 position = in_position.xyz * u_GridSize;
-    position.x += u_CameraWorldPosition.x;
-    position.z += u_CameraWorldPosition.z;
+    out_color = color;
+    out_worldPos = u_modelMatrix * position;
+    float dist = max(abs(uCameraPos.z), 1e-6);
 
-    mat4 mvp = u_projectionMatrix * u_viewMatrix;
-    vec4 pos = mvp * vec4(position, 1.0);
+    float decade = floor(log(dist) / log(10.0));
 
-    gl_Position = pos;
-    out_worldPosition = position;
+    float stepMul = pow(10.0, decade);
+
+    out_worldPos.xyz *= stepMul * 50;
+
+    vec2 movement = floor(uCameraPos.xy / 10);
+
+    out_worldPos.xy -= movement * 10;
+
+    gl_Position = u_projectionMatrix * u_viewMatrix * out_worldPos;
 };

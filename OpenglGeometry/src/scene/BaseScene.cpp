@@ -16,5 +16,14 @@ BaseScene::BaseScene()
 		camera.AddComponent<PositionComponent>().position.Set(Globals::startingCameraPosition);
 		camera.AddComponent<RotationComponent>();
 		camera.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
+		camera.AddComponent<NameComponent>().name = "camera";
+	}
+
+	{
+		auto grid = CreateEntity();
+		auto& mc = grid.AddComponent<MeshComponent>();
+		mc.renderingMode = RenderingMode::Lines;
+		mc.shaderTypes = { AvailableShaders::InfiniteGrid };
+		mc.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Grid);
 	}
 }
