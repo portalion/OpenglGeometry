@@ -12,6 +12,7 @@ uniform mat4 u_modelMatrix = mat4(1.0);
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
 uniform vec4 uCameraPos;
+
 void main()
 {
     out_color = color;
@@ -21,7 +22,7 @@ void main()
     float decade = floor(log10dist);
     float stepMul = pow(10.0, decade);
 
-    scalling = stepMul * 50;
+    scalling = stepMul * 10;
     fraction = log10dist - decade;
 
     out_worldPos.xyz *= scalling;
