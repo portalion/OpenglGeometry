@@ -181,11 +181,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\meshGenerators\InterpolatedBezierCurveGenerator.cpp" />
+    <ClCompile Include="src\systems\gui\PopupSystem.cpp" />
     <ClCompile Include="src\systems\RemovalSystem.cpp" />
     <ClCompile Include="src\meshGenerators\BezierCurveGenerator.cpp" />
     <ClCompile Include="src\meshGenerators\PolylineMeshGenerator.cpp" />
     <ClCompile Include="src\meshGenerators\TorusMeshGenerator.cpp" />
-    <ClCompile Include="src\systems\GUISystem.cpp" />
+    <ClCompile Include="src\systems\gui\GUISystem.cpp" />
     <ClCompile Include="src\systems\NotificationSystem.cpp" />
     <ClCompile Include="src\systems\MeshGeneratingSystem.cpp" />
     <ClCompile Include="src\core\Notifier.cpp" />
@@ -201,6 +202,7 @@
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
     <ClCompile Include="src\core\Camera.cpp" />
+    <ClCompile Include="src\UI\popups\ShapeCreation.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -228,13 +230,14 @@
     <ClInclude Include="src\archetypes\BezierSurfaceArchetypeCreation.h" />
     <ClInclude Include="src\meshGenerators\InterpolatedBezierCurveGenerator.h" />
     <ClInclude Include="src\archetypes\InterpolatedBezierCurveArchetypeCreation.h" />
+    <ClInclude Include="src\systems\gui\PopupSystem.h" />
     <ClInclude Include="src\systems\RemovalSystem.h" />
     <ClInclude Include="src\meshGenerators\Base.h" />
     <ClInclude Include="src\meshGenerators\BezierCurveGenerator.h" />
     <ClInclude Include="src\meshGenerators\MeshGenerators.h" />
     <ClInclude Include="src\meshGenerators\PolylineMeshGenerator.h" />
     <ClInclude Include="src\meshGenerators\TorusMeshGenerator.h" />
-    <ClInclude Include="src\systems\GUISystem.h" />
+    <ClInclude Include="src\systems\gui\GUISystem.h" />
     <ClInclude Include="src\systems\NotificationSystem.h" />
     <ClInclude Include="src\archetypes\Archetypes.h" />
     <ClInclude Include="src\archetypes\BezierCurveArchetypeCreation.h" />
@@ -263,6 +266,8 @@
     <ClInclude Include="src\renderer\Buffer.h" />
     <ClInclude Include="src\systems\ISystem.h" />
     <ClInclude Include="src\UI\GUI.h" />
+    <ClInclude Include="src\UI\popups\IPopup.h" />
+    <ClInclude Include="src\UI\popups\ShapeCreation.h" />
     <ClInclude Include="src\UI\SelectedShapesProperties.h" />
     <ClInclude Include="src\UI\ShapeCreator.h" />
     <ClInclude Include="src\UI\ShapeList.h" />

@@ -1,0 +1,22 @@
+#pragma once
+#include "IPopup.h"
+#include <scene/Components.h>
+#include <scene/Tags.h>
+#include <core/Base.h>
+#include <scene/Scene.h>
+#include <scene/Entity.h>
+
+class ShapeCreation : public IPopup
+{
+private:
+	Ref<Scene> m_Scene;
+	Entity m_Cursor;
+
+	std::vector<Entity> GetSelectedPoints();
+public:
+	ShapeCreation(Ref<Scene> scene);
+
+	inline const char* Name() override { return "Shape Creation"; };
+	inline bool ShouldOpen() override { return ImGui::IsKeyChordPressed(ImGuiMod_Shift | ImGuiKey_A); }
+	void Display() override;
+};

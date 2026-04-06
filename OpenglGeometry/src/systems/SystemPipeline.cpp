@@ -6,8 +6,9 @@
 #include "RenderingSystem.h"
 #include "MeshGeneratingSystem.h"
 #include "NotificationSystem.h"
-#include "GUISystem.h"
 #include "RemovalSystem.h"
+#include "gui/GUISystem.h"
+#include "gui/PopupSystem.h"
 
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
@@ -17,7 +18,10 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 	{
 		CreateRef<NotificationSystem>(m_Scene),
 		CreateRef<RemovalSystem>(m_Scene),
+		
 		CreateRef<GUISystem>(m_Scene),
+		CreateRef<PopupSystem>(m_Scene),
+
 		CreateRef<MeshGeneratingSystem>(m_Scene),
 		CreateRef<RenderingSystem>(m_Scene)
 	};

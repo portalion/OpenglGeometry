@@ -27,7 +27,6 @@ private:
 	bool showGrid = true;
 	Window window;
 
-
 	Unique<SystemPipeline> systemPipeline;
 	Ref<Scene> currentScene;
 };
