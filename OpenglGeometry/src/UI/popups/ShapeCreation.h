@@ -17,6 +17,6 @@ public:
 	ShapeCreation(Ref<Scene> scene);
 
 	inline const char* Name() override { return "Shape Creation"; };
-	inline bool ShouldOpen() override { return ImGui::IsKeyChordPressed(ImGuiMod_Shift | ImGuiKey_A); }
+	bool ShouldOpen() override;
 	void Display() override;
 };

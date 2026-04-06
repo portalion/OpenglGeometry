@@ -20,6 +20,11 @@ ShapeCreation::ShapeCreation(Ref<Scene> scene)
 	meshComponent.renderingMode = RenderingMode::Lines;
 }
 
+bool ShapeCreation::ShouldOpen()
+{
+	return ImGui::IsKeyChordPressed(ImGuiMod_Shift | ImGuiKey_A);
+}
+
 void ShapeCreation::Display()
 {
 	auto cursorPosition = m_Cursor.GetComponent<PositionComponent>().position;
