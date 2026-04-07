@@ -1,6 +1,6 @@
 #pragma once
 #include "core/Base.h"
-#include "ISystem.h"
+#include "interfaces/ISystem.h"
 
 class Scene;
 class Entity;

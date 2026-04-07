@@ -1,5 +1,5 @@
 #pragma once
-#include "IPopup.h"
+#include "interfaces/IPopup.h"
 #include <scene/Components.h>
 #include <scene/Tags.h>
 #include <core/Base.h>

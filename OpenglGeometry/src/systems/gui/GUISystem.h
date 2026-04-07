@@ -1,5 +1,5 @@
 #pragma once
-#include "systems/ISystem.h"
+#include "interfaces/ISystem.h"
 #include "core/Base.h"
 #include <scene/Scene.h>
 #include <scene/Entity.h>

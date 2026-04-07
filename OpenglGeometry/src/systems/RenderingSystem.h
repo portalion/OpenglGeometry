@@ -2,7 +2,7 @@
 #include "core/Base.h"
 #include "Algebra.h"
 #include "renderer/Renderer.h"
-#include "ISystem.h"
+#include "interfaces/ISystem.h"
 
 class Scene;
 class Shader;

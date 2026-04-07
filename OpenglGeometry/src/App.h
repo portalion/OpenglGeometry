@@ -3,7 +3,6 @@
 #include "utils/Initialization.h"
 #include "Algebra.h"
 #include "core/Window.h"
-#include "core/Camera.h"
 #include <unordered_set>
 #include "core/Base.h"
 #include "systems/SystemPipeline.h"

@@ -1,9 +1,9 @@
 #pragma once
 #include "core/Base.h"
-#include "systems/ISystem.h"
+#include "interfaces/ISystem.h"
 #include <vector>
 #include <string>
-#include <UI/popups/IPopup.h>
+#include <interfaces/IPopup.h>
 #include <scene/Scene.h>
 
 class PopupSystem : public ISystem

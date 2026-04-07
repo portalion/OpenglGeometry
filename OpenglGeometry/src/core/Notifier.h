@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <IObserver.h>
+#include <interfaces/IObserver.h>
 
 class Notifier
 {

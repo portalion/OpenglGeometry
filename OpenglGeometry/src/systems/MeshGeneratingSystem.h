@@ -2,7 +2,7 @@
 #include <scene/Scene.h>
 #include "scene/Entity.h"
 #include "scene/Components.h"
-#include "ISystem.h"
+#include "interfaces/ISystem.h"
 
 class MeshGeneratingSystem : public ISystem
 {
