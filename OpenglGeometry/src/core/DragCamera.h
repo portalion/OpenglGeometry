@@ -1,7 +1,7 @@
 #pragma once
 #include "Algebra.h"
 
-class Camera
+class DragCamera
 {
 private:
 	float zoom;
@@ -13,7 +13,7 @@ private:
 	void HandleZoom(const float& dt);
 	void HandleRotations(const float& dt);
 public:
-	Camera(Algebra::Vector4 position = Algebra::Vector4(0.f, 0.f, 0.f, 1.f), float zoom = 1.f);
+	DragCamera(Algebra::Vector4 position = Algebra::Vector4(0.f, 0.f, 0.f, 1.f), float zoom = 1.f);
 	
 	Algebra::Matrix4 GetTranslationMatrix();
 	Algebra::Matrix4 GetZoomMatrix();

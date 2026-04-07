@@ -1,24 +1,24 @@
-#include "Camera.h"
+#include "DragCamera.h"
 #include <imgui/imgui.h>
 #include <algorithm>
 #include "Globals.h"
 
-Algebra::Matrix4 Camera::GetTranslationMatrix()
+Algebra::Matrix4 DragCamera::GetTranslationMatrix()
 {
 	return Algebra::Matrix4::Translation(-position.x, -position.y, -position.z);
 }
 
-Algebra::Matrix4 Camera::GetZoomMatrix()
+Algebra::Matrix4 DragCamera::GetZoomMatrix()
 {
 	return Algebra::Matrix4::DiagonalScaling(zoom, zoom, zoom);
 }
 
-Algebra::Matrix4 Camera::GetRotationMatrix()
+Algebra::Matrix4 DragCamera::GetRotationMatrix()
 {
 	return rotation.ToMatrix();
 }
 
-void Camera::HandleTranslation(const float& dt)
+void DragCamera::HandleTranslation(const float& dt)
 {
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle))
 	{
@@ -34,7 +34,7 @@ void Camera::HandleTranslation(const float& dt)
 	}
 }
 
-void Camera::HandleZoom(const float& dt)
+void DragCamera::HandleZoom(const float& dt)
 {
 	if (ImGui::GetIO().MouseWheel != 0.f)
 	{
@@ -43,7 +43,7 @@ void Camera::HandleZoom(const float& dt)
 	}
 }
 
-void Camera::HandleRotations(const float& dt)
+void DragCamera::HandleRotations(const float& dt)
 {
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
 	{
@@ -79,12 +79,12 @@ void Camera::HandleRotations(const float& dt)
 	}
 }
 
-Camera::Camera(Algebra::Vector4 position, float zoom)
+DragCamera::DragCamera(Algebra::Vector4 position, float zoom)
 	:position{ position }, zoom{ zoom }, rotation{1, 0, 0, 0}
 {
 }
 
-void Camera::HandleInput()
+void DragCamera::HandleInput()
 {
 	const float dt = ImGui::GetIO().DeltaTime;
 	HandleTranslation(dt);

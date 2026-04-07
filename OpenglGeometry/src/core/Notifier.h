@@ -1,12 +1,6 @@
 #pragma once
 #include <vector>
-
-class IObserver
-{
-public:
-	virtual ~IObserver() = default;
-	virtual void OnNotify() = 0;
-};
+#include <IObserver.h>
 
 class Notifier
 {

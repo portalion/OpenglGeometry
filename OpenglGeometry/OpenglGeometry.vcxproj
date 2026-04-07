@@ -201,7 +201,7 @@
     <ClCompile Include="src\managers\IdManager.cpp" />
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
-    <ClCompile Include="src\core\Camera.cpp" />
+    <ClCompile Include="src\core\DragCamera.cpp" />
     <ClCompile Include="src\UI\popups\ShapeCreation.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -228,6 +228,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\archetypes\BezierSurfaceArchetypeCreation.h" />
+    <ClInclude Include="src\interfaces\ICamera.h" />
+    <ClInclude Include="src\interfaces\IObserver.h" />
     <ClInclude Include="src\meshGenerators\InterpolatedBezierCurveGenerator.h" />
     <ClInclude Include="src\archetypes\InterpolatedBezierCurveArchetypeCreation.h" />
     <ClInclude Include="src\systems\gui\PopupSystem.h" />
@@ -260,13 +262,13 @@
     <ClInclude Include="src\renderer\ShaderBuilder.h" />
     <ClInclude Include="src\managers\IdManager.h" />
     <ClInclude Include="src\managers\ShaderManager.h" />
-    <ClInclude Include="src\core\Camera.h" />
+    <ClInclude Include="src\core\DragCamera.h" />
     <ClInclude Include="src\engine\VertexLayout.h" />
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
-    <ClInclude Include="src\systems\ISystem.h" />
+    <ClInclude Include="src\interfaces\ISystem.h" />
     <ClInclude Include="src\UI\GUI.h" />
-    <ClInclude Include="src\UI\popups\IPopup.h" />
+    <ClInclude Include="src\interfaces\IPopup.h" />
     <ClInclude Include="src\UI\popups\ShapeCreation.h" />
     <ClInclude Include="src\UI\SelectedShapesProperties.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
