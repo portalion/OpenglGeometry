@@ -269,7 +269,6 @@
     <ClInclude Include="src\UI\popups\IPopup.h" />
     <ClInclude Include="src\UI\popups\ShapeCreation.h" />
     <ClInclude Include="src\UI\SelectedShapesProperties.h" />
-    <ClInclude Include="src\UI\ShapeCreator.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\UI\Utils.h" />
     <ClInclude Include="src\utils\GlCall.h" />

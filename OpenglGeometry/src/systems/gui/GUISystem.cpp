@@ -1,5 +1,7 @@
 #include "GUISystem.h"
 #include "UI/GUI.h"
+#include <archetypes/SimpleArchetypeCreation.h>
+#include <managers/StaticMeshManager.h>
 
 GUISystem::GUISystem(Ref<Scene> scene)
 	:m_Scene(scene)
@@ -20,7 +22,6 @@ void GUISystem::Process()
 		m_Cursor.AddComponent<PositionComponent>();
 	}
 
-	GUI::DisplayCreationButtons(m_Scene, m_Cursor.GetComponent<PositionComponent>().position);
 	GUI::DisplayShapeList(m_Scene);
 	GUI::DisplaySelectedShapesProperties(m_Scene);
 }
