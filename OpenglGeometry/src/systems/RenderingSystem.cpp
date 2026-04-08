@@ -46,6 +46,8 @@ void RenderingSystem::Process()
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
+		//cameraComponent.cameraHandling->HandleInput();
+
 		//TODO: Change it, for now it is working bad
 		auto viewMatrix = GetModelMatrix(entity);
 		auto s = ShaderManager::GetInstance().GetShader(AvailableShaders::InfiniteGrid);

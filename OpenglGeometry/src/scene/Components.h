@@ -9,6 +9,7 @@
 #include "renderer/Renderer.h"
 #include "managers/IdManager.h"
 #include "Observable.h"
+#include <interfaces/ICamera.h>
 
 struct PositionComponent
 {
@@ -49,6 +50,7 @@ struct CameraComponent
 {
 	bool active = false;
 	Algebra::Matrix4 projectionMatrix;
+	Ref<ICamera> cameraHandling;
 
 	CameraComponent() = default;
 	CameraComponent(const CameraComponent& other) = default;

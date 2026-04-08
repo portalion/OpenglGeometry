@@ -23,5 +23,4 @@ void GUISystem::Process()
 	}
 
 	GUI::DisplayShapeList(m_Scene);
-	GUI::DisplaySelectedShapesProperties(m_Scene);
 }

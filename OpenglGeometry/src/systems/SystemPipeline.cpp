@@ -9,6 +9,7 @@
 #include "RemovalSystem.h"
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
+#include "gui/ShapeInspectorSystem.h"
 
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
@@ -20,6 +21,7 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 		CreateRef<RemovalSystem>(m_Scene),
 		
 		CreateRef<GUISystem>(m_Scene),
+		CreateRef<ShapeInspectorSystem>(m_Scene),
 		CreateRef<PopupSystem>(m_Scene),
 
 		CreateRef<MeshGeneratingSystem>(m_Scene),

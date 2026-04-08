@@ -182,6 +182,7 @@
   <ItemGroup>
     <ClCompile Include="src\meshGenerators\InterpolatedBezierCurveGenerator.cpp" />
     <ClCompile Include="src\systems\gui\PopupSystem.cpp" />
+    <ClCompile Include="src\systems\gui\ShapeInspectorSystem.cpp" />
     <ClCompile Include="src\systems\RemovalSystem.cpp" />
     <ClCompile Include="src\meshGenerators\BezierCurveGenerator.cpp" />
     <ClCompile Include="src\meshGenerators\PolylineMeshGenerator.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="src\archetypes\InterpolatedBezierCurveArchetypeCreation.h" />
     <ClInclude Include="src\scene\ComponentFunctionRegistry.h" />
     <ClInclude Include="src\systems\gui\PopupSystem.h" />
+    <ClInclude Include="src\systems\gui\ShapeInspectorSystem.h" />
     <ClInclude Include="src\systems\RemovalSystem.h" />
     <ClInclude Include="src\meshGenerators\Base.h" />
     <ClInclude Include="src\meshGenerators\BezierCurveGenerator.h" />
@@ -271,7 +273,6 @@
     <ClInclude Include="src\UI\GUI.h" />
     <ClInclude Include="src\interfaces\IPopup.h" />
     <ClInclude Include="src\UI\popups\ShapeCreation.h" />
-    <ClInclude Include="src\UI\SelectedShapesProperties.h" />
     <ClInclude Include="src\UI\ShapeList.h" />
     <ClInclude Include="src\UI\Utils.h" />
     <ClInclude Include="src\utils\GlCall.h" />
