@@ -70,6 +70,8 @@ public:
 		return m_Scene->m_Registry.valid(m_EntityHandle);
 	}
 
+	std::vector<entt::id_type> GetComponentTypes();
+
 	friend Scene;
 };
 
