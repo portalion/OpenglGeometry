@@ -17,7 +17,8 @@ protected:
 	}
 
 public:
-	void PerformFunctions(Entity entity) {
+	inline void PerformFunctions(Entity entity) 
+	{
 		for (const auto& component : entity.GetComponentTypes())
 		{
 			if (!m_ComponentToFunctionStorage.contains(component)) continue;
