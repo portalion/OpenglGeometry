@@ -4,6 +4,7 @@
 void Renderer::SetShader(AvailableShaders shaderType)
 {
 	m_ActualShader = ShaderManager::GetInstance().GetShader(shaderType);
+	m_ActualShader->Bind();
 }
 
 void Renderer::SetCamera(Algebra::Matrix4 projectionMatrix, Algebra::Matrix4 viewMatrix)
@@ -26,7 +27,6 @@ void Renderer::Render(RenderingMode mode)
 {
 	if (!m_ActualShader) return;
 
-	m_ActualShader->Bind();
 	m_ActualShader->SetUniformMat4f("u_projectionMatrix", m_ActualProjectionMatrix);
 	m_ActualShader->SetUniformMat4f("u_viewMatrix", m_ActualViewMatrix);
 	m_ActualShader->SetUniformMat4f("u_modelMatrix", m_ActualModelMatrix);
