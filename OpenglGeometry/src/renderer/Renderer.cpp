@@ -18,18 +18,13 @@ void Renderer::SetMesh(Ref<VertexArray> mesh)
 	m_ActualMesh = mesh;
 }
 
-void Renderer::SetTransformations(Algebra::Matrix4 modelMatrix)
-{
-	m_ActualModelMatrix = modelMatrix;
-}
-
-void Renderer::Render(RenderingMode mode)
+void Renderer::Render(RenderingMode mode, const RendererContext& context)
 {
 	if (!m_ActualShader) return;
 
 	m_ActualShader->SetUniformMat4f("u_projectionMatrix", m_ActualProjectionMatrix);
 	m_ActualShader->SetUniformMat4f("u_viewMatrix", m_ActualViewMatrix);
-	m_ActualShader->SetUniformMat4f("u_modelMatrix", m_ActualModelMatrix);
+	m_ActualShader->SetUniformMat4f("u_modelMatrix", context.Position * context.Rotation * context.Scale);
 	
 	m_ActualMesh->Bind();
 

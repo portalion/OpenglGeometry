@@ -61,13 +61,13 @@ void RenderingSystem::Process()
 	{
 		auto& meshComponent = entity.GetComponent<MeshComponent>();
 
-		auto modelMatrix = GetModelMatrix(entity);
-		m_Renderer->SetTransformations(modelMatrix);
+		RendererContext context;
+		m_UniformApplier.PerformFunctions(entity, context);
 		m_Renderer->SetMesh(meshComponent.mesh);
 		for(auto shaderType : meshComponent.shaderTypes)
 		{
 			m_Renderer->SetShader(shaderType);
-			m_Renderer->Render(meshComponent.renderingMode);
+			m_Renderer->Render(meshComponent.renderingMode, context);
 		}
 	}
 }

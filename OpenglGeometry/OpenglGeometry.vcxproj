@@ -203,6 +203,7 @@
     <ClCompile Include="src\managers\ShaderManager.cpp" />
     <ClCompile Include="src\core\Globals.cpp" />
     <ClCompile Include="src\core\DragCamera.cpp" />
+    <ClCompile Include="src\systems\UniformApplier.cpp" />
     <ClCompile Include="src\UI\popups\ShapeCreation.cpp" />
     <ClCompile Include="src\utils\GlCall.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="src\interfaces\IObserver.h" />
     <ClInclude Include="src\meshGenerators\InterpolatedBezierCurveGenerator.h" />
     <ClInclude Include="src\archetypes\InterpolatedBezierCurveArchetypeCreation.h" />
+    <ClInclude Include="src\renderer\RendererContext.h" />
     <ClInclude Include="src\scene\ComponentFunctionRegistry.h" />
     <ClInclude Include="src\systems\gui\PopupSystem.h" />
     <ClInclude Include="src\systems\gui\ShapeInspectorSystem.h" />
@@ -270,6 +272,7 @@
     <ClInclude Include="src\core\Globals.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
     <ClInclude Include="src\interfaces\ISystem.h" />
+    <ClInclude Include="src\systems\UniformApplier.h" />
     <ClInclude Include="src\UI\GUI.h" />
     <ClInclude Include="src\interfaces\IPopup.h" />
     <ClInclude Include="src\UI\popups\ShapeCreation.h" />
