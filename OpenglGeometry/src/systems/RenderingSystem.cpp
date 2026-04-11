@@ -8,30 +8,6 @@
 #include <GL/glew.h>
 #include "scene/Components.h"
 
-Algebra::Matrix4 RenderingSystem::GetModelMatrix(Entity entity)
-{
-	Algebra::Matrix4 result = Algebra::Matrix4::Identity();
-	if (entity.HasComponent<PositionComponent>())
-	{
-		auto& position = entity.GetComponent<PositionComponent>().position;
-		result = Algebra::Matrix4::Translation(position) * result;
-	}
-
-	if (entity.HasComponent<ScaleComponent>())
-	{
-		auto& scale = entity.GetComponent<ScaleComponent>().scale;
-		result = Algebra::Matrix4::DiagonalScaling(scale.x, scale.y, scale.z) * result;
-	}
-
-	if (entity.HasComponent<RotationComponent>())
-	{
-		auto& rotation = entity.GetComponent<RotationComponent>().rotation;
-		result = rotation.ToMatrix() * result;
-	}
-
-	return result;
-}
-
 RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
 	: m_Scene(m_Scene)
 {
@@ -49,12 +25,13 @@ void RenderingSystem::Process()
 		//cameraComponent.cameraHandling->HandleInput();
 
 		//TODO: Change it, for now it is working bad
-		auto viewMatrix = GetModelMatrix(entity);
+		RendererContext cameraUniforms;
+		m_UniformApplier.PerformFunctions(entity, cameraUniforms);
+
 		auto s = ShaderManager::GetInstance().GetShader(AvailableShaders::InfiniteGrid);
 		s->Bind();
-		if(entity.HasComponent<PositionComponent>())
-			s->SetUniformVec4f("uCameraPos", entity.GetComponent<PositionComponent>().position.value);
-		m_Renderer->SetCamera(cameraComponent.projectionMatrix, viewMatrix);
+		s->SetUniformVec4f("uCameraPos", Algebra::Vector4() * cameraUniforms.Position);
+		m_Renderer->SetCamera(cameraComponent.projectionMatrix, cameraUniforms.Position * cameraUniforms.Rotation * cameraUniforms.Scale);
 	}
 
 	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvisibleTag>()))

@@ -15,8 +15,6 @@ private:
 	Ref<Scene> m_Scene;
 	Ref<Renderer> m_Renderer;
 	UniformApplier m_UniformApplier;
-
-	Algebra::Matrix4 GetModelMatrix(Entity entity);
 public:
 	RenderingSystem(Ref<Scene> m_Scene);
 
