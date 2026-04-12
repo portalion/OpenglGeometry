@@ -17,28 +17,28 @@ RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
 
 void RenderingSystem::Process()
 {
+	SceneContext sceneContext;
+
 	for (Entity entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
-		//cameraComponent.cameraHandling->HandleInput();
-
-		//TODO: Change it, for now it is working bad
-		RendererContext cameraUniforms;
+		EntityContext cameraUniforms;
 		m_UniformApplier.PerformFunctions(entity, cameraUniforms);
 
-		auto s = ShaderManager::GetInstance().GetShader(AvailableShaders::InfiniteGrid);
-		s->Bind();
-		s->SetUniformVec4f("uCameraPos", Algebra::Vector4() * cameraUniforms.Position);
-		m_Renderer->SetCamera(cameraComponent.projectionMatrix, cameraUniforms.Position * cameraUniforms.Rotation * cameraUniforms.Scale);
+		sceneContext.CameraPosition = cameraUniforms.Position[3];
+		sceneContext.ProjectionMatrix = cameraComponent.projectionMatrix;
+		sceneContext.ViewMatrix = cameraUniforms.Position * cameraUniforms.Rotation * cameraUniforms.Scale;
 	}
 
+	m_Renderer->SetSceneContext(sceneContext);
+	
 	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvisibleTag>()))
 	{
 		auto& meshComponent = entity.GetComponent<MeshComponent>();
 
-		RendererContext context;
+		EntityContext context;
 		m_UniformApplier.PerformFunctions(entity, context);
 		m_Renderer->SetMesh(meshComponent.mesh);
 		for(auto shaderType : meshComponent.shaderTypes)

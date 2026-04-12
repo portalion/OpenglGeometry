@@ -1,20 +1,20 @@
 #include "UniformApplier.h"
 #include <scene/Components.h>
 
-void UniformApplier::PositionApplier(Entity entity, RendererContext& context)
+void UniformApplier::PositionApplier(Entity entity, EntityContext& context)
 {
 	auto position = entity.GetComponent<PositionComponent>().position;
 	context.Position = Algebra::Matrix4::Translation(position);
 	
 }
 
-void UniformApplier::RotationApplier(Entity entity, RendererContext& context)
+void UniformApplier::RotationApplier(Entity entity, EntityContext& context)
 {
 	auto rotation = entity.GetComponent<RotationComponent>().rotation;
 	context.Rotation = rotation.ToMatrix();
 }
 
-void UniformApplier::ScaleApplier(Entity entity, RendererContext& context)
+void UniformApplier::ScaleApplier(Entity entity, EntityContext& context)
 {
 	auto scale = entity.GetComponent<ScaleComponent>().scale;
 	context.Scale = Algebra::Matrix4::DiagonalScaling(scale.x, scale.y, scale.z);

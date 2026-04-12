@@ -2,16 +2,16 @@
 
 layout(vertices = 4) out;
 
-uniform mat4 u_viewMatrix;
-uniform mat4 u_projectionMatrix;
-uniform vec4 u_cameraPos;
+uniform mat4 g_viewMatrix;
+uniform mat4 g_projectionMatrix;
+uniform vec4 g_cameraPosition;
 
 out patch float maxU;
 
 float screenDistance(vec4 a, vec4 b)
 {
-    vec4 clipA = u_projectionMatrix * u_viewMatrix * a;
-    vec4 clipB = u_projectionMatrix * u_viewMatrix * b;
+    vec4 clipA = g_projectionMatrix * g_viewMatrix * a;
+    vec4 clipB = g_projectionMatrix * g_viewMatrix * b;
 
     vec3 ndcA = clipA.xyz / clipA.w;
     vec3 ndcB = clipB.xyz / clipB.w;
@@ -26,7 +26,7 @@ float averageDistanceToCamera()
     vec3 worldPos2 = gl_in[2].gl_Position.xyz;
     vec3 worldPos3 = gl_in[3].gl_Position.xyz;
 
-    vec3 camPos = u_cameraPos.xyz;
+    vec3 camPos = g_cameraPosition.xyz;
 
     float d0 = distance(worldPos0, camPos);
     float d1 = distance(worldPos1, camPos);

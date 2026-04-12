@@ -3,12 +3,12 @@
 #include <scene/ComponentFunctionRegistry.h>
 #include <renderer/Shader.h>
 
-class UniformApplier : public ComponentFunctionRegistry<RendererContext&>
+class UniformApplier : public ComponentFunctionRegistry<EntityContext&>
 {
 private:
-	void PositionApplier(Entity entity, RendererContext& context);
-	void RotationApplier(Entity entity, RendererContext& context);
-	void ScaleApplier(Entity entity, RendererContext& context);
+	void PositionApplier(Entity entity, EntityContext& context);
+	void RotationApplier(Entity entity, EntityContext& context);
+	void ScaleApplier(Entity entity, EntityContext& context);
 public:
 	UniformApplier();
 };

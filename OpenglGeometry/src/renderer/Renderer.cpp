@@ -7,10 +7,14 @@ void Renderer::SetShader(AvailableShaders shaderType)
 	m_ActualShader->Bind();
 }
 
-void Renderer::SetCamera(Algebra::Matrix4 projectionMatrix, Algebra::Matrix4 viewMatrix)
+void Renderer::SetSceneContext(SceneContext context)
 {
-	m_ActualProjectionMatrix = projectionMatrix;
-	m_ActualViewMatrix = viewMatrix;
+	UniformContext sceneContextTemp;
+	sceneContextTemp.Matrix4Uniforms["g_projectionMatrix"] = context.ProjectionMatrix;
+	sceneContextTemp.Matrix4Uniforms["g_viewMatrix"] = context.ViewMatrix;
+	sceneContextTemp.Vector4Uniforms["g_cameraPosition"] = context.CameraPosition;
+
+	sceneContext = sceneContextTemp;
 }
 
 void Renderer::SetMesh(Ref<VertexArray> mesh)
@@ -18,14 +22,16 @@ void Renderer::SetMesh(Ref<VertexArray> mesh)
 	m_ActualMesh = mesh;
 }
 
-void Renderer::Render(RenderingMode mode, const RendererContext& context)
+void Renderer::Render(RenderingMode mode, const EntityContext& context)
 {
 	if (!m_ActualShader) return;
 
-	m_ActualShader->SetUniformMat4f("u_projectionMatrix", m_ActualProjectionMatrix);
-	m_ActualShader->SetUniformMat4f("u_viewMatrix", m_ActualViewMatrix);
-	m_ActualShader->SetUniformMat4f("u_modelMatrix", context.Position * context.Rotation * context.Scale);
-	
+	UniformContext uniformContext = sceneContext;
+	uniformContext.Matrix4Uniforms["u_modelMatrix"] = context.Position * context.Rotation * context.Scale;
+	uniformContext.Vector4Uniforms["u_color"] = Algebra::Vector4(1.f, 0.2f, 0.f, 1.f);
+
+	m_ActualShader->ApplyContext(uniformContext);
+
 	m_ActualMesh->Bind();
 
 	glDrawElements(static_cast<GLenum>(mode), m_ActualMesh->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);

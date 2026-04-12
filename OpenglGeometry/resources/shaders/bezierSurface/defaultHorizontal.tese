@@ -2,8 +2,8 @@
 
 layout(isolines, equal_spacing, ccw) in;
 
-uniform mat4 u_viewMatrix;
-uniform mat4 u_projectionMatrix;
+uniform mat4 g_viewMatrix;
+uniform mat4 g_projectionMatrix;
 uniform int u_subdivisions;
 
 vec3 interpolateRow(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float u) {
@@ -34,5 +34,5 @@ void main() {
     // Evaluate final Bezier curve in v using the results
     vec3 finalPos = interpolateRow(row0, row1, row2, row3, v);
 
-    gl_Position = u_projectionMatrix * u_viewMatrix * vec4(finalPos, 1.0);
+    gl_Position = g_projectionMatrix * g_viewMatrix * vec4(finalPos, 1.0);
 }

@@ -20,10 +20,12 @@ private:
 	Algebra::Matrix4 m_ActualViewMatrix;
 
 	Ref<VertexArray> m_ActualMesh;
+
+	UniformContext sceneContext;
 public:
 	void SetShader(AvailableShaders shaderType);
-	void SetCamera(Algebra::Matrix4 projectionMatrix, Algebra::Matrix4 viewMatrix);
+	void SetSceneContext(SceneContext context);
 	void SetMesh(Ref<VertexArray> mesh);
-	void Render(RenderingMode mode, const RendererContext& context);
+	void Render(RenderingMode mode, const EntityContext& context);
 };
 

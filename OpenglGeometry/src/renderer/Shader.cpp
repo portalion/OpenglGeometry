@@ -2,6 +2,15 @@
 
 #include <iostream>
 #include "utils/GlCall.h"
+#include "RendererContext.h"
+#include <functional>
+
+struct UniformInfo
+{
+    std::string name;
+    GLenum type;
+    GLint location;
+};
 
 const std::unordered_map<ShaderType, ShaderTypeInfo> Shader::shaderInfoMap =
 {
@@ -16,6 +25,7 @@ Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes, u
     :m_RendererID{ 0 }, patchSize{ patchSize }
 {
     m_RendererID = CreateShader(sourceCodes);
+    ReflectUniforms(m_RendererID);
 }
 
 Shader::~Shader()
@@ -106,4 +116,56 @@ int Shader::GetUniformLocation(const std::string& name)
     else m_UniformLocationCache[name] = location;
 
     return location;
+}
+
+void Shader::ReflectUniforms(unsigned int program)
+{
+    GLint count;
+    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
+
+    for (GLint i = 0; i < count; i++)
+    {
+        char name[256];
+        GLsizei length;
+        GLint size;
+        GLenum type;
+
+        glGetActiveUniform(program, i, sizeof(name), &length, &size, &type, name);
+        std::string uniformName(name, length);
+        m_Uniforms.push_back({ uniformName, type, GetUniformLocation(uniformName) });
+    }
+}
+
+void Shader::ApplyContext(UniformContext context)
+{
+    for (const auto& uniform : m_Uniforms)
+    {
+        switch (uniform.type)
+        {
+        case GL_FLOAT_VEC4:
+            if (context.Vector4Uniforms.contains(uniform.name))
+            {
+                auto& value = context.Vector4Uniforms[uniform.name];
+                SetUniformVec4f(uniform.name, value);
+            }
+            else
+            {
+                std::cout << "WARNING: " << "There is no uniform named: " << uniform.name 
+                    << " of type: " << GL_FLOAT_VEC4 << std::endl;
+            }
+            break;
+        case GL_FLOAT_MAT4:
+            if (context.Matrix4Uniforms.contains(uniform.name))
+            {
+                auto& value = context.Matrix4Uniforms[uniform.name];
+                SetUniformMat4f(uniform.name, value);
+            }
+            else
+            {
+                std::cout << "WARNING: " << "There is no uniform named: " << uniform.name
+                    << " of type: " << GL_FLOAT_VEC4 << std::endl;
+            }
+            break;
+        }
+    }
 }

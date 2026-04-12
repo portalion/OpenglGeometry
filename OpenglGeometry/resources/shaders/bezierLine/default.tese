@@ -2,8 +2,8 @@
 
 layout(isolines, equal_spacing, ccw) in;
 
-uniform mat4 u_viewMatrix;
-uniform mat4 u_projectionMatrix;
+uniform mat4 g_viewMatrix;
+uniform mat4 g_projectionMatrix;
 
 in patch float maxU;
 
@@ -31,5 +31,5 @@ void main()
     vec4 p2 = gl_in[2].gl_Position;
     vec4 p3 = gl_in[3].gl_Position;
 
-    gl_Position = u_projectionMatrix * u_viewMatrix * Bezier(p0, p1, p2, p3, u / maxU + v);
+    gl_Position = g_projectionMatrix * g_viewMatrix * Bezier(p0, p1, p2, p3, u / maxU + v);
 }
