@@ -1,7 +1,8 @@
 #pragma once
 #include "Algebra.h"
+#include "interfaces/ICamera.h"
 
-class DragCamera
+class DragCamera : public ICamera
 {
 private:
 	float zoom;
@@ -22,5 +23,5 @@ public:
 	inline Algebra::Vector4 GetPosition() { return position; }
 	inline Algebra::Matrix4 GetViewMatrix() { return GetRotationMatrix() * GetTranslationMatrix() * GetZoomMatrix(); }
 
-	void HandleInput();
+	void HandleInput(CameraComponent& cameraComponent) override;
 };

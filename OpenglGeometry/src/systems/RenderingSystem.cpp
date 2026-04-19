@@ -7,6 +7,7 @@
 #include "renderer/VertexArray.h"
 #include <GL/glew.h>
 #include "scene/Components.h"
+#include <interfaces/ICamera.h>
 
 RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
 	: m_Scene(m_Scene)
@@ -24,12 +25,14 @@ void RenderingSystem::Process()
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
+		cameraComponent.cameraHandling->HandleInput(cameraComponent);
+
 		EntityContext cameraUniforms;
 		m_UniformApplier.PerformFunctions(entity, cameraUniforms);
 
 		sceneContext.CameraPosition = cameraUniforms.Position[3];
 		sceneContext.ProjectionMatrix = cameraComponent.projectionMatrix;
-		sceneContext.ViewMatrix = cameraUniforms.Position * cameraUniforms.Rotation * cameraUniforms.Scale;
+		sceneContext.ViewMatrix = cameraComponent.viewMatrix;
 	}
 
 	m_Renderer->SetSceneContext(sceneContext);

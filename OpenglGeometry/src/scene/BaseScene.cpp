@@ -3,6 +3,7 @@
 #include "core/Globals.h"
 #include "archetypes/Archetypes.h"
 #include "scene/Components.h"
+#include <core/DragCamera.h>
 
 BaseScene::BaseScene()
 {
@@ -13,9 +14,7 @@ BaseScene::BaseScene()
 		auto& cc = camera.AddComponent<CameraComponent>();
 		cc.active = true;
 		cc.projectionMatrix = Algebra::Matrix4::Projection(aspect, 0.1f, 10000.0f, 3.14f / 2.f);
-		camera.AddComponent<PositionComponent>().position.Set(Globals::startingCameraPosition);
-		camera.AddComponent<RotationComponent>();
-		camera.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
+		cc.cameraHandling = CreateRef<DragCamera>();
 		camera.AddComponent<NameComponent>().name = "camera";
 	}
 
