@@ -9,13 +9,15 @@ public:
 	T value;
 	Entity entity;
 
-	void Set(const T& newValue)
+	inline T& operator=(const T& newValue)
 	{
 		if (value != newValue)
 		{
 			value = newValue;
 			entity.AddTag<ObserverChangedState>();
 		}
+		return value;
 	}
-	operator const T& () const { return value; }
+
+	inline operator const T& () const { return value; }
 };

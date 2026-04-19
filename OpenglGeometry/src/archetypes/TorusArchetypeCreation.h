@@ -8,7 +8,7 @@ namespace Archetypes
 		entity.AddTag<IsDirtyTag>();
 		entity.AddComponent<TorusGenerationComponent>();
 
-		entity.AddComponent<PositionComponent>().position.Set(position);
+		entity.AddComponent<PositionComponent>().position = position;
 		entity.AddComponent<RotationComponent>();
 		entity.AddComponent<ScaleComponent>().scale = { 1.f, 1.f, 1.f };
 

@@ -38,7 +38,7 @@ void ShapeInspectorSystem::PositionInspect(Entity entity)
 	auto& position = entity.GetComponent<PositionComponent>().position;
 	if (ImGui::DragFloat3(GUI::GenerateLabel(entity, "Position").c_str(), &tmpPosition.x, 0.1f))
 	{
-		position.Set(tmpPosition);
+		position = tmpPosition;
 	}
 }
 

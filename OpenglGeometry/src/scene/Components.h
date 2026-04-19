@@ -19,7 +19,7 @@ struct PositionComponent
 
 	void Move(Algebra::Vector4 offset)
 	{
-		position.Set(offset);
+		position = offset;
 	}
 };
 

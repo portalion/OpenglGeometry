@@ -6,7 +6,7 @@ namespace Archetypes
 {
 	inline Entity AddPointToEntity(Entity entity, Algebra::Vector4 startingPosition)
 	{
-		entity.AddComponent<PositionComponent>().position.Set(startingPosition);
+		entity.AddComponent<PositionComponent>().position = startingPosition;
 		entity.AddComponent<NotificationComponent>();
 		auto& meshComponent = entity.AddComponent<MeshComponent>();
 		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
