@@ -14,4 +14,9 @@ namespace GUI
 		result += "##" + id;
 		return result;
 	}
+
+	inline bool DragUInt(const char* label, uint32_t* value, float speed = 1.0f, uint32_t min = 0, uint32_t max = 0)
+	{
+		return ImGui::DragScalar(label, ImGuiDataType_U32, value, speed, &min, &max);
+	}
 }

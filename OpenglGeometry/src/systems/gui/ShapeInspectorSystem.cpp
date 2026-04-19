@@ -11,6 +11,7 @@ ShapeInspectorSystem::ShapeInspectorSystem(Ref<Scene> scene)
 	Bind<ScaleComponent>(&ShapeInspectorSystem::ScaleInspect);
 	Bind<LineGenerationComponent>(&ShapeInspectorSystem::LineInspect);
 	Bind<IsParentOfVirtualEntitiesComponent>(&ShapeInspectorSystem::VirtualInspect);
+	Bind<TorusGenerationComponent>(&ShapeInspectorSystem::TorusInspect);
 }
 
 void ShapeInspectorSystem::Process()
@@ -86,6 +87,28 @@ void ShapeInspectorSystem::VirtualInspect(Entity entity)
 				virtualEntity.AddTag<IsInvisibleTag>();
 			}
 		}
+	}
+}
+
+void ShapeInspectorSystem::TorusInspect(Entity entity)
+{
+	auto& torusComponent = entity.GetComponent<TorusGenerationComponent>();
+
+	if (ImGui::DragFloat(GUI::GenerateLabel(entity, "Radius").c_str(), &torusComponent.radius, 0.1f))
+	{
+		entity.AddTag<IsDirtyTag>();
+	}
+	if (ImGui::DragFloat(GUI::GenerateLabel(entity, "Tube Radius").c_str(), &torusComponent.tubeRadius, 0.1f))
+	{
+		entity.AddTag<IsDirtyTag>();
+	}
+	if (GUI::DragUInt(GUI::GenerateLabel(entity, "Radial Segments").c_str(), &torusComponent.radialSegments, 1.0f, 3, 64))
+	{
+		entity.AddTag<IsDirtyTag>();
+	}
+	if (GUI::DragUInt(GUI::GenerateLabel(entity, "Tubular Segments").c_str(), &torusComponent.tubularSegments, 1.0f, 3, 64))
+	{
+		entity.AddTag<IsDirtyTag>();
 	}
 }
 

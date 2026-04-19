@@ -12,7 +12,7 @@ private:
 	void RotationInspect(Entity entity);
 	void LineInspect(Entity entity);
 	void VirtualInspect(Entity entity);
-
+	void TorusInspect(Entity entity);
 public:
 	ShapeInspectorSystem(Ref<Scene> scene);
 
