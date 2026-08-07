@@ -4,64 +4,99 @@
 
 | Requirement | Notes |
 | --- | --- |
-| Windows | The project is MSBuild/Visual Studio only; there is no CMake or premake file. |
-| Visual Studio 2022 (17.9+) | The projects target platform toolset **v145**. If your VS installs a different toolset, retarget the solution (right-click solution → *Retarget solution*) or edit `<PlatformToolset>` in both `.vcxproj` files. |
-| C++20 | Both projects set `<LanguageStandard>stdcpp20`. The code uses concepts, ranges (`std::views::transform`), `std::numbers`, designated initializers and `contains()`. |
+| Windows | The build is Windows/MSVC only. Nothing in the CMake files is deliberately platform-specific, but nothing else has been tested, and `utils/GlCall.h` uses the MSVC-only `__debugbreak()`. |
+| Visual Studio 2022 or 2026 | Any edition, with the *Desktop development with C++* workload. This also supplies CMake and Ninja. |
+| C++20 | Set globally in the root `CMakeLists.txt`. The code uses concepts, ranges (`std::views::transform`), `std::numbers`, designated initializers and `contains()`. |
+| Git | GLFW and GLEW are submodules. |
 | GPU with OpenGL 4.6 | The window requests a 4.6 core profile context and shaders are `#version 460 core` (two Bézier-surface shaders are `#version 430`). Tessellation shaders are required. |
-
-Everything else is vendored in the repository — you do **not** need a package manager.
 
 ## Building
 
-```bash
-git clone <repo-url>
-```
-
-Then:
-
-1. Open `OpenglGeometry.sln` in Visual Studio.
-2. Pick a configuration. `x64` is the one that is actually wired up
-   (`Dependencies\lib\x64`); `Win32` maps to `Dependencies\lib\Win32`.
-3. Build the solution. `Algebra` builds first as a static library, then `OpenglGeometry`
-   links against it.
-
-From the command line:
+Clone **with submodules**:
 
 ```bash
-msbuild OpenglGeometry.sln /p:Configuration=Debug /p:Platform=x64
+git clone --recurse-submodules <repo-url>
 ```
 
-Outputs land in:
+If you already cloned without them:
 
-```
-build/<Platform>/<Configuration>/<ProjectName>/out/     # binaries
-build/<Platform>/<Configuration>/<ProjectName>/         # intermediates
-```
-
-### Post-build step
-
-`OpenglGeometry.vcxproj` runs a post-build command:
-
-```
-xcopy /Y /I /E "$(ProjectDir)resources" "$(TargetDir)resources"
+```bash
+git submodule update --init --recursive
 ```
 
-This copies `OpenglGeometry/resources/` (the GLSL shaders) next to the executable.
+### From Visual Studio
+
+**File → Open → Folder…** and pick the repository root. Visual Studio reads
+`CMakeSettings.json` and offers the `x64-Debug` and `x64-Release` configurations. Select
+`OpenglGeometry.exe` as the startup item and press F5.
+
+### From the command line
+
+Run from a **Developer Command Prompt** (Ninja and `cl.exe` must be on `PATH`):
+
+```bash
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -S . -B out/build/x64-Debug
+```
+
+```bash
+cmake --build out/build/x64-Debug
+```
+
+Swap `Debug` for `Release` and `x64-Debug` for `x64-Release` to match the other
+configuration. `CMakeSettings.json` is read only by Visual Studio, so the CLI needs the
+generator and build type spelled out.
+
+### Output layout
+
+```
+out/build/<name>/
+  OpenglGeometry/
+    OpenglGeometry.exe
+    resources/shaders/       re-copied on every build
+    Libs/imgui.lib
+  Algebra/Algebra.lib
+  Dependencies/              built GLFW and GLEW
+```
+
+The executable and its `resources/` tree sit in the same directory, which is what the runtime
+shader paths require.
+
+### Resources are copied, not referenced
+
+A `copy_resources` target mirrors `OpenglGeometry/resources/` next to the executable on
+**every** build, so an edited shader always reaches the running program:
+
+```cmake
+add_custom_target(copy_resources ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${PROJECT_SOURCE_DIR}/resources
+	${PROJECT_BINARY_DIR}/resources
+	COMMENT "Copying resources into binary directory")
+```
+
 Shaders are loaded at runtime with the **relative** path `resources/shaders/...`, so the
-working directory must be the output directory. If you launch the exe from somewhere else,
-shader files silently fail to open, the programs link empty, and you get a black viewport —
-see [gotchas](gotchas.md).
+working directory must be the directory containing the executable. If you run the exe from
+somewhere else, shader files silently fail to open, the programs link empty, and you get a
+black viewport — see [gotchas](gotchas.md).
 
-If you edit a shader and nothing changes, rebuild so the post-build copy runs again (or edit
-the copy under `build/.../out/resources/` while iterating).
+There is still no hot reload: rebuild and restart to see a shader change.
 
 ## Running
 
-Run from Visual Studio (F5), or run the produced `OpenglGeometry.exe` from its own
-directory. A console window is attached (`<SubSystem>Console`) and is used for log output:
-OpenGL/GLSL version, shader and mesh loading info, and uniform warnings.
+Press F5 in Visual Studio, or run `out/build/<name>/OpenglGeometry/OpenglGeometry.exe` from
+its own directory. A console window is attached and used for log output: OpenGL/GLSL version,
+shader and mesh loading info, and uniform warnings. A healthy startup looks like:
 
-In `_DEBUG` builds the ImGui demo window is also shown (`App::Run`).
+```
+OpenGL Version: 4.6.0 - Build 30.0.100.9864
+GLSL Version: 4.60 - Build 30.0.100.9864
+INFO: Loading Meshes
+INFO: Loaded Meshes - Elasped time: 1ms
+INFO: Loading Shaders
+INFO: Loaded Shaders
+```
+
+In Debug builds the ImGui demo window is also shown (`App::Run`, guarded by `_DEBUG`).
 
 ### Controls
 
@@ -78,38 +113,51 @@ Properties* (per-component inspectors). See [UI](ui.md).
 
 ## Dependencies
 
-| Library | Where | How it is consumed |
+| Library | Where | How it is obtained |
 | --- | --- | --- |
-| **GLFW 3** | `Dependencies/include/GLFW`, `Dependencies/lib/{x64,Win32}` | `glfw3.lib`, static |
-| **GLEW 2.1.0** | `Dependencies/include/GL`, `Dependencies/glew-2.1.0` | `glew32s.lib`, static (`GLEW_STATIC` is defined) |
-| **OpenGL** | system | `opengl32.lib` |
-| **Dear ImGui** (docking branch) | `OpenglGeometry/vendor/imgui` | Sources compiled directly into the project |
-| **EnTT** | `OpenglGeometry/vendor/entt/entt.hpp` | Single-header, header-only |
-| **Algebra** | `Algebra/` | In-repo static library project, see [algebra.md](algebra.md) |
+| **GLFW** | `Dependencies/glfw` | git submodule, built from source → target `glfw` |
+| **GLEW** | `Dependencies/glew` | git submodule ([Perlmint/glew-cmake](https://github.com/Perlmint/glew-cmake)) → target `libglew_static` |
+| **Dear ImGui** (docking branch) | `OpenglGeometry/Libs/imgui` | vendored in-tree → target `imgui` |
+| **EnTT** | `OpenglGeometry/Libs/entt` | vendored in-tree → INTERFACE target `entt` |
+| **OpenGL** | system | transitive through `libglew_static` |
+| **Algebra** | `Algebra/` | in-repo static library, see [algebra.md](algebra.md) |
 
-Include directories for `OpenglGeometry`:
+The rule of thumb: **`Dependencies/` for submodules, `Libs/` for code committed to this
+repository.** Both submodules are pinned to the same commits as the sibling
+**PhysicsSimulation** project. See [build-system.md](build-system.md) for the full rationale.
 
-```
-$(ProjectDir)vendor        →  imgui/..., entt/entt.hpp
-$(ProjectDir)src           →  "core/Base.h", "scene/Entity.h", ...
-$(SolutionDir)Algebra\src  →  "Algebra.h", "Vector4.h", ...
-$(SolutionDir)Dependencies\include
-```
+### Include paths
 
-Because `src` is an include root, headers are included as project-relative paths
-(`#include "scene/Components.h"`), not with `../`. Follow that convention in new code.
+Every include path is carried by a target, so there is nothing global to maintain:
+
+| You want | Write | Provided by |
+| --- | --- | --- |
+| Project header | `#include "scene/Components.h"` | `OpenglGeometry`'s own `src/` include dir |
+| Math | `#include "Algebra.h"` | `Algebra` target (PUBLIC) |
+| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `Libs/`) |
+| EnTT | `#include <entt/entt.hpp>` | `entt` interface target |
+| GL loader | `#include <GL/glew.h>` | `libglew_static` (PUBLIC, also brings `GLEW_STATIC`) |
+| Windowing | `#include <GLFW/glfw3.h>` | `glfw` target |
 
 ## Repository layout
 
 ```
-OpenglGeometry.sln
-Algebra/                       Static library: Vector4, Matrix4, Quaternion, helpers
-  src/
-Dependencies/                  Prebuilt GLFW/GLEW headers + libs
+CMakeLists.txt                 Root: C++20, MSVC hot reload, add_subdirectory list
+CMakeSettings.json             Visual Studio configurations (x64-Debug, x64-Release)
+.gitmodules                    GLFW and GLEW
+Dependencies/
+  glfw/                        submodule
+  glew/                        submodule
+Algebra/
+  CMakeLists.txt               Static library target
+  src/                         Vector4, Matrix4, Quaternion, helpers
 OpenglGeometry/
-  OpenglGeometry.vcxproj       All source files are listed here explicitly
-  resources/shaders/           GLSL, copied next to the exe post-build
-  vendor/                      imgui/, entt/
+  CMakeLists.txt               Executable, include dirs, resource copy
+  Libs/
+    CMakeLists.txt             imgui and entt targets
+    imgui/                     vendored (docking branch, flat layout)
+    entt/                      vendored single header
+  resources/shaders/           GLSL, copied next to the exe
   deprecated/                  Old raycast-ellipsoid code, NOT in the build
   src/
     main.cpp                   Entry point
@@ -124,7 +172,7 @@ OpenglGeometry/
     renderer/                  Shader, ShaderBuilder, VertexArray, buffers, Renderer
     UI/                        ImGui panels and popups
     utils/                     GL error macros, GLEW/ImGui initialisation
-build/                         Build output (gitignored)
+out/                           Build output (gitignored)
 docs/                          You are here
 ```
 
@@ -133,7 +181,5 @@ docs/                          You are here
 
 ## Adding files
 
-**Important:** this is an MSBuild project with an explicit file list. Creating a `.cpp` on
-disk is not enough — it must be added to `OpenglGeometry.vcxproj` (and ideally
-`OpenglGeometry.filters`). Adding files through the Visual Studio Solution Explorer does
-this for you. See [how-to/add-a-file-to-the-build.md](how-to/add-a-file-to-the-build.md).
+Source lists are **explicit**. A new `.cpp` must be added to the relevant `CMakeLists.txt` —
+see [how-to/add-a-file-to-the-build.md](how-to/add-a-file-to-the-build.md).

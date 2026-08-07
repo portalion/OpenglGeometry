@@ -200,7 +200,7 @@ namespace MeshGenerator { namespace MyCurve {
 
    Return a multiple of 4 control points (pad like `FixVertices` if necessary).
 
-2. Include it in `MeshGenerators.h` and add the files to the `.vcxproj`.
+2. Include it in `MeshGenerators.h`. The build picks the files up automatically.
 
 3. Copy `BezierCurveArchetypeCreation.h`'s pattern into a new archetype, setting
    `generationFunction = MeshGenerator::MyCurve::GenerateVertices` and a distinct shape name.

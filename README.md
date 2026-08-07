@@ -15,8 +15,30 @@ Quick links: [Getting started](docs/getting-started.md) ·
 
 ## Build
 
-Open `OpenglGeometry.sln` in Visual Studio 2022 and build `x64`. All dependencies (GLFW,
-GLEW, ImGui, EnTT) are vendored — see [getting started](docs/getting-started.md) for details.
+Requires Windows and Visual Studio 2022 or 2026 with the *Desktop development with C++*
+workload (which supplies CMake and Ninja).
+
+```bash
+git clone --recurse-submodules <repo-url>
+```
+
+Then open the folder in Visual Studio and pick the `x64-Debug` configuration, or from a
+Developer Command Prompt:
+
+```bash
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -S . -B out/build/x64-Debug
+```
+
+```bash
+cmake --build out/build/x64-Debug
+```
+
+GLFW and GLEW are git submodules under `Dependencies/`; ImGui and EnTT are vendored in
+`OpenglGeometry/Libs/`. The executable and its shaders land in
+`out/build/<name>/OpenglGeometry/`.
+
+See [getting started](docs/getting-started.md) for details and
+[build system](docs/build-system.md) for how the CMake files are put together.
 
 ## Controls
 

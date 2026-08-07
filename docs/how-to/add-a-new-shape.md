@@ -62,7 +62,7 @@ Then include the header in
 #include "SphereMeshGenerator.h"
 ```
 
-**Add both files to `OpenglGeometry.vcxproj`** — see
+**Add the new `.cpp` to the `add_executable` list in `OpenglGeometry/CMakeLists.txt`** — see
 [add-a-file-to-the-build.md](add-a-file-to-the-build.md).
 
 ## 3. Add a generation pass to `MeshGeneratingSystem`
@@ -144,9 +144,7 @@ namespace Archetypes
 
 Include it from
 [`Archetypes.h`](../../OpenglGeometry/src/archetypes/Archetypes.h). Archetypes are
-header-only `inline` functions, so there is no `.cpp` to add to the build — but the new
-header should still be added to the `.vcxproj` `<ClInclude>` list for Solution Explorer
-visibility.
+header-only `inline` functions, so there is no `.cpp` at all and nothing to add to the build.
 
 More on the two-layer convention: [archetypes.md](../archetypes.md).
 
@@ -195,7 +193,6 @@ Details: [how-to/add-an-inspector-field.md](add-an-inspector-field.md).
 
 - [ ] Component in `Components.h`
 - [ ] Generator in `meshGenerators/`, included from `MeshGenerators.h`
-- [ ] Generator files added to `OpenglGeometry.vcxproj`
 - [ ] Generation pass in `MeshGeneratingSystem`, called from `Process()`
 - [ ] Archetype header, included from `Archetypes.h`
 - [ ] `IsDirtyTag` set in the archetype
@@ -210,7 +207,7 @@ Details: [how-to/add-an-inspector-field.md](add-an-inspector-field.md).
 | Shape created but invisible | Forgot `IsDirtyTag` in the archetype, so no `MeshComponent` was ever created |
 | Shape not in the *Shape List* | Forgot `AddShapeToEntity` (no `NameComponent`) |
 | Editing parameters does nothing | Forgot `entity.AddTag<IsDirtyTag>()` in the inspector handler |
-| Unresolved external symbol | The `.cpp` is on disk but not in the `.vcxproj` |
+| Unresolved external symbol | The `.cpp` is on disk but not listed in `OpenglGeometry/CMakeLists.txt` |
 | Assertion inside EnTT on creation | Used `AddComponent<T>` where the component already exists — use `AddTag`/`AddOrReplaceComponent` |
 | Renders as garbage triangles | `RenderingMode` doesn't match how the index buffer was built |
 

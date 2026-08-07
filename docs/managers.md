@@ -90,7 +90,7 @@ for an unregistered enum value default-constructs a null `shared_ptr` rather tha
 loudly. `Renderer::Render` guards with `if (!m_ActualShader) return;`, so the symptom is
 silently invisible geometry.
 
-There is no hot-reload. Editing GLSL requires a rebuild (which re-runs the `xcopy` post-build
+There is no hot-reload. Editing GLSL requires a rebuild (which re-runs the resource copy
 step) and a restart.
 
 To add a program, see [how-to/add-a-new-shader.md](how-to/add-a-new-shader.md).

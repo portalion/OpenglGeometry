@@ -143,8 +143,10 @@ namespace MeshGenerator
 ```
 
 2. Add the header to [`MeshGenerators.h`](../../OpenglGeometry/src/meshGenerators/MeshGenerators.h).
-3. Add both files to the `.vcxproj` ([how-to](../how-to/add-a-file-to-the-build.md)).
-4. Call it from a new pass in `MeshGeneratingSystem`.
+3. Call it from a new pass in `MeshGeneratingSystem`.
+
+Add the new `.cpp` to the `add_executable` list in `OpenglGeometry/CMakeLists.txt`
+([how-to](../how-to/add-a-file-to-the-build.md)).
 
 Keep the function pure — no `Entity`, no GL calls. That separation is what makes this layer
 easy to test and to reuse (the Bézier vertex generators are reused verbatim by three

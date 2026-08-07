@@ -225,6 +225,6 @@ normalising if you touch these files.
 - Attribute locations come from `BufferLayout` element order, not from the names.
 - Tessellated shaders need `RenderingMode::Patches` on the `MeshComponent` and a matching
   `ChangePatchSize(n)` in the `ShaderManager` registration.
-- Rebuild after editing GLSL so the post-build `xcopy` refreshes the copy next to the exe.
+- Rebuild after editing GLSL so the post-build copy step refreshes the files next to the exe.
 
 Step-by-step: [how-to/add-a-new-shader.md](../how-to/add-a-new-shader.md).

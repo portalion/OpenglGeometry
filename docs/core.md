@@ -313,5 +313,6 @@ expands to multiple statements — never use it as an unbraced `if` body.
 
 [`OpenglGeometry/deprecated/ellipsoid/`](../OpenglGeometry/deprecated/ellipsoid/) contains
 `RaycastableEllipsoid` and `Raycaster` from an earlier CPU raycasting version of the project.
-**These files are not in the `.vcxproj` and are not compiled.** They reference headers that
+**These files are not listed in `OpenglGeometry/CMakeLists.txt` and are not compiled.** They
+reference headers that
 no longer exist at those paths (`"Shader.h"`, `"Window.h"`) and would not build as-is.

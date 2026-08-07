@@ -229,5 +229,5 @@ dialog for `BezierSurfaceCreationParameters` (patch counts, size, cylinder flag)
 2. `ShouldOpen()` returns your trigger, e.g.
    `ImGui::IsKeyChordPressed(ImGuiMod_Shift | ImGuiKey_A)`.
 3. Push it into `m_RegisteredPopups` in `PopupSystem`'s constructor.
-4. Add the new `.cpp` to the `.vcxproj`
+4. Add the new `.cpp` to the `add_executable` list in `OpenglGeometry/CMakeLists.txt`
    ([how-to](../how-to/add-a-file-to-the-build.md)).

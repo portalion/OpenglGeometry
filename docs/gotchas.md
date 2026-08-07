@@ -253,7 +253,7 @@ the torus wraps. `BezierSurfaceArchetypeCreation.h` correctly uses `std::numbers
 | What | Where | Notes |
 | --- | --- | --- |
 | `Notifier`, `IObserver` | `core/Notifier.*`, `interfaces/IObserver.h` | Superseded by the ECS notification mechanism. Zero references. `Notifier.cpp` is still compiled |
-| `deprecated/ellipsoid/` | `OpenglGeometry/deprecated/` | Old CPU raycasting code. Not in the `.vcxproj`; would not compile (includes headers at paths that no longer exist) |
+| `deprecated/ellipsoid/` | `OpenglGeometry/deprecated/` | Old CPU raycasting code. Not listed in `OpenglGeometry/CMakeLists.txt`; would not compile (includes headers at paths that no longer exist) |
 | `App::Render/HandleInput/Update/DisplayParameters/CreateShape` | `App.h` | Declared, never defined |
 | `App::ScreenToNDC`, `App::GetClickedPoint` | `App.cpp` | Half-finished picking; `GetClickedPoint` computes NDC and a threshold, then returns. No callers |
 | `App::showGrid` | `App.h` | Never read |

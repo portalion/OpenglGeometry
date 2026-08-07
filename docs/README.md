@@ -16,6 +16,7 @@ buffers, and curves/surfaces are evaluated on the GPU with tessellation shaders.
 | --- | --- |
 | [Getting started](getting-started.md) | Prerequisites, how to build, how to run, repository layout |
 | [Architecture](architecture.md) | The big picture: frame loop, data flow, why the code is split the way it is |
+| [Build system](build-system.md) | How the CMake setup is put together and why |
 | [Glossary](glossary.md) | Terms used throughout the codebase (archetype, virtual entity, dirty, patch, …) |
 
 ## Reference by subsystem

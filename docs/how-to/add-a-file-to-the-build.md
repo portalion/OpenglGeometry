@@ -1,77 +1,140 @@
 # How to add a file to the build
 
-This project uses **MSBuild with an explicit file list**. Creating a `.cpp` on disk does not
-add it to the build — you get a linker error (`unresolved external symbol`) rather than a
-compile error, which is easy to misdiagnose.
+Source lists are **explicit**, matching the sibling PhysicsSimulation project. Creating a
+`.cpp` on disk is not enough — add it to the relevant `CMakeLists.txt`, or you get an
+`unresolved external symbol` at link time rather than a compile error.
 
-## The easy way
-
-In Visual Studio's Solution Explorer: right-click the project → **Add → New Item…** (or
-**Existing Item…**). Visual Studio updates both `.vcxproj` and `.filters`.
-
-Pick the right project:
-
-| File belongs to | Project |
+| File goes in | Add it to |
 | --- | --- |
-| `OpenglGeometry/src/**` | `OpenglGeometry.vcxproj` |
-| `Algebra/src/**` | `Algebra.vcxproj` |
+| `OpenglGeometry/src/**` | [`OpenglGeometry/CMakeLists.txt`](../../OpenglGeometry/CMakeLists.txt), in the `add_executable` list |
+| `Algebra/src/**` | [`Algebra/CMakeLists.txt`](../../Algebra/CMakeLists.txt), in the `add_library` list |
+| `OpenglGeometry/resources/**` | Nothing — the whole tree is copied next to the exe every build |
 
-## The manual way
+## Adding a source file
 
-If you created the files outside the IDE, edit
-[`OpenglGeometry/OpenglGeometry.vcxproj`](../../OpenglGeometry/OpenglGeometry.vcxproj)
-directly. There are two relevant `<ItemGroup>`s.
+```cmake
+add_executable(${PROJECT_NAME}
+    "src/main.cpp"
+    "src/App.cpp"
 
-Source files:
-
-```xml
-<ItemGroup>
-  <ClCompile Include="src\systems\MyNewSystem.cpp" />
-  ...
-</ItemGroup>
+    "src/systems/MeshGeneratingSystem.cpp"
+    "src/systems/MyNewSystem.cpp"          # ← new, keep it in its folder group
+    ...
+)
 ```
 
-Headers:
+Paths are relative to the `CMakeLists.txt`, forward slashes, quoted. The list is grouped by
+folder with blank lines between groups — keep that style.
 
-```xml
-<ItemGroup>
-  <ClInclude Include="src\systems\MyNewSystem.h" />
-  ...
-</ItemGroup>
+Only `.cpp` files need listing; headers are found through the include directories.
+
+Re-configure afterwards. Visual Studio does this automatically when it notices the file
+changed; from the command line:
+
+```bash
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -S . -B out/build/x64-Debug
 ```
 
-Use **backslashes** and paths relative to the `.vcxproj` directory.
+## Header-only additions need nothing
 
-Optionally mirror the entry in `OpenglGeometry.filters` so the file shows up in the right
-Solution Explorer folder — this affects only the IDE, not the build:
+Archetypes (`src/archetypes/*.h`), UI helpers (`src/UI/*.h`) and the interfaces are all
+`inline`/header-only. They are picked up through the `src/` include directory with no build
+change at all.
 
-```xml
-<ClCompile Include="src\systems\MyNewSystem.cpp">
-  <Filter>Source Files</Filter>
-</ClCompile>
+## When you need to do more
+
+The project splits third-party code two ways:
+
+- **`Dependencies/`** — git submodules, added with `add_subdirectory` from the root.
+- **`OpenglGeometry/Libs/`** — code checked into this repository, built by
+  [`Libs/CMakeLists.txt`](../../OpenglGeometry/Libs/CMakeLists.txt).
+
+### A new vendored library
+
+Drop it in `OpenglGeometry/Libs/mylib/` and add a target to `Libs/CMakeLists.txt`. For
+something header-only, copy the `entt` pattern:
+
+```cmake
+add_library(mylib INTERFACE)
+
+target_include_directories(
+	mylib INTERFACE
+	${PROJECT_SOURCE_DIR}
+)
 ```
 
-If the solution is open, Visual Studio will prompt to reload the project.
+For something that compiles, copy the `imgui` pattern — note `${PROJECT_NAME}` doubles as the
+source subdirectory name:
 
-## Which files actually need this
+```cmake
+project(mylib)
 
-| File type | Needs a `.vcxproj` entry? |
-| --- | --- |
-| `.cpp` | **Yes** — otherwise it is never compiled and you get link errors |
-| `.h` | Not for the build to work, but add it as `<ClInclude>` so it appears in Solution Explorer and in searches |
-| Header-only, `inline` (archetypes, `UI/`) | Same as above — build works without it, add it for visibility |
-| `.vert` / `.frag` / `.tesc` / `.tese` | No. Shaders are loaded at runtime and copied by the post-build `xcopy`, which copies the whole `resources/` tree |
+add_library(mylib)
+
+target_include_directories(mylib PUBLIC ${PROJECT_SOURCE_DIR})
+
+target_sources(
+	mylib PRIVATE
+	${PROJECT_NAME}/a.cpp      # → Libs/mylib/a.cpp
+	${PROJECT_NAME}/b.cpp
+)
+```
+
+Then add it to the app's `target_link_libraries`.
+
+### A new submodule dependency
+
+```bash
+git submodule add https://github.com/owner/mylib Dependencies/mylib
+cd Dependencies/mylib && git checkout <tag-or-sha> && cd ../..
+git add Dependencies/mylib .gitmodules
+```
+
+Then `add_subdirectory (Dependencies/mylib)` in the root `CMakeLists.txt`, before the project
+subdirectories, and link its target.
+
+Pin an explicit commit or tag. Watch out for dependencies whose own
+`cmake_minimum_required` is below 3.5 — CMake 4.x refuses those outright. (The GLEW submodule
+is fine: it declares the range form, `VERSION 2.8.12...4.0`.)
+
+### A new sub-project
+
+Create `MyLib/CMakeLists.txt` following `Algebra`:
+
+```cmake
+project (MyLib)
+
+add_library(${PROJECT_NAME}
+	"src/Thing.cpp"
+)
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+
+target_include_directories (${PROJECT_NAME} PUBLIC
+	${PROJECT_SOURCE_DIR}/src
+)
+```
+
+then `add_subdirectory (MyLib)` in the root and link it from `OpenglGeometry`.
+
+### A new resource type
+
+Everything under `OpenglGeometry/resources/` is copied recursively, so new shader
+subdirectories need no build change. Load them with paths relative to the working directory,
+e.g. `"resources/shaders/myGroup/"`.
 
 ## Include paths
 
-`OpenglGeometry`'s include directories are:
+Include directories are carried by the targets, so there is nothing global to maintain:
 
-```
-$(ProjectDir)vendor        →  #include <imgui/imgui.h>, <entt/entt.hpp>
-$(ProjectDir)src           →  #include "scene/Components.h"
-$(SolutionDir)Algebra\src  →  #include "Algebra.h"
-$(SolutionDir)Dependencies\include
-```
+| You want | Write | Provided by |
+| --- | --- | --- |
+| Project header | `#include "scene/Components.h"` | `OpenglGeometry`'s own `src/` include dir |
+| Math | `#include "Algebra.h"` | `Algebra` target (PUBLIC) |
+| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `Libs/`) |
+| EnTT | `#include <entt/entt.hpp>` | `entt` interface target |
+| GL loader | `#include <GL/glew.h>` | `libglew_static` (PUBLIC, also brings `GLEW_STATIC`) |
+| Windowing | `#include <GLFW/glfw3.h>` | `glfw` target |
 
 Because `src` is an include root, **use project-relative includes, never `../`**:
 
@@ -82,23 +145,3 @@ Because `src` is an include root, **use project-relative includes, never `../`**
 
 Both `"quoted"` and `<angled>` forms appear in the codebase for project headers; either
 works.
-
-## Adding a new resource directory
-
-Anything placed under `OpenglGeometry/resources/` is copied recursively next to the
-executable by the post-build step:
-
-```
-xcopy /Y /I /E "$(ProjectDir)resources" "$(TargetDir)resources"
-```
-
-so new shader subdirectories need no build change. Load them with paths relative to the
-executable's working directory, e.g. `"resources/shaders/myGroup/"`.
-
-## Adding a whole new project
-
-Rare, but: create the `.vcxproj`, add it to `OpenglGeometry.sln` with configuration mappings
-for all four Debug/Release × x64/Win32 combinations, add a project reference from
-`OpenglGeometry`, and put its `src` directory on the include path. `Algebra` is the model to
-copy — a `StaticLibrary` with `stdcpp20` and the shared `build/$(Platform)/$(Configuration)`
-output layout.

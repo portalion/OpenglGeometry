@@ -230,6 +230,6 @@ Checklist:
 - `AddLineToEntity` / `AddNotifiersToEntityContainer` if it depends on other entities.
 - `AddVirtualToEntity` for any helper geometry you create alongside it.
 - Headers only — the archetypes are `inline` and have no `.cpp`, so nothing to add to the
-  `.vcxproj` unless you add a source file.
+  build files to touch.
 
 Full walkthrough: [how-to/add-a-new-shape.md](how-to/add-a-new-shape.md).

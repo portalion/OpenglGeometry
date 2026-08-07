@@ -132,14 +132,17 @@ is how Bézier surfaces get isolines in both directions:
 
 Shaders are copied next to the executable by the post-build step:
 
-```
-xcopy /Y /I /E "$(ProjectDir)resources" "$(TargetDir)resources"
+```cmake
+add_custom_command(TARGET OpenglGeometry POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+            "$<TARGET_FILE_DIR:OpenglGeometry>/resources")
 ```
 
-Editing a `.glsl` file and pressing F5 without a rebuild runs the **old** copy. There is no
-hot reload. While iterating on a shader it is often quicker to edit the copy under
-`build/<Platform>/<Config>/OpenglGeometry/out/resources/` and just restart — remember to copy
-your changes back to the source tree.
+Editing a shader and pressing F5 without a rebuild runs the **old** copy. There is no hot
+reload. While iterating on a shader it is often quicker to edit the copy under
+`out/build/<name>/OpenglGeometry/resources/` and just restart — remember to copy your
+changes back to the source tree.
 
 ---
 

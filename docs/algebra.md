@@ -1,7 +1,7 @@
 # The `Algebra` library
 
-A small self-contained math library built as a **static library project**
-(`Algebra/Algebra.vcxproj`) and linked into `OpenglGeometry`. Everything lives in
+A small self-contained math library built as a **static library target**
+(`Algebra/CMakeLists.txt`) and linked into `OpenglGeometry`. Everything lives in
 `namespace Algebra`.
 
 ```cpp
@@ -246,10 +246,11 @@ Note that most of the codebase writes angles in radians directly, often with a h
 
 ## Working on `Algebra`
 
-It is a separate MSBuild project. New `.cpp`/`.h` files go into `Algebra.vcxproj`, not
-`OpenglGeometry.vcxproj`, and headers should be added to `Algebra.h` so the umbrella include
-keeps working. `OpenglGeometry` already has `$(SolutionDir)Algebra\src` on its include path,
-so new headers are reachable as `#include "MyHeader.h"` from anywhere in the app.
+It is a separate CMake target. New `.cpp` files must be added to the `add_library` list in
+`Algebra/CMakeLists.txt`; add new headers to `Algebra.h` so the umbrella include keeps
+working. The
+target exports `Algebra/src` as a PUBLIC include directory, so new headers are reachable as
+`#include "MyHeader.h"` from anywhere in the app.
 
 There is no test project. If you change the math — particularly `SolveTrilinealEquation`, the
 projection matrix, or quaternion composition order — verify visually with an interpolated
