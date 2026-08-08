@@ -364,5 +364,13 @@ FodyWeavers.xsd
 
 build/
 
-Dependencies/
 /OpenglGeometry/imgui.ini
+
+# CMake
+build*/
+out/
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
