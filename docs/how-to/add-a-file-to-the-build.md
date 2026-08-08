@@ -46,12 +46,12 @@ change at all.
 The project splits third-party code two ways:
 
 - **`Dependencies/`** — git submodules, added with `add_subdirectory` from the root.
-- **`OpenglGeometry/Libs/`** — code checked into this repository, built by
-  [`Libs/CMakeLists.txt`](../../OpenglGeometry/Libs/CMakeLists.txt).
+- **`vendor/`** — code checked into this repository, built by
+  [`vendor/CMakeLists.txt`](../../vendor/CMakeLists.txt).
 
 ### A new vendored library
 
-Drop it in `OpenglGeometry/Libs/mylib/` and add a target to `Libs/CMakeLists.txt`. For
+Drop it in `vendor/mylib/` and add a target to `vendor/CMakeLists.txt`. For
 something header-only, copy the `entt` pattern:
 
 ```cmake
@@ -75,7 +75,7 @@ target_include_directories(mylib PUBLIC ${PROJECT_SOURCE_DIR})
 
 target_sources(
 	mylib PRIVATE
-	${PROJECT_NAME}/a.cpp      # → Libs/mylib/a.cpp
+	${PROJECT_NAME}/a.cpp      # → vendor/mylib/a.cpp
 	${PROJECT_NAME}/b.cpp
 )
 ```
@@ -131,7 +131,7 @@ Include directories are carried by the targets, so there is nothing global to ma
 | --- | --- | --- |
 | Project header | `#include "scene/Components.h"` | `OpenglGeometry`'s own `src/` include dir |
 | Math | `#include "Algebra.h"` | `Algebra` target (PUBLIC) |
-| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `Libs/`) |
+| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `vendor/`) |
 | EnTT | `#include <entt/entt.hpp>` | `entt` interface target |
 | GL loader | `#include <GL/glew.h>` | `libglew_static` (PUBLIC, also brings `GLEW_STATIC`) |
 | Windowing | `#include <GLFW/glfw3.h>` | `glfw` target |

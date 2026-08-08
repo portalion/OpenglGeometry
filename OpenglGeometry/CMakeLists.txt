@@ -1,7 +1,5 @@
 project (OpenglGeometry)
 
-add_subdirectory (Libs)
-
 add_executable(${PROJECT_NAME}
     "src/main.cpp"
     "src/App.cpp"

@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory (Dependencies/glfw)
 add_subdirectory (Dependencies/glew)
 
+add_subdirectory (vendor)
+
 add_subdirectory (Algebra)
 
 add_subdirectory (OpenglGeometry)

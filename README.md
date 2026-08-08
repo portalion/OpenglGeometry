@@ -34,7 +34,7 @@ cmake --build out/build/x64-Debug
 ```
 
 GLFW and GLEW are git submodules under `Dependencies/`; ImGui and EnTT are vendored in
-`OpenglGeometry/Libs/`. The executable and its shaders land in
+`vendor/`. The executable and its shaders land in
 `out/build/<name>/OpenglGeometry/`.
 
 See [getting started](docs/getting-started.md) for details and

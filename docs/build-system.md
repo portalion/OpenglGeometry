@@ -8,7 +8,7 @@ The layout deliberately mirrors the sibling **PhysicsSimulation** project, so th
 repositories can be worked on interchangeably:
 
 - submodules in `Dependencies/`, added with `add_subdirectory`
-- vendored third-party code in `<project>/Libs/`, with its own `CMakeLists.txt`
+- vendored third-party code in `vendor/`, with its own `CMakeLists.txt`
 - a minimal root `CMakeLists.txt` that does nothing but set C++20 and list subdirectories
 - one `project()` per subdirectory, using the `${PROJECT_NAME}` idiom
 - explicit source lists, grouped by folder with blank lines
@@ -22,7 +22,7 @@ repositories can be worked on interchangeably:
 | [`CMakeLists.txt`](../CMakeLists.txt) | MSVC hot-reload policy, C++20, `add_subdirectory` list. Nothing else. |
 | [`Algebra/CMakeLists.txt`](../Algebra/CMakeLists.txt) | `Algebra` static library |
 | [`OpenglGeometry/CMakeLists.txt`](../OpenglGeometry/CMakeLists.txt) | `OpenglGeometry` executable, include dirs, resource copy |
-| [`OpenglGeometry/Libs/CMakeLists.txt`](../OpenglGeometry/Libs/CMakeLists.txt) | `imgui` and `entt` targets |
+| [`vendor/CMakeLists.txt`](../vendor/CMakeLists.txt) | `imgui` and `entt` targets |
 | [`CMakeSettings.json`](../CMakeSettings.json) | Visual Studio configurations: `x64-Debug`, `x64-Release` |
 | [`.gitmodules`](../.gitmodules) | GLFW and GLEW submodules |
 
@@ -32,11 +32,11 @@ repositories can be worked on interchangeably:
 | --- | --- | --- |
 | **GLFW** | `Dependencies/glfw` | git submodule, `add_subdirectory` → target `glfw` |
 | **GLEW** | `Dependencies/glew` | git submodule ([Perlmint/glew-cmake](https://github.com/Perlmint/glew-cmake)), `add_subdirectory` → target `libglew_static` |
-| **Dear ImGui** | `OpenglGeometry/Libs/imgui` | vendored in-tree, built by `Libs/CMakeLists.txt` |
-| **EnTT** | `OpenglGeometry/Libs/entt` | vendored in-tree, INTERFACE target |
+| **Dear ImGui** | `vendor/imgui` | vendored in-tree, built by `vendor/CMakeLists.txt` |
+| **EnTT** | `vendor/entt` | vendored in-tree, INTERFACE target |
 | **OpenGL** | system | transitive through `libglew_static` |
 
-The split is the point: **`Dependencies/` is for things git manages, `Libs/` is for things
+The split is the point: **`Dependencies/` is for things git manages, `vendor/` is for things
 checked into this repository.** Both submodules are pinned to the **same commits
 PhysicsSimulation uses**, so the two projects compile against identical dependency versions.
 
@@ -52,14 +52,14 @@ linking it is all that is required.
 ```
 OpenglGeometry (executable)
 ├── Algebra         static     PUBLIC include: Algebra/src
-├── imgui           static     PUBLIC include: OpenglGeometry/Libs
+├── imgui           static     PUBLIC include: vendor
 │                              links glfw + libglew_static
-├── entt            interface  PUBLIC include: OpenglGeometry/Libs
+├── entt            interface  PUBLIC include: vendor
 ├── glfw            static     submodule
 └── libglew_static  static     submodule; PUBLIC GLEW_STATIC + include dir
 ```
 
-`Libs/CMakeLists.txt` uses PhysicsSimulation's trick of naming the project after the library
+`vendor/CMakeLists.txt` uses PhysicsSimulation's trick of naming the project after the library
 so `${PROJECT_NAME}` doubles as the source subdirectory:
 
 ```cmake
@@ -67,12 +67,12 @@ project(imgui)
 
 target_sources(
 	imgui PRIVATE
-	${PROJECT_NAME}/imgui.cpp      # → Libs/imgui/imgui.cpp
+	${PROJECT_NAME}/imgui.cpp      # → vendor/imgui/imgui.cpp
 	...
 )
 ```
 
-Because the include directory is `Libs/` itself, `#include <imgui/imgui.h>` and
+Because the include directory is `vendor/` itself, `#include <imgui/imgui.h>` and
 `#include <entt/entt.hpp>` both resolve unchanged from before the move.
 
 ## Resource copying
@@ -94,19 +94,29 @@ paths need.
 
 ## Deviations from PhysicsSimulation
 
-**1. ImGui is vendored rather than a submodule** — same as PhysicsSimulation, which also keeps
-its (docking-branch) ImGui in `Libs/`. The only difference is content: PhysicsSimulation also
-vendors ImPlot; this project also has `imgui_stdlib.cpp`. Both are flat layouts with the
+**1. Vendored code lives in `vendor/` at the repository root.** PhysicsSimulation calls it
+`Libs` and nests it as `PhysicsSimulation/Libs/`, which ties the vendored code to one
+project. Hoisting it to the root puts both third-party directories at the same level —
+`Dependencies/` for submodules, `vendor/` for committed code — and lets a second project (or
+`Algebra`) link `imgui` or `entt` without reaching into the application's subtree.
+
+Only the `add_subdirectory (vendor)` call moved, from `OpenglGeometry/CMakeLists.txt` to the
+root. `vendor/CMakeLists.txt` is unchanged: it uses `${PROJECT_SOURCE_DIR}`, which follows the
+directory containing the `project()` call.
+
+**2. ImGui is vendored rather than a submodule** — same as PhysicsSimulation, which also keeps
+its (docking-branch) ImGui vendored in-tree. The only difference is content: PhysicsSimulation
+also vendors ImPlot; this project also has `imgui_stdlib.cpp`. Both are flat layouts with the
 backends next to `imgui.cpp`.
 
-**2. `Algebra` is a separate library target.** PhysicsSimulation keeps everything in one
+**3. `Algebra` is a separate library target.** PhysicsSimulation keeps everything in one
 executable. This project has an independent math library that predates the CMake migration,
 so it stays its own `add_subdirectory`. It follows the same per-project idiom.
 
-**3. `CMakeSettings.json` has a Release configuration.** PhysicsSimulation defines only
+**4. `CMakeSettings.json` has a Release configuration.** PhysicsSimulation defines only
 `x64-Debug`. `x64-Release` is added here because the project is regularly built both ways.
 
-**4. Lowercase `resources/`.** PhysicsSimulation uses `Resources/`. The shader loader hard-codes
+**5. Lowercase `resources/`.** PhysicsSimulation uses `Resources/`. The shader loader hard-codes
 `"resources/shaders/"`, so renaming would mean a source change for no gain.
 
 ## Known rough edges
@@ -152,7 +162,7 @@ That is `indices.push_back(indices.size())` in the grid mesh loop. Benign at the
 | --- | --- |
 | `OpenglGeometry.sln` + 2 `.vcxproj` + 2 `.filters` | 4 `CMakeLists.txt` + `CMakeSettings.json` |
 | `Dependencies/` prebuilt libs (gitignored, so clean clones could not build) | `Dependencies/` git submodules built from source |
-| `OpenglGeometry/vendor/{imgui,entt}` | `OpenglGeometry/Libs/{imgui,entt}` |
+| `OpenglGeometry/vendor/{imgui,entt}` | `vendor/{imgui,entt}` — same name, hoisted to the root |
 | Post-build `xcopy /Y /I /E` | `copy_resources` custom target |
 | `GLEW_STATIC` in `<PreprocessorDefinitions>` | Inherited from `libglew_static` |
 | `$(SolutionDir)Algebra\src` on the include path | `PUBLIC` include directory on the `Algebra` target |

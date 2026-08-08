@@ -53,7 +53,7 @@ out/build/<name>/
   OpenglGeometry/
     OpenglGeometry.exe
     resources/shaders/       re-copied on every build
-    Libs/imgui.lib
+    vendor/imgui.lib
   Algebra/Algebra.lib
   Dependencies/              built GLFW and GLEW
 ```
@@ -117,12 +117,12 @@ Properties* (per-component inspectors). See [UI](ui.md).
 | --- | --- | --- |
 | **GLFW** | `Dependencies/glfw` | git submodule, built from source → target `glfw` |
 | **GLEW** | `Dependencies/glew` | git submodule ([Perlmint/glew-cmake](https://github.com/Perlmint/glew-cmake)) → target `libglew_static` |
-| **Dear ImGui** (docking branch) | `OpenglGeometry/Libs/imgui` | vendored in-tree → target `imgui` |
-| **EnTT** | `OpenglGeometry/Libs/entt` | vendored in-tree → INTERFACE target `entt` |
+| **Dear ImGui** (docking branch) | `vendor/imgui` | vendored in-tree → target `imgui` |
+| **EnTT** | `vendor/entt` | vendored in-tree → INTERFACE target `entt` |
 | **OpenGL** | system | transitive through `libglew_static` |
 | **Algebra** | `Algebra/` | in-repo static library, see [algebra.md](algebra.md) |
 
-The rule of thumb: **`Dependencies/` for submodules, `Libs/` for code committed to this
+The rule of thumb: **`Dependencies/` for submodules, `vendor/` for code committed to this
 repository.** Both submodules are pinned to the same commits as the sibling
 **PhysicsSimulation** project. See [build-system.md](build-system.md) for the full rationale.
 
@@ -134,7 +134,7 @@ Every include path is carried by a target, so there is nothing global to maintai
 | --- | --- | --- |
 | Project header | `#include "scene/Components.h"` | `OpenglGeometry`'s own `src/` include dir |
 | Math | `#include "Algebra.h"` | `Algebra` target (PUBLIC) |
-| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `Libs/`) |
+| ImGui | `#include <imgui/imgui.h>` | `imgui` target (PUBLIC, exports `vendor/`) |
 | EnTT | `#include <entt/entt.hpp>` | `entt` interface target |
 | GL loader | `#include <GL/glew.h>` | `libglew_static` (PUBLIC, also brings `GLEW_STATIC`) |
 | Windowing | `#include <GLFW/glfw3.h>` | `glfw` target |
@@ -145,18 +145,18 @@ Every include path is carried by a target, so there is nothing global to maintai
 CMakeLists.txt                 Root: C++20, MSVC hot reload, add_subdirectory list
 CMakeSettings.json             Visual Studio configurations (x64-Debug, x64-Release)
 .gitmodules                    GLFW and GLEW
-Dependencies/
+Dependencies/                  third-party managed by git
   glfw/                        submodule
   glew/                        submodule
+vendor/                        third-party committed to this repository
+  CMakeLists.txt               imgui and entt targets
+  imgui/                       vendored (docking branch, flat layout)
+  entt/                        vendored single header
 Algebra/
   CMakeLists.txt               Static library target
   src/                         Vector4, Matrix4, Quaternion, helpers
 OpenglGeometry/
   CMakeLists.txt               Executable, include dirs, resource copy
-  Libs/
-    CMakeLists.txt             imgui and entt targets
-    imgui/                     vendored (docking branch, flat layout)
-    entt/                      vendored single header
   resources/shaders/           GLSL, copied next to the exe
   deprecated/                  Old raycast-ellipsoid code, NOT in the build
   src/
