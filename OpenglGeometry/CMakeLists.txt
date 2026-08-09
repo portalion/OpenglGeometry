@@ -34,7 +34,7 @@ add_executable(${PROJECT_NAME}
     "src/systems/RemovalSystem.cpp"
     "src/systems/RenderingSystem.cpp"
     "src/systems/SystemPipeline.cpp"
-    "src/systems/UniformApplier.cpp"
+    "src/renderer/UniformApplier.cpp"
 
     "src/systems/gui/GUISystem.cpp"
     "src/systems/gui/PopupSystem.cpp"
