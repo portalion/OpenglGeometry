@@ -13,7 +13,6 @@ public:
 	~App();
 
 	void Run();
-	void HandleResize();
 private:
 	bool running;
 	Window window;

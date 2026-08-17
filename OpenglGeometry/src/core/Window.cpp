@@ -27,7 +27,6 @@ Window::Window(int width, int height, std::string title)
     glfwSetFramebufferSizeCallback(handle, [](GLFWwindow* window, int w, int h) {
         WindowUserPointerData* windowData = static_cast<WindowUserPointerData*>(glfwGetWindowUserPointer(window));
         windowData->window->HandleResize(w, h);
-        windowData->app->HandleResize();
         });
 
     if (!InitGLEW())
@@ -53,7 +52,7 @@ void Window::HandleResize(int width, int height)
 {
     this->width = width;
     this->height = height;
-    GLCall(glViewport(0, 0, std::max(width - Globals::rightInterfaceWidth, 0), height));
+    GLCall(glViewport(0, 0, width, height));
 }
 
 void Window::SetAppPointerData(App* app)

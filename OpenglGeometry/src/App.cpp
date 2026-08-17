@@ -13,8 +13,6 @@ App::App()
     ImGui::StyleColorsDark();
     window.SetAppPointerData(this);
 
-    HandleResize();
-
 	currentScene = CreateRef<BaseScene>();
 	systemPipeline = CreateUnique<SystemPipeline>(currentScene);
 }
@@ -37,9 +35,6 @@ void App::Run()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-#ifdef _DEBUG
-        ImGui::ShowDemoWindow();
-#endif 
 
 		if (systemPipeline)
 		{
@@ -51,11 +46,4 @@ void App::Run()
 
         window.ProcessFrame();
     }
-}
-
-void App::HandleResize()
-{
-	float newWidth = static_cast<float>(window.GetWidth() - Globals::rightInterfaceWidth);
-	float newHeight = static_cast<float>(window.GetHeight());
-	float aspect = newWidth / newHeight;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <Vector4.h>
+#include "Viewport.h"
 
 /// <summary>
 /// struct for configuration constants, or global constants
@@ -11,9 +12,16 @@ struct Globals
 	static const int startingSceneHeight;
 	static const int rightInterfaceWidth;
 
+	//Camera frustum
+	static const float cameraNearPlane;
+	static const float cameraFarPlane;
+	static const float cameraFieldOfView;
+
 	static const Algebra::Vector4 startingCameraPosition;
 
 	static const Algebra::Vector4 defaultPointsColor;
 	static const Algebra::Vector4 defaultMiddlePointColor;
+
+	static Viewport viewport;
 };
 

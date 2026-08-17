@@ -3,6 +3,8 @@
 #include "scene/Entity.h"
 #include <managers/ShaderManager.h>
 #include <core/Globals.h>
+#include <core/Viewport.h>
+#include <utils/GlCall.h>
 
 #include "renderer/VertexArray.h"
 #include <GL/glew.h>
@@ -24,6 +26,14 @@ void RenderingSystem::Process()
 	{
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
+
+		auto viewport = Globals::viewport;
+
+		if (viewport.IsDirty() && viewport.IsValid())
+		{
+			cameraComponent.projectionMatrix = Algebra::Matrix4::Projection(
+				viewport.Aspect(), Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView);
+		}
 
 		cameraComponent.cameraHandling->HandleInput(cameraComponent);
 
