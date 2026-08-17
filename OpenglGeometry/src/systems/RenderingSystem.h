@@ -3,7 +3,7 @@
 #include "Algebra.h"
 #include "renderer/Renderer.h"
 #include "interfaces/ISystem.h"
-#include "UniformApplier.h"
+#include "renderer/UniformApplier.h"
 
 class Scene;
 class Shader;
