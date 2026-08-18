@@ -44,7 +44,8 @@ add_executable(${PROJECT_NAME}
     "src/UI/popups/ShapeCreation.cpp"
 
     "src/utils/GlCall.cpp"
-    "src/utils/Initialization.cpp")
+    "src/utils/Initialization.cpp" 
+    "src/ui/core/DockSpace.cpp")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
