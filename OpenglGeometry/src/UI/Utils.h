@@ -5,6 +5,9 @@
 
 namespace GUI
 {
+	inline constexpr const char* ShapeListWindow = "Shape List##Shape List";
+	inline constexpr const char* InspectorWindow = "Selected Shapes Properties##Selected Shapes Properties";
+
 	inline std::string GenerateLabel(Entity entity, std::string labelWithoutId)
 	{
 		std::string result = labelWithoutId;

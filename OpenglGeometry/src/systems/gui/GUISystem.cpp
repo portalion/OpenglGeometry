@@ -2,25 +2,32 @@
 #include "UI/GUI.h"
 #include <archetypes/SimpleArchetypeCreation.h>
 #include <managers/StaticMeshManager.h>
+#include <ui/layouts/DefaultLayout.h>
 
 GUISystem::GUISystem(Ref<Scene> scene)
-	:m_Scene(scene)
-{
-	m_Cursor = m_Scene->CreateEntity();
-	Archetypes::AddShapeToEntity(m_Cursor, "Cursor");
-	m_Cursor.AddComponent<PositionComponent>();
-	auto& meshComponent = m_Cursor.AddComponent<MeshComponent>();
-	meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Cursor);
-	meshComponent.shaderTypes.push_back(AvailableShaders::Default);
-	meshComponent.renderingMode = RenderingMode::Lines;
+	:m_Scene(scene), m_ShapeInspector{ scene } {
 }
 
 void GUISystem::Process()
 {
-	if (!m_Cursor.HasComponent<PositionComponent>())
+
+	GUI::DrawMenuBar(m_Scene, m_ShowImGuiDemo, [this]() { GUI::Layout::Default(this->m_Dockspace); });
+	GUI::DrawToolbar();
+	GUI::DrawStatusBar(m_Scene);
+
+	if (!m_Dockspace.Created())
 	{
-		m_Cursor.AddComponent<PositionComponent>();
+		GUI::Layout::Default(m_Dockspace);
+	}
+
+	m_Dockspace.ClaimSize();
+	m_Dockspace.FixViewportSize(Globals::viewport);
+
+	if (m_ShowImGuiDemo)
+	{
+		ImGui::ShowDemoWindow(&m_ShowImGuiDemo);
 	}
 
 	GUI::DisplayShapeList(m_Scene);
+	m_ShapeInspector.Display();
 }

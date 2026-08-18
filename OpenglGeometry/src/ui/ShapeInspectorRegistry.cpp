@@ -1,22 +1,22 @@
-#include "ShapeInspectorSystem.h"
+#include "ShapeInspectorRegistry.h"
 #include <Algebra.h>
 #include <imgui/imgui.h>
 #include <UI/Utils.h>
 
-ShapeInspectorSystem::ShapeInspectorSystem(Ref<Scene> scene)
+ShapeInspectorRegistry::ShapeInspectorRegistry(Ref<Scene> scene)
 	:m_Scene { scene }
 {
-	Bind<PositionComponent>(&ShapeInspectorSystem::PositionInspect);
-	Bind<RotationComponent>(&ShapeInspectorSystem::RotationInspect);
-	Bind<ScaleComponent>(&ShapeInspectorSystem::ScaleInspect);
-	Bind<LineGenerationComponent>(&ShapeInspectorSystem::LineInspect);
-	Bind<IsParentOfVirtualEntitiesComponent>(&ShapeInspectorSystem::VirtualInspect);
-	Bind<TorusGenerationComponent>(&ShapeInspectorSystem::TorusInspect);
+	Bind<PositionComponent>(&ShapeInspectorRegistry::PositionInspect);
+	Bind<RotationComponent>(&ShapeInspectorRegistry::RotationInspect);
+	Bind<ScaleComponent>(&ShapeInspectorRegistry::ScaleInspect);
+	Bind<LineGenerationComponent>(&ShapeInspectorRegistry::LineInspect);
+	Bind<IsParentOfVirtualEntitiesComponent>(&ShapeInspectorRegistry::VirtualInspect);
+	Bind<TorusGenerationComponent>(&ShapeInspectorRegistry::TorusInspect);
 }
 
-void ShapeInspectorSystem::Process()
+void ShapeInspectorRegistry::Display()
 {
-	ImGui::Begin("Selected Shapes Properties##Selected Shapes Properties");
+	ImGui::Begin(GUI::InspectorWindow);
 	auto selectedShapes = m_Scene->GetAllEntitiesWith<IsSelectedTag>();
 
 	if (selectedShapes.empty())
@@ -33,7 +33,7 @@ void ShapeInspectorSystem::Process()
 	ImGui::End();
 }
 
-void ShapeInspectorSystem::PositionInspect(Entity entity)
+void ShapeInspectorRegistry::PositionInspect(Entity entity)
 {
 	Algebra::Vector4 tmpPosition = entity.GetComponent<PositionComponent>().position;
 	auto& position = entity.GetComponent<PositionComponent>().position;
@@ -43,19 +43,19 @@ void ShapeInspectorSystem::PositionInspect(Entity entity)
 	}
 }
 
-void ShapeInspectorSystem::ScaleInspect(Entity entity)
+void ShapeInspectorRegistry::ScaleInspect(Entity entity)
 {
 	auto& scale = entity.GetComponent<ScaleComponent>().scale;
 	ImGui::DragFloat3(GUI::GenerateLabel(entity, "Scale").c_str(), &scale.x, 0.1f);
 }
 
-void ShapeInspectorSystem::RotationInspect(Entity entity)
+void ShapeInspectorRegistry::RotationInspect(Entity entity)
 {
 	auto& rotation = entity.GetComponent<RotationComponent>().rotation;
 	ImGui::DragFloat3(GUI::GenerateLabel(entity, "Rotation").c_str(), &rotation.x, 0.1f);
 }
 
-void ShapeInspectorSystem::LineInspect(Entity entity)
+void ShapeInspectorRegistry::LineInspect(Entity entity)
 {
 	auto& controlPoints = entity.GetComponent<LineGenerationComponent>().controlPoints;
 	ImGui::Text("Control Points: %zu", controlPoints.size());
@@ -67,7 +67,7 @@ void ShapeInspectorSystem::LineInspect(Entity entity)
 	}
 }
 
-void ShapeInspectorSystem::VirtualInspect(Entity entity)
+void ShapeInspectorRegistry::VirtualInspect(Entity entity)
 {
 	auto virtualEntities = entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities;
 	for (Entity virtualEntity : virtualEntities)
@@ -90,7 +90,7 @@ void ShapeInspectorSystem::VirtualInspect(Entity entity)
 	}
 }
 
-void ShapeInspectorSystem::TorusInspect(Entity entity)
+void ShapeInspectorRegistry::TorusInspect(Entity entity)
 {
 	auto& torusComponent = entity.GetComponent<TorusGenerationComponent>();
 

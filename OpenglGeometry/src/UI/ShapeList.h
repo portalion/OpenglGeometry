@@ -3,12 +3,13 @@
 #include "scene/Scene.h"
 #include "scene/Entity.h"
 #include "Utils.h"
+#include "SceneActions.h"
 
 namespace GUI
 {
 	inline void DisplayShapeList(Ref<Scene> scene)
 	{
-		ImGui::Begin("Shape List##Shape List");
+		ImGui::Begin(ShapeListWindow);
 
 		auto shapes = scene->GetAllEntitiesWith<NameComponent>();
 
@@ -21,37 +22,19 @@ namespace GUI
 
 		if (ImGui::Button("Select All##Shape List"))
 		{
-			for (Entity entity : shapes)
-			{
-				if (!entity.HasComponent<IsSelectedTag>())
-				{
-					entity.AddTag<IsSelectedTag>();
-				}
-			}
+			SelectAll(scene);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Deselect All##Shape List"))
 		{
-			for (Entity entity : shapes)
-			{
-				if (entity.HasComponent<IsSelectedTag>())
-				{
-					entity.RemoveTag<IsSelectedTag>();
-				}
-			}
+			DeselectAll(scene);
 		}
 
 		if (ImGui::Button("Remove All Selected##Shape List"))
 		{
-			for (Entity entity : shapes)
-			{
-				if (entity.HasComponent<IsSelectedTag>())
-				{
-					entity.AddTag<ToBeDestroyedTag>();
-				}
-			}
+			DeleteSelected(scene);
 		}
 
 		for (Entity entity : shapes)

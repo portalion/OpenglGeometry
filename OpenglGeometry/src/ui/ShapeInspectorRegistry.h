@@ -1,9 +1,8 @@
 #pragma once
 #include <core/Base.h>
 #include <scene/ComponentFunctionRegistry.h>
-#include <interfaces/ISystem.h>
 
-class ShapeInspectorSystem : public ComponentFunctionRegistry<>, public ISystem
+class ShapeInspectorRegistry : public ComponentFunctionRegistry<>
 {
 private:
 	Ref<Scene> m_Scene;
@@ -14,7 +13,7 @@ private:
 	void VirtualInspect(Entity entity);
 	void TorusInspect(Entity entity);
 public:
-	ShapeInspectorSystem(Ref<Scene> scene);
+	ShapeInspectorRegistry(Ref<Scene> scene);
 
-	void Process() override;
+	void Display();
 };

@@ -39,13 +39,13 @@ add_executable(${PROJECT_NAME}
 
     "src/systems/gui/GUISystem.cpp"
     "src/systems/gui/PopupSystem.cpp"
-    "src/systems/gui/ShapeInspectorSystem.cpp"
+    "src/ui/ShapeInspectorRegistry.cpp"
 
     "src/UI/popups/ShapeCreation.cpp"
 
     "src/utils/GlCall.cpp"
     "src/utils/Initialization.cpp" 
-    "src/ui/core/DockSpace.cpp")
+    "src/ui/core/DockSpace.cpp" "src/ui/layouts/DefaultLayout.cpp")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
