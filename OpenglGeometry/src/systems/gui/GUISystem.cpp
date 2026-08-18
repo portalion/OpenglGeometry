@@ -3,18 +3,16 @@
 #include <archetypes/SimpleArchetypeCreation.h>
 #include <managers/StaticMeshManager.h>
 #include <ui/layouts/DefaultLayout.h>
-#include <App.h>
 
-GUISystem::GUISystem(Ref<Scene> scene)
-	:m_Scene(scene), m_ShapeInspector{ scene } {
+GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
+	:m_Scene(scene), m_Viewport(viewport), m_ShapeInspector{ scene } {
 }
 
 void GUISystem::Process()
 {
-
 	GUI::DrawMenuBar(m_Scene, m_ShowImGuiDemo, [this]() { GUI::Layout::Default(this->m_Dockspace); });
 	GUI::DrawToolbar();
-	GUI::DrawStatusBar(m_Scene);
+	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData());
 
 	if (!m_Dockspace.Created())
 	{
@@ -22,7 +20,12 @@ void GUISystem::Process()
 	}
 
 	m_Dockspace.ClaimSize();
-	m_Dockspace.FixViewportSize(App::GetInstance().g_Viewport);
+
+	ViewportData sceneRect;
+	if (m_Dockspace.TryGetCentralNodeRect(sceneRect))
+	{
+		m_Viewport.Change(sceneRect);
+	}
 
 	if (m_ShowImGuiDemo)
 	{

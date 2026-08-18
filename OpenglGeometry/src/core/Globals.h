@@ -1,6 +1,5 @@
 #pragma once
 #include <Vector4.h>
-#include "Viewport.h"
 
 /// <summary>
 /// struct for configuration constants, or global constants

@@ -13,7 +13,7 @@ App::App()
     m_Window.SetAppPointerData(this);
 
 	m_CurrentScene = CreateRef<BaseScene>();
-	m_SystemPipeline = CreateUnique<SystemPipeline>(m_CurrentScene);
+	m_SystemPipeline = CreateUnique<SystemPipeline>(m_CurrentScene, m_Viewport);
 }
 
 App::~App()

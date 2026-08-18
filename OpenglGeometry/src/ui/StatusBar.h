@@ -3,11 +3,10 @@
 #include <imgui/imgui_internal.h>
 #include "core/Globals.h"
 #include "core/Viewport.h"
-#include <App.h>
 
 namespace GUI
 {
-	inline void DrawStatusBar(Ref<Scene> scene)
+	inline void DrawStatusBar(Ref<Scene> scene, const ViewportData& viewport)
 	{
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
 
@@ -15,7 +14,6 @@ namespace GUI
 		{
 			const auto objectCount = std::ranges::distance(scene->GetAllEntitiesWith<NameComponent>());
 			const auto selectedCount = std::ranges::distance(scene->GetAllEntitiesWith<IsSelectedTag>());
-			const ViewportData viewport = App::GetInstance().g_Viewport.GetData();
 
 			ImGui::Text("%.0f fps", ImGui::GetIO().Framerate);
 			ImGui::SameLine();

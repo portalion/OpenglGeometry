@@ -30,12 +30,12 @@ void Dockspace::ClaimSize()
 	ImGui::DockSpaceOverViewport(m_Id, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 }
 
-void Dockspace::FixViewportSize(Viewport& viewport)
+bool Dockspace::TryGetCentralNodeRect(ViewportData& out) const
 {
 	const ImGuiDockNode* centralNode = ImGui::DockBuilderGetCentralNode(m_Id);
 	if (centralNode == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	const ImGuiViewport* imGuiViewport = ImGui::GetMainViewport();
@@ -54,5 +54,6 @@ void Dockspace::FixViewportSize(Viewport& viewport)
 	result.width = std::max(static_cast<int>(width), 0);
 	result.height = std::max(static_cast<int>(height), 0);
 
-	viewport.Change(result);
+	out = result;
+	return true;
 }

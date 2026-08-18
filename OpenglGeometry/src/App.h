@@ -5,8 +5,8 @@
 #include "core/Window.h"
 #include <unordered_set>
 #include "core/Base.h"
+#include "core/Viewport.h"
 #include "systems/SystemPipeline.h"
-#include <core/Globals.h>
 
 class App {
 public:
@@ -16,12 +16,13 @@ public:
 
 	static App& GetInstance();
 
-	Viewport g_Viewport;
-
 	void Run();
 private:
 	App();
 	Window m_Window;
+
+	// Declared before the pipeline: the systems hold a reference to it.
+	Viewport m_Viewport;
 
 	Unique<SystemPipeline> m_SystemPipeline;
 	Ref<Scene> m_CurrentScene;

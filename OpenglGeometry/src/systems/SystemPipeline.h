@@ -4,6 +4,7 @@
 #include <vector>
 
 class Scene;
+class Viewport;
 
 class SystemPipeline
 {
@@ -12,9 +13,8 @@ private:
 
 	Ref<Scene> m_Scene;
 public:
-	SystemPipeline(Ref<Scene> m_Scene);
+	SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport);
 	~SystemPipeline();
 
 	void Update();
 };
-

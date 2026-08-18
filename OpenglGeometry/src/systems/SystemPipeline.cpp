@@ -10,9 +10,8 @@
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
 #include <core/Globals.h>
-#include <App.h>
 
-SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
+SystemPipeline::SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 {
 	this->m_Scene = m_Scene;
 
@@ -21,11 +20,11 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 		CreateRef<NotificationSystem>(m_Scene),
 		CreateRef<RemovalSystem>(m_Scene),
 		
-		CreateRef<GUISystem>(m_Scene),
+		CreateRef<GUISystem>(m_Scene, viewport),
 		CreateRef<PopupSystem>(m_Scene),
 
 		CreateRef<MeshGeneratingSystem>(m_Scene),
-		CreateRef<RenderingSystem>(m_Scene)
+		CreateRef<RenderingSystem>(m_Scene, viewport)
 	};
 }
 
@@ -39,5 +38,4 @@ void SystemPipeline::Update()
 	{
 		system->Process();
 	}
-	App::GetInstance().g_Viewport.Apply();
 }

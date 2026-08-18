@@ -10,10 +10,9 @@
 #include <GL/glew.h>
 #include "scene/Components.h"
 #include <interfaces/ICamera.h>
-#include <App.h>
 
-RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
-	: m_Scene(m_Scene)
+RenderingSystem::RenderingSystem(Ref<Scene> m_Scene, Viewport& viewport)
+	: m_Scene(m_Scene), m_Viewport(viewport)
 {
 	m_Renderer = CreateRef<Renderer>();
 	m_Renderer->SetShader(AvailableShaders::Default);
@@ -23,17 +22,19 @@ void RenderingSystem::Process()
 {
 	SceneContext sceneContext;
 
+	// Read the flag before Apply() clears it - the projection depends on the same change.
+	const bool viewportChanged = m_Viewport.IsDirty() && m_Viewport.IsValid();
+	m_Viewport.Apply();
+
 	for (Entity entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
-		auto viewport = App::GetInstance().g_Viewport;
-
-		if (viewport.IsDirty() && viewport.IsValid())
+		if (viewportChanged)
 		{
 			cameraComponent.projectionMatrix = Algebra::Matrix4::Projection(
-				viewport.Aspect(), Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView);
+				m_Viewport.Aspect(), Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView);
 		}
 
 		cameraComponent.cameraHandling->HandleInput(cameraComponent);

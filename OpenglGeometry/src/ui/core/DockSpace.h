@@ -13,5 +13,5 @@ public:
 	ImGuiID StartCreation(ImVec2 size);
 	void FinishCreation();
 	void ClaimSize();
-	void FixViewportSize(Viewport& viewport);
+	bool TryGetCentralNodeRect(ViewportData& out) const;
 };
