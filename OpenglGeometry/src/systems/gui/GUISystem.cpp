@@ -3,6 +3,7 @@
 #include <archetypes/SimpleArchetypeCreation.h>
 #include <managers/StaticMeshManager.h>
 #include <ui/layouts/DefaultLayout.h>
+#include <App.h>
 
 GUISystem::GUISystem(Ref<Scene> scene)
 	:m_Scene(scene), m_ShapeInspector{ scene } {
@@ -21,7 +22,7 @@ void GUISystem::Process()
 	}
 
 	m_Dockspace.ClaimSize();
-	m_Dockspace.FixViewportSize(Globals::viewport);
+	m_Dockspace.FixViewportSize(App::GetInstance().g_Viewport);
 
 	if (m_ShowImGuiDemo)
 	{

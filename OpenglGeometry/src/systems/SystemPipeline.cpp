@@ -10,6 +10,7 @@
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
 #include <core/Globals.h>
+#include <App.h>
 
 SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
@@ -38,5 +39,5 @@ void SystemPipeline::Update()
 	{
 		system->Process();
 	}
-	Globals::viewport.Apply();
+	App::GetInstance().g_Viewport.Apply();
 }

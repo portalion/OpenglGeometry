@@ -3,6 +3,7 @@
 #include <imgui/imgui_internal.h>
 #include "core/Globals.h"
 #include "core/Viewport.h"
+#include <App.h>
 
 namespace GUI
 {
@@ -14,7 +15,7 @@ namespace GUI
 		{
 			const auto objectCount = std::ranges::distance(scene->GetAllEntitiesWith<NameComponent>());
 			const auto selectedCount = std::ranges::distance(scene->GetAllEntitiesWith<IsSelectedTag>());
-			const ViewportData viewport = Globals::viewport.GetData();
+			const ViewportData viewport = App::GetInstance().g_Viewport.GetData();
 
 			ImGui::Text("%.0f fps", ImGui::GetIO().Framerate);
 			ImGui::SameLine();

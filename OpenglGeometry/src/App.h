@@ -6,17 +6,25 @@
 #include <unordered_set>
 #include "core/Base.h"
 #include "systems/SystemPipeline.h"
+#include <core/Globals.h>
 
 class App {
 public:
-	App();
+	App(const App&) = delete;
+	App& operator=(const App&) = delete;
 	~App();
 
-	void Run();
-private:
-	bool running;
-	Window window;
+	static App& GetInstance();
 
-	Unique<SystemPipeline> systemPipeline;
-	Ref<Scene> currentScene;
+	Viewport g_Viewport;
+
+	void Run();
+	void Stop();
+private:
+	App();
+	bool m_Running;
+	Window m_Window;
+
+	Unique<SystemPipeline> m_SystemPipeline;
+	Ref<Scene> m_CurrentScene;
 };

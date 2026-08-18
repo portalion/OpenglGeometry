@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #include "scene/Components.h"
 #include <interfaces/ICamera.h>
+#include <App.h>
 
 RenderingSystem::RenderingSystem(Ref<Scene> m_Scene)
 	: m_Scene(m_Scene)
@@ -27,7 +28,7 @@ void RenderingSystem::Process()
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		if (!cameraComponent.active) continue;
 
-		auto viewport = Globals::viewport;
+		auto viewport = App::GetInstance().g_Viewport;
 
 		if (viewport.IsDirty() && viewport.IsValid())
 		{

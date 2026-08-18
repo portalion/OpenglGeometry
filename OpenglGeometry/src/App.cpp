@@ -6,15 +6,15 @@
 #include <scene/BaseScene.h>
 
 App::App()
-    : window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
-    running{true}
+    : m_Window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
+    m_Running{true}
 {
-    InitImgui(window.GetWindowPointer());
+    InitImgui(m_Window.GetWindowPointer());
     ImGui::StyleColorsDark();
-    window.SetAppPointerData(this);
+    m_Window.SetAppPointerData(this);
 
-	currentScene = CreateRef<BaseScene>();
-	systemPipeline = CreateUnique<SystemPipeline>(currentScene);
+	m_CurrentScene = CreateRef<BaseScene>();
+	m_SystemPipeline = CreateUnique<SystemPipeline>(m_CurrentScene);
 }
 
 App::~App()
@@ -25,10 +25,16 @@ App::~App()
     glfwTerminate();
 }
 
+App& App::GetInstance()
+{
+    static App instance;
+    return instance;
+}
+
 
 void App::Run()
 {
-    while (running && !window.ShouldClose())
+    while (m_Running && !m_Window.ShouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -36,14 +42,14 @@ void App::Run()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-		if (systemPipeline)
+		if (m_SystemPipeline)
 		{
-			systemPipeline->Update();
+			m_SystemPipeline->Update();
 		}
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        window.ProcessFrame();
+        m_Window.ProcessFrame();
     }
 }

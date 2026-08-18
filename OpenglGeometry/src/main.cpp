@@ -13,7 +13,7 @@ int main(void)
         return -1;
     }
 
-    App app;
+    App& app = App::GetInstance();
     app.Run();
 
     return 0;
