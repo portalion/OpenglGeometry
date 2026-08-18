@@ -6,8 +6,7 @@
 #include <scene/BaseScene.h>
 
 App::App()
-    : m_Window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}, 
-    m_Running{true}
+    : m_Window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}
 {
     InitImgui(m_Window.GetWindowPointer());
     ImGui::StyleColorsDark();
@@ -34,7 +33,7 @@ App& App::GetInstance()
 
 void App::Run()
 {
-    while (m_Running && !m_Window.ShouldClose())
+    while (!m_Window.ShouldClose())
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

@@ -8,8 +8,13 @@ float Viewport::Aspect() const
 
 void Viewport::Change(ViewportData newData)
 {
-	m_Dirty = true;
+	if (newData == m_Data)
+	{
+		return;
+	}
+
 	m_Data = newData;
+	m_Dirty = true;
 }
 
 void Viewport::Apply()

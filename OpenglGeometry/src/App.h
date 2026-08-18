@@ -19,10 +19,8 @@ public:
 	Viewport g_Viewport;
 
 	void Run();
-	void Stop();
 private:
 	App();
-	bool m_Running;
 	Window m_Window;
 
 	Unique<SystemPipeline> m_SystemPipeline;

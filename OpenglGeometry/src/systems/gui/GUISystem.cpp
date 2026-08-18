@@ -31,4 +31,6 @@ void GUISystem::Process()
 
 	GUI::DisplayShapeList(m_Scene);
 	m_ShapeInspector.Display();
+
+	GUI::HandleShortcuts(m_Scene);
 }

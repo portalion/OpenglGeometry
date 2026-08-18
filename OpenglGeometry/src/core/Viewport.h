@@ -6,13 +6,15 @@ struct ViewportData
 	int y = 0;
 	int width = 0;
 	int height = 0;
+
+	bool operator==(const ViewportData& other) const = default;
 };
 
 class Viewport
 {
 private:
 	ViewportData m_Data;
-	bool m_Dirty;
+	bool m_Dirty = false;
 public:
 	inline bool IsDirty() { return m_Dirty; }
 	inline bool IsValid() const { return m_Data.width > 0 && m_Data.height > 0; }
