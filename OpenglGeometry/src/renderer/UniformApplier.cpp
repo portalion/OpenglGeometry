@@ -20,9 +20,23 @@ void UniformApplier::ScaleApplier(Entity entity, EntityContext& context)
 	context.Scale = Algebra::Matrix4::DiagonalScaling(scale.x, scale.y, scale.z);
 }
 
+void UniformApplier::ColorApplier(Entity entity, EntityContext& context)
+{
+	context.Color = entity.GetComponent<ColorComponent>().color;
+}
+
+void UniformApplier::SamplesApplier(Entity entity, EntityContext& context)
+{
+	const auto& surface = entity.GetComponent<BezierSurfaceGenerationComponent>();
+	context.SamplesU = surface.samplesU;
+	context.SamplesV = surface.samplesV;
+}
+
 UniformApplier::UniformApplier()
 {
 	Bind<PositionComponent>(&UniformApplier::PositionApplier);
 	Bind<RotationComponent>(&UniformApplier::RotationApplier);
 	Bind<ScaleComponent>(&UniformApplier::ScaleApplier);
+	Bind<ColorComponent>(&UniformApplier::ColorApplier);
+	Bind<BezierSurfaceGenerationComponent>(&UniformApplier::SamplesApplier);
 }

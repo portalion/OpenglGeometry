@@ -136,6 +136,13 @@ void Shader::ReflectUniforms(unsigned int program)
     }
 }
 
+void Shader::WarnOnce(const std::string& uniformName, const std::string& message)
+{
+    if (!m_WarnedUniforms.insert(uniformName).second) return;
+
+    std::cout << "WARNING: " << message << ": " << uniformName << std::endl;
+}
+
 void Shader::ApplyContext(UniformContext context)
 {
     for (const auto& uniform : m_Uniforms)
@@ -150,8 +157,7 @@ void Shader::ApplyContext(UniformContext context)
             }
             else
             {
-                std::cout << "WARNING: " << "There is no uniform named: " << uniform.name 
-                    << " of type: " << GL_FLOAT_VEC4 << std::endl;
+                WarnOnce(uniform.name, "The context carries no vec4 named");
             }
             break;
         case GL_FLOAT_MAT4:
@@ -162,9 +168,24 @@ void Shader::ApplyContext(UniformContext context)
             }
             else
             {
-                std::cout << "WARNING: " << "There is no uniform named: " << uniform.name
-                    << " of type: " << GL_FLOAT_VEC4 << std::endl;
+                WarnOnce(uniform.name, "The context carries no mat4 named");
             }
+            break;
+        case GL_INT:
+            if (context.IntUniforms.contains(uniform.name))
+            {
+                auto& value = context.IntUniforms[uniform.name];
+                SetUniformVec1i(uniform.name, value);
+            }
+            else
+            {
+                WarnOnce(uniform.name, "The context carries no int named");
+            }
+            break;
+        default:
+            // The next unsupported uniform type should be loud rather than silent - a
+            // uniform nobody writes keeps whatever GLSL defaulted it to, forever.
+            WarnOnce(uniform.name, "UniformContext cannot carry the type of uniform");
             break;
         }
     }

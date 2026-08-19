@@ -113,7 +113,7 @@ namespace Archetypes
 		{
 			for (unsigned int j = 0; j < numberOfPointsY; j++)
 			{
-				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, j * sizeYPerPoint, 0.f);
+				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, 0.f, j * sizeYPerPoint);
 				Entity point;
 				if (!createVirtual)
 					point = CreatePoint(scene, startingPosition + offset);
@@ -146,10 +146,10 @@ namespace Archetypes
 		{
 			for(unsigned int j = 0; j < numberOfPointsY; j++)
 			{
-				Algebra::Vector4 heightOffset = 
-					Algebra::Vector4(0.f, 0.f, j * heightPerPoint);
-				Algebra::Vector4 radiusOffset = 
-					Algebra::Matrix4::RotationZ(anglePerPoint * i) * 
+				Algebra::Vector4 heightOffset =
+					Algebra::Vector4(0.f, j * heightPerPoint, 0.f);
+				Algebra::Vector4 radiusOffset =
+					Algebra::Matrix4::RotationY(anglePerPoint * i) *
 					Algebra::Vector4(params.sizeX, 0.f, 0.f);
 
 				Entity point;

@@ -19,6 +19,5 @@ struct Globals
 	static const Algebra::Vector4 startingCameraPosition;
 
 	static const Algebra::Vector4 defaultPointsColor;
-	static const Algebra::Vector4 defaultMiddlePointColor;
 };
 

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "Algebra.h"
 #include "RendererContext.h"
 
@@ -30,6 +31,7 @@ private:
 	std::unordered_map<std::string, int> m_UniformLocationCache;
 	unsigned int patchSize;
 	std::vector<UniformInfo> m_Uniforms;
+	std::unordered_set<std::string> m_WarnedUniforms;
 public:
 	static const std::unordered_map<ShaderType, ShaderTypeInfo> shaderInfoMap;
 
@@ -45,6 +47,7 @@ private:
 	unsigned int CreateShader(const std::unordered_map<ShaderType, std::string>& shaderSourceCodes);
 	void ReflectUniforms(unsigned int program);
 	int GetUniformLocation(const std::string& name);
+	void WarnOnce(const std::string& uniformName, const std::string& message);
 
 	void SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix);
 	void SetUniformVec1i(const std::string& name, const int& value);

@@ -28,7 +28,9 @@ void Renderer::Render(RenderingMode mode, const EntityContext& context)
 
 	UniformContext uniformContext = sceneContext;
 	uniformContext.Matrix4Uniforms["u_modelMatrix"] = context.Position * context.Rotation * context.Scale;
-	uniformContext.Vector4Uniforms["u_color"] = Algebra::Vector4(1.f, 0.2f, 0.f, 1.f);
+	uniformContext.Vector4Uniforms["u_color"] = context.Color;
+	uniformContext.IntUniforms["u_subdivisions"] = context.SamplesU;
+	uniformContext.IntUniforms["v_subdivisions"] = context.SamplesV;
 
 	m_ActualShader->ApplyContext(uniformContext);
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleArchetypeCreation.h"
+#include "CursorArchetypeCreation.h"
 #include "PointArchetypeCreation.h"
 #include "TorusArchetypeCreation.h"
 #include "PolylineArchetypeCreation.h"

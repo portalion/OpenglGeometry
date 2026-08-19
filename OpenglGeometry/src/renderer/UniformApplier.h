@@ -9,6 +9,8 @@ private:
 	void PositionApplier(Entity entity, EntityContext& context);
 	void RotationApplier(Entity entity, EntityContext& context);
 	void ScaleApplier(Entity entity, EntityContext& context);
+	void ColorApplier(Entity entity, EntityContext& context);
+	void SamplesApplier(Entity entity, EntityContext& context);
 public:
 	UniformApplier();
 };

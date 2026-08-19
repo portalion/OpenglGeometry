@@ -37,6 +37,7 @@ namespace Archetypes
 		{
 			if (!it->IsValid() || !it->HasComponent<NotificationComponent>())
 			{
+				it++;
 				continue;
 			}
 

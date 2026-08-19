@@ -8,4 +8,8 @@ struct ObserverChangedState { };
 
 struct IsInvisibleTag { };
 
+struct IsTransparentTag { };
+
 struct ToBeDestroyedTag { };
+
+struct CursorTag { };

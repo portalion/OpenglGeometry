@@ -8,7 +8,6 @@ const float Globals::cameraNearPlane = 0.1f;
 const float Globals::cameraFarPlane = 1000.f;
 const float Globals::cameraFieldOfView = 3.14f / 2.f;
 
-const Algebra::Vector4 Globals::startingCameraPosition = Algebra::Vector4(0.f, 0.f, 10.f, 1.f);
+const Algebra::Vector4 Globals::startingCameraPosition = Algebra::Vector4(0.f, 3.f, 10.f, 1.f);
 
 const Algebra::Vector4 Globals::defaultPointsColor = Algebra::Vector4(1.f, 0.2f, 0.f, 1.f);
-const Algebra::Vector4 Globals::defaultMiddlePointColor = Algebra::Vector4(1.f, 1.f, 1.f, 1.f);

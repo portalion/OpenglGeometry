@@ -11,13 +11,6 @@ std::vector<Entity> ShapeCreation::GetSelectedPoints()
 ShapeCreation::ShapeCreation(Ref<Scene> scene)
 {
 	m_Scene = scene;
-	m_Cursor = m_Scene->CreateEntity();
-	Archetypes::AddShapeToEntity(m_Cursor, "Cursor");
-	m_Cursor.AddComponent<PositionComponent>();
-	auto& meshComponent = m_Cursor.AddComponent<MeshComponent>();
-	meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Cursor);
-	meshComponent.shaderTypes.push_back(AvailableShaders::Default);
-	meshComponent.renderingMode = RenderingMode::Lines;
 }
 
 bool ShapeCreation::ShouldOpen()

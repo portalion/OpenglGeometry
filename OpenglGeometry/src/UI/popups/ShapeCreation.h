@@ -10,7 +10,6 @@ class ShapeCreation : public IPopup
 {
 private:
 	Ref<Scene> m_Scene;
-	Entity m_Cursor;
 
 	std::vector<Entity> GetSelectedPoints();
 public:
