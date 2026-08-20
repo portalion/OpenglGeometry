@@ -24,5 +24,6 @@ BaseScene::BaseScene()
 		mc.renderingMode = RenderingMode::Lines;
 		mc.shaderTypes = { AvailableShaders::InfiniteGrid };
 		mc.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Grid);
+		grid.AddTag<IsTransparentTag>();
 	}
 }

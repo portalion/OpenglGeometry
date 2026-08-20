@@ -80,45 +80,41 @@ StaticMeshManager::StaticMeshManager()
 		m_Meshes[StaticMeshType::Cursor] = VertexArray::CreateWithBuffers(cursorVertices, cursorIndices, layout);
 	}
 
-	//Grid
+	// Grid
 	{
 		std::vector<float> vertices;
 		std::vector<unsigned int> indices;
 
-		const int GRID_SIZE = 200;
-		const float SIZE_PER_EDGE = 2.f / GRID_SIZE;
-		const float START_POS = -1.f;
-		const float ENDING_POS = 1.f;
+		const int GRID_HALF_CELLS = 1000;
+		const float GRID_EXTENT = static_cast<float>(GRID_HALF_CELLS);
+		const float MINOR_LINE = 0.f;
+		const float MAJOR_LINE = 1.f;
+		const float ALONG_X = 0.f;
+		const float ALONG_Z = 1.f;
 
-		for (int i = 0; i < GRID_SIZE + 1; i++)
+		for (int i = -GRID_HALF_CELLS; i <= GRID_HALF_CELLS; i++)
 		{
-			Algebra::Vector4 color{ 0.2f, 0.2f, 0.2f };
-			if (i == GRID_SIZE / 2.f)
-			{
-				color = { 1.f, 0.f, 0.f };
-			}
-			else if (i % 10 == 0)
-			{
-				color = { 0.5f, 0.5f, 0.5f };
-			}
+			const float coord = static_cast<float>(i);
+			const float lineLevel = (i % 10 == 0) ? MAJOR_LINE : MINOR_LINE;
 
-			float iCoord = START_POS + SIZE_PER_EDGE * i;
-			vertices.insert(vertices.end(), 
+			vertices.insert(vertices.end(),
 				{
-					iCoord, START_POS, 0.f, 1.f, color.x, color.y, color.z,
-					iCoord, ENDING_POS, 0.f, 1.f, color.x, color.y, color.z,
-					START_POS, iCoord, 0.f, 1.f, color.x, color.y, color.z,
-					ENDING_POS, iCoord, 0.f, 1.f, color.x, color.y, color.z,
+					-GRID_EXTENT, 0.f, coord, 1.f, lineLevel, ALONG_X,
+					 GRID_EXTENT, 0.f, coord, 1.f, lineLevel, ALONG_X,
+					 coord, 0.f, -GRID_EXTENT, 1.f, lineLevel, ALONG_Z,
+					 coord, 0.f,  GRID_EXTENT, 1.f, lineLevel, ALONG_Z,
 				});
-			for(int j = 0; j < 4; j++)
-				indices.push_back(indices.size());
+
+			for (int j = 0; j < 4; j++)
+			{
+				indices.push_back(static_cast<unsigned int>(indices.size()));
+			}
 		}
-		
 
 		BufferLayout layout =
 		{
 			{ ShaderDataType::Float4, "position" },
-			{ ShaderDataType::Float3, "color" }
+			{ ShaderDataType::Float2, "lineInfo" }
 		};
 		m_Meshes[StaticMeshType::Grid] = VertexArray::CreateWithBuffers(vertices, indices, layout);
 	}

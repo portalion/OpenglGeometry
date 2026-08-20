@@ -1,23 +1,27 @@
 #version 460 core
 
-layout(location = 0) in vec3 in_color;
-layout(location = 1) in vec4 in_worldPos;
-layout(location = 2) in float in_scalling;
-layout(location = 3) in float in_fraction;
+layout(location = 0) in vec4 in_color;
+layout(location = 1) in vec3 in_worldPos;
+layout(location = 2) in vec3 in_eyePos;
 
 layout(location = 0) out vec4 out_color;
-uniform vec4 g_cameraPosition;
+
+const float c_fadeStartHeights = 3.0;
+const float c_fadeEndHeights = 8.0;
+
 void main()
 {
-	const float maxFadeDistance = 25.0f;
-	const float heightToFadeDistanceRatio = 15.0f;
+    float height = max(abs(in_eyePos.y), 1e-4);
+    float distanceToCamera = length(in_worldPos.xz - in_eyePos.xz);
 
-	float fadeDistance = abs(g_cameraPosition.z) * heightToFadeDistanceRatio;
-	fadeDistance = min(fadeDistance, in_scalling * 0.05f);
-	fadeDistance = max(fadeDistance, in_scalling * 0.5f);
+    float fade = 1.0 - smoothstep(
+        c_fadeStartHeights * height, c_fadeEndHeights * height, distanceToCamera);
 
-	float distanceToCamera = length(in_worldPos.xy - g_cameraPosition.xy);
-	float opacityFalloff = smoothstep(1.0, 0.0, distanceToCamera / fadeDistance);
+    float alpha = in_color.a * fade;
+    if (alpha <= 0.002)
+    {
+        discard;
+    }
 
-	out_color = vec4(in_color, opacityFalloff * (1.0 - in_fraction));
+    out_color = vec4(in_color.rgb, alpha);
 };

@@ -1,35 +1,47 @@
 #version 460 core
 
 layout(location = 0) in vec4 position;
-layout(location = 1) in vec3 color;
+layout(location = 1) in vec2 lineInfo;
 
-layout(location = 0) out vec3 out_color;
-layout(location = 1) out vec4 out_worldPos;
-layout(location = 2) out float scalling;
-layout(location = 3) out float fraction;
+layout(location = 0) out vec4 out_color;
+layout(location = 1) out vec3 out_worldPos;
+layout(location = 2) out vec3 out_eyePos;
 
-uniform mat4 u_modelMatrix = mat4(1.0);
 uniform mat4 g_viewMatrix;
 uniform mat4 g_projectionMatrix;
-uniform vec4 g_cameraPosition;
+const float c_minHeight = 0.001;
+
+const vec3 c_minorColor = vec3(0.30);
+const vec3 c_majorColor = vec3(0.55);
+const vec3 c_xAxisColor = vec3(0.85, 0.25, 0.25);
+const vec3 c_zAxisColor = vec3(0.25, 0.45, 0.90);
 
 void main()
 {
-    out_color = color;
-    out_worldPos = u_modelMatrix * position;
-    float dist = max(abs(g_cameraPosition.z), 1e-6);
-    float log10dist = log(dist) / log(10.0);
-    float decade = floor(log10dist);
-    float stepMul = pow(10.0, decade);
+    vec3 eye = (inverse(g_viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    float height = max(abs(eye.y), c_minHeight);
+    float level = log(height * c_cellsPerHeight) / log(10.0);
+    float decadeFraction = fract(level);
+    float cellSize = pow(10.0, floor(level));
 
-    scalling = stepMul * 10;
-    fraction = log10dist - decade;
+    float snapPeriod = cellSize * 10.0;
+    vec3 world = vec3(position.x * cellSize, 0.0, position.z * cellSize);
+    world.xz += round(eye.xz / snapPeriod) * snapPeriod;
 
-    out_worldPos.xyz *= scalling;
+    float isMajor = lineInfo.x;
+    vec3 color = mix(c_minorColor, mix(c_majorColor, c_minorColor, decadeFraction), isMajor);
+    float alpha = mix(1.0 - decadeFraction, 1.0, isMajor);
 
-    vec2 movement = floor(g_cameraPosition.xy / 10);
+    float lineCoord = mix(world.z, world.x, lineInfo.y);
+    if (abs(lineCoord) < 0.5 * cellSize)
+    {
+        color = mix(c_xAxisColor, c_zAxisColor, lineInfo.y);
+        alpha = 1.0;
+    }
 
-    out_worldPos.xy -= movement * 10;
+    out_color = vec4(color, alpha);
+    out_worldPos = world;
+    out_eyePos = eye;
 
-    gl_Position = g_projectionMatrix * g_viewMatrix * out_worldPos;
+    gl_Position = g_projectionMatrix * g_viewMatrix * vec4(world, 1.0);
 };
