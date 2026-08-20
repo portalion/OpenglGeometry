@@ -20,7 +20,7 @@ bool ShapeCreation::ShouldOpen()
 
 void ShapeCreation::Display()
 {
-	auto cursorPosition = m_Cursor.GetComponent<PositionComponent>().position;
+	auto cursorPosition = Archetypes::GetCursorPosition(m_Scene.get());
 	if (ImGui::MenuItem("Create Torus##Creation menu"))
 	{
 		Archetypes::CreateTorus(m_Scene.get(), cursorPosition);

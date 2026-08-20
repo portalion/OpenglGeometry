@@ -25,5 +25,9 @@ namespace GUI
 		{
 			DeselectAll(scene);
 		}
+		if (ImGui::Shortcut(ImGuiKey_F, ImGuiInputFlags_RouteGlobal))
+		{
+			FocusSelected(scene);
+		}
 	}
 }

@@ -3,7 +3,7 @@
 #include "core/Globals.h"
 #include "archetypes/Archetypes.h"
 #include "scene/Components.h"
-#include <core/DragCamera.h>
+#include <core/OrbitCamera.h>
 
 BaseScene::BaseScene()
 {
@@ -14,7 +14,8 @@ BaseScene::BaseScene()
 		auto& cc = camera.AddComponent<CameraComponent>();
 		cc.active = true;
 		cc.projectionMatrix = Algebra::Matrix4::Projection(aspect, Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView);
-		cc.cameraHandling = CreateRef<DragCamera>();
+		cc.cameraHandling = CreateRef<OrbitCamera>(
+			Globals::startingCameraTarget, Globals::startingCameraDistance, Globals::startingCameraPitch);
 		camera.AddComponent<NameComponent>().name = "camera";
 	}
 
@@ -26,4 +27,6 @@ BaseScene::BaseScene()
 		mc.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Grid);
 		grid.AddTag<IsTransparentTag>();
 	}
+
+	Archetypes::CreateCursor(this);
 }

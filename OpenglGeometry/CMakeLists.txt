@@ -4,9 +4,8 @@ add_executable(${PROJECT_NAME}
     "src/main.cpp"
     "src/App.cpp"
 
-    "src/core/DragCamera.cpp"
+    "src/core/OrbitCamera.cpp"
     "src/core/Globals.cpp"
-    "src/core/Notifier.cpp"
     "src/core/Viewport.cpp"
     "src/core/Window.cpp"
 

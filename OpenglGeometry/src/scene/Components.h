@@ -8,6 +8,7 @@
 #include "Tags.h"
 #include "renderer/Renderer.h"
 #include "managers/IdManager.h"
+#include "core/Globals.h"
 #include "Observable.h"
 
 struct PositionComponent
@@ -43,6 +44,14 @@ struct RotationComponent
 		this->rotation = this->rotation * rotation;
 		this->rotation.Normalize();
 	}
+};
+
+struct ColorComponent
+{
+	Algebra::Vector4 color = Globals::defaultPointsColor;
+
+	ColorComponent() = default;
+	ColorComponent(const ColorComponent& other) = default;
 };
 
 class ICamera;
@@ -142,6 +151,8 @@ struct BezierPatchGenerationComponent
 struct BezierSurfaceGenerationComponent
 {
 	std::vector<std::vector<Entity>> bezierPatches;
+	int samplesU = 32;
+	int samplesV = 32;
 	BezierSurfaceGenerationComponent() = default;
 	BezierSurfaceGenerationComponent(const BezierSurfaceGenerationComponent& other) = default;
 };

@@ -12,6 +12,12 @@ enum class RenderingMode
 	Patches = GL_PATCHES
 };
 
+enum class DepthMode
+{
+	NoDepth = GL_FALSE,
+	Depth = GL_TRUE
+};
+
 class Renderer
 {
 private:
@@ -26,6 +32,7 @@ public:
 	void SetShader(AvailableShaders shaderType);
 	void SetSceneContext(SceneContext context);
 	void SetMesh(Ref<VertexArray> mesh);
+	void SetDepthMode(DepthMode depthMode);
 	void Render(RenderingMode mode, const EntityContext& context);
 };
 

@@ -22,7 +22,6 @@ void RenderingSystem::Process()
 {
 	SceneContext sceneContext;
 
-	// Read the flag before Apply() clears it - the projection depends on the same change.
 	const bool viewportChanged = m_Viewport.IsDirty() && m_Viewport.IsValid();
 	m_Viewport.Apply();
 
@@ -37,29 +36,20 @@ void RenderingSystem::Process()
 				m_Viewport.Aspect(), Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView);
 		}
 
-		cameraComponent.cameraHandling->HandleInput(cameraComponent);
+		cameraComponent.cameraHandling->HandleInput(cameraComponent, m_Viewport.GetData());
 
-		EntityContext cameraUniforms;
-		m_UniformApplier.PerformFunctions(entity, cameraUniforms);
-
-		sceneContext.CameraPosition = cameraUniforms.Position[3];
+		sceneContext.CameraPosition = cameraComponent.cameraHandling->GetPosition();
 		sceneContext.ProjectionMatrix = cameraComponent.projectionMatrix;
 		sceneContext.ViewMatrix = cameraComponent.viewMatrix;
 	}
 
 	m_Renderer->SetSceneContext(sceneContext);
-	
-	for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvisibleTag>()))
-	{
-		auto& meshComponent = entity.GetComponent<MeshComponent>();
 
-		EntityContext context;
-		m_UniformApplier.PerformFunctions(entity, context);
-		m_Renderer->SetMesh(meshComponent.mesh);
-		for(auto shaderType : meshComponent.shaderTypes)
-		{
-			m_Renderer->SetShader(shaderType);
-			m_Renderer->Render(meshComponent.renderingMode, context);
-		}
-	}
+	RenderEntities(m_Scene->GetAllEntitiesWith<MeshComponent>(
+		Excluded<IsInvisibleTag, IsTransparentTag>()));
+
+	m_Renderer->SetDepthMode(DepthMode::NoDepth);
+	RenderEntities(m_Scene->GetAllEntitiesWith<MeshComponent, IsTransparentTag>(
+		Excluded<IsInvisibleTag>()));
+	m_Renderer->SetDepthMode(DepthMode::Depth);
 }

@@ -1,0 +1,33 @@
+#pragma once
+#include "SimpleArchetypeCreation.h"
+#include <managers/StaticMeshManager.h>
+
+namespace Archetypes
+{
+	inline Entity CreateCursor(Scene* scene)
+	{
+		auto cursor = scene->CreateEntity();
+
+		AddShapeToEntity(cursor, "Cursor");
+		cursor.AddTag<CursorTag>();
+		cursor.AddComponent<PositionComponent>();
+		cursor.AddComponent<ColorComponent>().color = Algebra::Vector4(1.f, 1.f, 1.f, 1.f);
+
+		auto& meshComponent = cursor.AddComponent<MeshComponent>();
+		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Cursor);
+		meshComponent.shaderTypes.push_back(AvailableShaders::Default);
+		meshComponent.renderingMode = RenderingMode::Lines;
+
+		return cursor;
+	}
+
+	inline Algebra::Vector4 GetCursorPosition(Scene* scene)
+	{
+		for (Entity cursor : scene->GetAllEntitiesWith<CursorTag, PositionComponent>())
+		{
+			return cursor.GetComponent<PositionComponent>().position;
+		}
+
+		return Algebra::Vector4(0.f, 0.f, 0.f, 1.f);
+	}
+}

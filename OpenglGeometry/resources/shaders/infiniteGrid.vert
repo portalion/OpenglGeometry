@@ -10,7 +10,7 @@ layout(location = 2) out vec3 out_eyePos;
 uniform mat4 g_viewMatrix;
 uniform mat4 g_projectionMatrix;
 const float c_minHeight = 0.001;
-
+const float c_cellsPerHeight = 0.1;
 const vec3 c_minorColor = vec3(0.30);
 const vec3 c_majorColor = vec3(0.55);
 const vec3 c_xAxisColor = vec3(0.85, 0.25, 0.25);

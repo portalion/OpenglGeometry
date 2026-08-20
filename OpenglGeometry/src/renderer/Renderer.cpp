@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <GL/glew.h>
+#include <utils/GlCall.h>
 
 void Renderer::SetShader(AvailableShaders shaderType)
 {
@@ -20,6 +21,11 @@ void Renderer::SetSceneContext(SceneContext context)
 void Renderer::SetMesh(Ref<VertexArray> mesh)
 {
 	m_ActualMesh = mesh;
+}
+
+void Renderer::SetDepthMode(DepthMode depthMode)
+{
+	GLCall(glDepthMask(static_cast<GLboolean>(depthMode)));
 }
 
 void Renderer::Render(RenderingMode mode, const EntityContext& context)

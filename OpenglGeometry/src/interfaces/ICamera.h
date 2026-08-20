@@ -1,8 +1,14 @@
 #pragma once
 #include <scene/Components.h>
+#include <core/Viewport.h>
 
 class ICamera
 {
 public:
-	virtual void HandleInput(CameraComponent& cameraComponent) = 0;
+	virtual ~ICamera() = default;
+
+	virtual void HandleInput(CameraComponent& cameraComponent, const ViewportData& viewport) = 0;
+
+	virtual Algebra::Vector4 GetPosition() const = 0;
+	virtual void Focus(const Algebra::Vector4& point, float radius) = 0;
 };

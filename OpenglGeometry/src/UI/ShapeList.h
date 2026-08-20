@@ -37,13 +37,31 @@ namespace GUI
 			DeleteSelected(scene);
 		}
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Focus Selected##Shape List"))
+		{
+			FocusSelected(scene);
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Orbit around the selection (F)");
+		}
+
 		for (Entity entity : shapes)
 		{	
 			bool isSelected = entity.HasComponent<IsSelectedTag>();
 			
-			if (ImGui::Selectable(GenerateLabel(entity, entity.GetComponent<NameComponent>().name).c_str(), isSelected))
+			if (ImGui::Selectable(GenerateLabel(entity, entity.GetComponent<NameComponent>().name).c_str(), isSelected,
+				ImGuiSelectableFlags_AllowDoubleClick))
 			{
-				if (isSelected)
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					DeselectAll(scene);
+					entity.AddTag<IsSelectedTag>();
+					FocusSelected(scene);
+				}
+				else if (isSelected)
 				{
 					entity.RemoveTag<IsSelectedTag>();
 				}

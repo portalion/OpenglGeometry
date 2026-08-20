@@ -16,7 +16,9 @@ struct Globals
 	static const float cameraFarPlane;
 	static const float cameraFieldOfView;
 
-	static const Algebra::Vector4 startingCameraPosition;
+	static const Algebra::Vector4 startingCameraTarget;
+	static const float startingCameraDistance;
+	static const float startingCameraPitch;
 
 	static const Algebra::Vector4 defaultPointsColor;
 };
