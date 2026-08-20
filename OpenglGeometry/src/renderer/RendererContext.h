@@ -8,6 +8,7 @@ struct SceneContext
 	Algebra::Matrix4 ViewMatrix;
 	Algebra::Matrix4 ProjectionMatrix;
 	Algebra::Vector4 CameraPosition;
+	Algebra::Vector4 CameraTarget;
 };
 
 struct EntityContext

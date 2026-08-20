@@ -14,6 +14,7 @@ void Renderer::SetSceneContext(SceneContext context)
 	sceneContextTemp.Matrix4Uniforms["g_projectionMatrix"] = context.ProjectionMatrix;
 	sceneContextTemp.Matrix4Uniforms["g_viewMatrix"] = context.ViewMatrix;
 	sceneContextTemp.Vector4Uniforms["g_cameraPosition"] = context.CameraPosition;
+	sceneContextTemp.Vector4Uniforms["g_cameraTarget"] = context.CameraTarget;
 
 	sceneContext = sceneContextTemp;
 }

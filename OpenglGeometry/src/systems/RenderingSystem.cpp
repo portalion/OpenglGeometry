@@ -39,6 +39,7 @@ void RenderingSystem::Process()
 		cameraComponent.cameraHandling->HandleInput(cameraComponent, m_Viewport.GetData());
 
 		sceneContext.CameraPosition = cameraComponent.cameraHandling->GetPosition();
+		sceneContext.CameraTarget = cameraComponent.cameraHandling->GetTarget();
 		sceneContext.ProjectionMatrix = cameraComponent.projectionMatrix;
 		sceneContext.ViewMatrix = cameraComponent.viewMatrix;
 	}

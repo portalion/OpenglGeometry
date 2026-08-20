@@ -24,7 +24,7 @@ public:
 	Algebra::Matrix4 GetRotationMatrix() const;
 	Algebra::Matrix4 GetViewMatrix() const;
 
-	inline Algebra::Vector4 GetTarget() const { return target; }
+	inline Algebra::Vector4 GetTarget() const override { return target; }
 	inline float GetDistance() const { return distance; }
 
 	Algebra::Vector4 GetPosition() const override;
