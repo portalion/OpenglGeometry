@@ -2,7 +2,6 @@
 
 IdManager::IdManager()
 {
-    
 }
 
 IdManager::~IdManager()
@@ -18,17 +17,13 @@ IdManager& IdManager::GetInstance()
 
 ID IdManager::GetNewId()
 {
-    if (m_FreeIds.empty())
-    {
-        return m_CurrentFreeId++;
-    }
-
-    ID result = m_FreeIds.front();
-	m_FreeIds.pop();
-	return result;
+    return m_NextFreeId++;
 }
 
-void IdManager::FreeId(ID id)
+void IdManager::ReserveUpTo(ID id)
 {
-	m_FreeIds.push(id);
+    if (id >= m_NextFreeId)
+    {
+        m_NextFreeId = id + 1;
+    }
 }

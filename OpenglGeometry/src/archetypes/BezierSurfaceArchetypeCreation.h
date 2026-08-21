@@ -196,7 +196,7 @@ namespace Archetypes
 	{
 		auto resultBezierSurface = scene->CreateEntity();
 
-		AddShapeToEntity(resultBezierSurface, "Bezier Surface");
+		AddShapeToEntity(resultBezierSurface, ObjectType::BezierSurfaceC0);
 		AddBezierSurfaceToEntity(resultBezierSurface, scene, bezierParams);
 
 		return resultBezierSurface;

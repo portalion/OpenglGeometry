@@ -1,6 +1,9 @@
 #pragma once
 #include <functional>
 #include "utils/Initialization.h"
+#include "SceneActions.h"
+#include "Utils.h"
+
 namespace GUI
 {
 	inline void DisabledMenuItem(const char* label, const char* shortcut = nullptr)
@@ -10,7 +13,7 @@ namespace GUI
 		ImGui::EndDisabled();
 	}
 
-	inline void DrawMenuBar(Ref<Scene> scene, bool& showImGuiDemo, std::function<void()> layoutCallback)
+	inline void DrawMenuBar(Ref<Scene> scene, bool& showImGuiDemo, const UICallbacks& callbacks)
 	{
 		if (!ImGui::BeginMainMenuBar())
 		{
@@ -33,7 +36,10 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Edit"))
 		{
-			DisabledMenuItem("Rename", "F2");
+			if (ImGui::MenuItem("Rename", "F2", false, GUI::CanRename(scene)))
+			{
+				callbacks.renameSelected();
+			}
 			if (ImGui::MenuItem("Delete selected", "Del", false, GUI::AnythingSelected(scene)))
 			{
 				GUI::DeleteSelected(scene);
@@ -82,7 +88,7 @@ namespace GUI
 			ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
 			if (ImGui::MenuItem("Reset layout"))
 			{
-				layoutCallback();
+				callbacks.resetLayout();
 			}
 			ImGui::EndMenu();
 		}

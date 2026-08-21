@@ -19,7 +19,7 @@ namespace Archetypes
 	{
 		auto resultPoint = scene->CreateEntity(); 
 
-		AddShapeToEntity(resultPoint, "Point");
+		AddShapeToEntity(resultPoint, ObjectType::Point);
 		AddPointToEntity(resultPoint, startingPosition);
 
 		return resultPoint;

@@ -3,10 +3,11 @@
 #include "core/Base.h"
 #include "scene/Scene.h"
 #include "SceneActions.h"
+#include "Utils.h"
 
 namespace GUI
 {
-	inline void HandleShortcuts(Ref<Scene> scene)
+	inline void HandleShortcuts(Ref<Scene> scene, const UICallbacks& callbacks)
 	{
 		if (ImGui::GetIO().WantTextInput)
 		{
@@ -28,6 +29,10 @@ namespace GUI
 		if (ImGui::Shortcut(ImGuiKey_F, ImGuiInputFlags_RouteGlobal))
 		{
 			FocusSelected(scene);
+		}
+		if (ImGui::Shortcut(ImGuiKey_F2, ImGuiInputFlags_RouteGlobal) && CanRename(scene))
+		{
+			callbacks.renameSelected();
 		}
 	}
 }

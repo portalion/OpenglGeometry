@@ -23,7 +23,7 @@ namespace Archetypes
 	{
 		auto resultBezierC0 = scene->CreateEntity();
 
-		AddShapeToEntity(resultBezierC0, "Interpolated Bezier");
+		AddShapeToEntity(resultBezierC0, ObjectType::InterpolatedC2);
 		AddInterpolatedBezierToEntity(resultBezierC0, scene, pointsBegin, pointsEnd);
 
 		return resultBezierC0;

@@ -7,8 +7,8 @@
 class Entity
 {
 private:
-	entt::entity m_EntityHandle;
-	Scene* m_Scene;
+	entt::entity m_EntityHandle = entt::null;
+	Scene* m_Scene = nullptr;
 public:
 	Entity() = default;
 	Entity(entt::entity entity, Scene* m_Scene);
@@ -60,18 +60,22 @@ public:
 		this->RemoveComponent<T>();
 	}
 
-	std::string GetID() const
+	std::string GetHandleId() const
 	{
 		return std::to_string(static_cast<uint32_t>(m_EntityHandle));
 	}
 
 	bool IsValid() const
 	{
-		return m_Scene->m_Registry.valid(m_EntityHandle);
+		return m_Scene != nullptr && m_Scene->m_Registry.valid(m_EntityHandle);
+	}
+
+	bool operator==(const Entity& other) const
+	{
+		return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 	}
 
 	std::vector<entt::id_type> GetComponentTypes();
 
 	friend Scene;
 };
-

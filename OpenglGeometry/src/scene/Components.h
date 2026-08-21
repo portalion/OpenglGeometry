@@ -10,6 +10,7 @@
 #include "managers/IdManager.h"
 #include "core/Globals.h"
 #include "Observable.h"
+#include "ObjectType.h"
 
 struct PositionComponent
 {
@@ -89,14 +90,16 @@ struct TorusGenerationComponent
 
 struct IdComponent
 {
-	const ID id = IdManager::GetInstance().GetNewId();
-	IdComponent() = default;
-	IdComponent(const IdComponent& other) = default;
+	ID id = IdManager::GetInstance().GetNewId();
 
-	~IdComponent()
-	{
-		IdManager::GetInstance().FreeId(id);
-	}
+	IdComponent() = default;
+
+	IdComponent(ID id) : id(id) { }
+
+	IdComponent(const IdComponent& other) = delete;
+	IdComponent& operator=(const IdComponent& other) = delete;
+	IdComponent(IdComponent&& other) = default;
+	IdComponent& operator=(IdComponent&& other) = default;
 };
 
 struct NameComponent

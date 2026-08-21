@@ -20,7 +20,7 @@ namespace Archetypes
 	{
 		auto resultPolyline = scene->CreateEntity();
 
-		AddShapeToEntity(resultPolyline, "Polyline");
+		AddShapeToEntity(resultPolyline, ObjectType::Chain);
 		AddPolylineToEntity(resultPolyline, pointsBegin, pointsEnd);
 
 		return resultPolyline;

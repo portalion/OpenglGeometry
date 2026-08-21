@@ -3,6 +3,7 @@
 #include <imgui/imgui_internal.h>
 #include "core/Globals.h"
 #include "core/Viewport.h"
+#include "SceneActions.h"
 
 namespace GUI
 {
@@ -12,7 +13,7 @@ namespace GUI
 
 		if (ImGui::BeginViewportSideBar("##StatusBar", ImGui::GetMainViewport(), ImGuiDir_Down, ImGui::GetFrameHeight() + 12, flags))
 		{
-			const auto objectCount = std::ranges::distance(scene->GetAllEntitiesWith<NameComponent>());
+			const auto objectCount = std::ranges::distance(GetSceneObjects(scene));
 			const auto selectedCount = std::ranges::distance(scene->GetAllEntitiesWith<IsSelectedTag>());
 
 			ImGui::Text("%.0f fps", ImGui::GetIO().Framerate);

@@ -19,7 +19,7 @@ namespace Archetypes
 	{
 		auto resultTorus = scene->CreateEntity();
 
-		AddShapeToEntity(resultTorus, "Torus");
+		AddShapeToEntity(resultTorus, ObjectType::Torus);
 		AddTorusToEntity(resultTorus, position);
 
 		return resultTorus;

@@ -6,12 +6,15 @@ class ShapeInspectorRegistry : public ComponentFunctionRegistry<>
 {
 private:
 	Ref<Scene> m_Scene;
+	void NameInspect(Entity entity);
 	void PositionInspect(Entity entity);
 	void ScaleInspect(Entity entity);
 	void RotationInspect(Entity entity);
 	void LineInspect(Entity entity);
 	void VirtualInspect(Entity entity);
 	void TorusInspect(Entity entity);
+
+	void DrawHeader(Entity entity);
 public:
 	ShapeInspectorRegistry(Ref<Scene> scene);
 

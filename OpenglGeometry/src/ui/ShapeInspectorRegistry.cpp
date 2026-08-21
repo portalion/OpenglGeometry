@@ -1,11 +1,13 @@
 #include "ShapeInspectorRegistry.h"
 #include <Algebra.h>
 #include <imgui/imgui.h>
+#include <imgui/imgui_stdlib.h>
 #include <UI/Utils.h>
 
 ShapeInspectorRegistry::ShapeInspectorRegistry(Ref<Scene> scene)
 	:m_Scene { scene }
 {
+	Bind<NameComponent>(&ShapeInspectorRegistry::NameInspect);
 	Bind<PositionComponent>(&ShapeInspectorRegistry::PositionInspect);
 	Bind<RotationComponent>(&ShapeInspectorRegistry::RotationInspect);
 	Bind<ScaleComponent>(&ShapeInspectorRegistry::ScaleInspect);
@@ -26,11 +28,40 @@ void ShapeInspectorRegistry::Display()
 
 	for (Entity entity : selectedShapes)
 	{
-		ImGui::Text("Properties of %s", entity.GetComponent<NameComponent>().name.c_str());
+		DrawHeader(entity);
 		this->PerformFunctions(entity);
 	}
 
 	ImGui::End();
+}
+
+void ShapeInspectorRegistry::DrawHeader(Entity entity)
+{
+	if (entity.HasComponent<NameComponent>())
+	{
+		ImGui::SeparatorText(entity.GetComponent<NameComponent>().name.c_str());
+	}
+	else
+	{
+		ImGui::SeparatorText("Object");
+	}
+
+	const auto type = GetObjectType(entity);
+
+	if (type.has_value() && entity.HasComponent<IdComponent>())
+	{
+		ImGui::TextDisabled("%s  -  id %u", ToDisplayString(*type), entity.GetComponent<IdComponent>().id);
+	}
+	else
+	{
+		ImGui::TextDisabled("not part of the scene - not saved");
+	}
+}
+
+void ShapeInspectorRegistry::NameInspect(Entity entity)
+{
+	auto& name = entity.GetComponent<NameComponent>().name;
+	ImGui::InputText(GUI::GenerateLabel(entity, "Name").c_str(), &name);
 }
 
 void ShapeInspectorRegistry::PositionInspect(Entity entity)
@@ -62,8 +93,20 @@ void ShapeInspectorRegistry::LineInspect(Entity entity)
 
 	for (Entity point : controlPoints)
 	{
-		if (point.HasComponent<NameComponent>())
-			ImGui::Text("Point Name: %s", point.GetComponent<NameComponent>().name.c_str());
+		if (!point.IsValid() || !point.HasComponent<NameComponent>())
+		{
+			continue;
+		}
+
+		if (point.HasComponent<IdComponent>())
+		{
+			ImGui::BulletText("%s  (#%u)", point.GetComponent<NameComponent>().name.c_str(),
+				point.GetComponent<IdComponent>().id);
+		}
+		else
+		{
+			ImGui::BulletText("%s", point.GetComponent<NameComponent>().name.c_str());
+		}
 	}
 }
 
@@ -76,7 +119,7 @@ void ShapeInspectorRegistry::VirtualInspect(Entity entity)
 
 		bool visible = !virtualEntity.HasComponent<IsInvisibleTag>();
 
-		if (ImGui::Checkbox(GUI::GenerateLabel(entity, "virtual visible").c_str(), &visible))
+		if (ImGui::Checkbox(GUI::GenerateLabel(virtualEntity, "virtual visible").c_str(), &visible))
 		{
 			if (visible)
 			{
@@ -111,4 +154,3 @@ void ShapeInspectorRegistry::TorusInspect(Entity entity)
 		entity.AddTag<IsDirtyTag>();
 	}
 }
-

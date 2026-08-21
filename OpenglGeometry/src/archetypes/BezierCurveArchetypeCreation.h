@@ -26,7 +26,7 @@ namespace Archetypes
 	{
 		auto resultBezierC0 = scene->CreateEntity();
 
-		AddShapeToEntity(resultBezierC0, "Bezier C0");
+		AddShapeToEntity(resultBezierC0, ObjectType::BezierC0);
 		AddBezierC0ToEntity(resultBezierC0, scene, pointsBegin, pointsEnd);
 
 		return resultBezierC0;
@@ -54,7 +54,7 @@ namespace Archetypes
 	{
 		auto resultBezierC2 = scene->CreateEntity();
 
-		AddShapeToEntity(resultBezierC2, "Bezier C2");
+		AddShapeToEntity(resultBezierC2, ObjectType::BezierC2);
 		AddBezierC2ToEntity(resultBezierC2, scene, pointsBegin, pointsEnd);
 
 		return resultBezierC2;

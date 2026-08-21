@@ -7,16 +7,30 @@
 
 namespace Archetypes
 {
-	inline Entity AddShapeToEntity(Entity entity, std::string shapeName)
+	inline Entity AddShapeToEntity(Entity entity, ObjectType type)
 	{
-		auto id = entity.AddComponent<IdComponent>().id;
-		entity.AddComponent<NameComponent>().name = shapeName + ' ' + std::to_string(id);
+		const auto id = entity.AddComponent<IdComponent>().id;
+		entity.AddComponent<ObjectTypeComponent>(type);
+		entity.AddComponent<NameComponent>().name = std::string(ToDisplayString(type)) + ' ' + std::to_string(id);
 
 		return entity;
 	}
 
 	inline Entity AddVirtualToEntity(Entity entity, Entity parent)
 	{
+		if (entity.HasComponent<IdComponent>())
+		{
+			entity.RemoveComponent<IdComponent>();
+		}
+		if (entity.HasComponent<ObjectTypeComponent>())
+		{
+			entity.RemoveComponent<ObjectTypeComponent>();
+		}
+		if (entity.HasComponent<NameComponent>())
+		{
+			entity.RemoveComponent<NameComponent>();
+		}
+
 		auto& vec = entity.AddComponent<VirtualEntityComponent>();
 		vec.realEntity = parent;
 
@@ -26,6 +40,11 @@ namespace Archetypes
 		parent.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities.push_back(entity);
 		
 		return entity;
+	}
+
+	inline bool IsSerializable(Entity entity)
+	{
+		return entity.IsValid() && entity.HasComponent<IdComponent>();
 	}
 
 	template<std::forward_iterator Iter>

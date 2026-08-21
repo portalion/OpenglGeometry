@@ -5,12 +5,15 @@
 #include <ui/layouts/DefaultLayout.h>
 
 GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
-	:m_Scene(scene), m_Viewport(viewport), m_ShapeInspector{ scene } {
+	:m_Scene(scene), m_Viewport(viewport), m_ShapeList{ scene }, m_ShapeInspector{ scene }
+{
+	m_Callbacks.resetLayout = [this]() { GUI::Layout::Default(this->m_Dockspace); };
+	m_Callbacks.renameSelected = [this]() { this->m_ShapeList.RequestRename(); };
 }
 
 void GUISystem::Process()
 {
-	GUI::DrawMenuBar(m_Scene, m_ShowImGuiDemo, [this]() { GUI::Layout::Default(this->m_Dockspace); });
+	GUI::DrawMenuBar(m_Scene, m_ShowImGuiDemo, m_Callbacks);
 	GUI::DrawToolbar();
 	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData());
 
@@ -32,8 +35,8 @@ void GUISystem::Process()
 		ImGui::ShowDemoWindow(&m_ShowImGuiDemo);
 	}
 
-	GUI::DisplayShapeList(m_Scene);
+	m_ShapeList.Display();
 	m_ShapeInspector.Display();
 
-	GUI::HandleShortcuts(m_Scene);
+	GUI::HandleShortcuts(m_Scene, m_Callbacks);
 }

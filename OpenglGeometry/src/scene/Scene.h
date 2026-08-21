@@ -1,5 +1,7 @@
 #pragma once
 #include <entt/entt.hpp>
+#include <unordered_map>
+#include "managers/IdManager.h"
 
 class Entity;
 
@@ -10,7 +12,11 @@ class Scene
 {
 private:
 	entt::registry m_Registry;
+	std::unordered_map<ID, entt::entity> m_EntitiesById;
+
 	void OnPositionCreated(entt::registry& registry, entt::entity entity);
+	void OnIdCreated(entt::registry& registry, entt::entity entity);
+	void OnIdDestroyed(entt::registry& registry, entt::entity entity);
 public:
 	Scene();
 	~Scene();
@@ -20,6 +26,9 @@ public:
 
 	Entity CreateEntity();
 	void DestroyEntity(Entity entity);
+
+	bool HasEntityWithId(ID id) const;
+	Entity FindEntityById(ID id);
 
 	template<typename... Components, typename... Exclude>
 	auto GetAllEntitiesWith(Excluded<Exclude...> exclude)
@@ -45,4 +54,3 @@ public:
 
 	friend Entity;
 };
-

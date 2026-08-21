@@ -1,16 +1,13 @@
 #pragma once
-#include <string>
-#include <queue>
+#include <cstdint>
 
-using ID = long long;
-
+using ID = std::uint32_t;
 class IdManager
 {
 private:
 	IdManager();
 
-	ID m_CurrentFreeId = 0;
-	std::queue<ID> m_FreeIds;
+	ID m_NextFreeId = 1;
 public:
 	~IdManager();
 	IdManager(IdManager& other) = delete;
@@ -19,6 +16,5 @@ public:
 	static IdManager& GetInstance();
 
 	ID GetNewId();
-	void FreeId(ID id);
+	void ReserveUpTo(ID id);
 };
-

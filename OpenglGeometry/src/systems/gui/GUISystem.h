@@ -6,6 +6,8 @@
 #include <core/Viewport.h>
 #include <ui/core/DockSpace.h>
 #include <ui/ShapeInspectorRegistry.h>
+#include <ui/ShapeList.h>
+#include <ui/Utils.h>
 
 class GUISystem : public ISystem
 {
@@ -15,7 +17,10 @@ private:
 	Dockspace m_Dockspace;
 	bool m_ShowImGuiDemo = false;
 
+	GUI::ShapeList m_ShapeList;
 	ShapeInspectorRegistry m_ShapeInspector;
+
+	GUI::UICallbacks m_Callbacks;
 public:
 	GUISystem(Ref<Scene> scene, Viewport& viewport);
 	void Process() override;

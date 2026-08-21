@@ -8,7 +8,7 @@ namespace Archetypes
 	{
 		auto cursor = scene->CreateEntity();
 
-		AddShapeToEntity(cursor, "Cursor");
+		cursor.AddComponent<NameComponent>().name = "Cursor";
 		cursor.AddTag<CursorTag>();
 		cursor.AddComponent<PositionComponent>();
 		cursor.AddComponent<ColorComponent>().color = Algebra::Vector4(1.f, 1.f, 1.f, 1.f);

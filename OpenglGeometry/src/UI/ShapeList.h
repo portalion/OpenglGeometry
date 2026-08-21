@@ -1,77 +1,44 @@
 #pragma once
-#include <imgui/imgui.h>
+#include <array>
+#include <string>
+#include <vector>
+#include "core/Base.h"
 #include "scene/Scene.h"
 #include "scene/Entity.h"
-#include "Utils.h"
-#include "SceneActions.h"
+#include "scene/ObjectType.h"
 
 namespace GUI
 {
-	inline void DisplayShapeList(Ref<Scene> scene)
+	class ShapeList
 	{
-		ImGui::Begin(ShapeListWindow);
+	private:
+		Ref<Scene> m_Scene;
 
-		auto shapes = scene->GetAllEntitiesWith<NameComponent>();
+		std::string m_Filter;
+		std::array<bool, ObjectTypeCount> m_VisibleTypes;
 
-		if (shapes.empty())
-		{
-			ImGui::Text("No shapes available.##Shape List");
-			ImGui::End();
-			return;
-		}
+		Entity m_RenameTarget;
+		std::string m_RenameBuffer;
+		bool m_RenameRequested = false;
+		bool m_RenameNeedsFocus = false;
 
-		if (ImGui::Button("Select All##Shape List"))
-		{
-			SelectAll(scene);
-		}
+		void DrawActionRow();
+		void DrawFilterRow();
+		void DrawGroup(ObjectType type, const std::vector<Entity>& entities);
+		void DrawRow(Entity entity);
+		void DrawRenameField(Entity entity);
+		void DrawRowContextMenu(Entity entity);
 
-		ImGui::SameLine();
+		bool PassesFilter(Entity entity) const;
+		bool IsVisible(ObjectType type) const;
 
-		if (ImGui::Button("Deselect All##Shape List"))
-		{
-			DeselectAll(scene);
-		}
+		void BeginRename(Entity entity);
+		void CommitRename();
+		void CancelRename();
+	public:
+		ShapeList(Ref<Scene> scene);
+		void RequestRename();
 
-		if (ImGui::Button("Remove All Selected##Shape List"))
-		{
-			DeleteSelected(scene);
-		}
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Focus Selected##Shape List"))
-		{
-			FocusSelected(scene);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Orbit around the selection (F)");
-		}
-
-		for (Entity entity : shapes)
-		{	
-			bool isSelected = entity.HasComponent<IsSelectedTag>();
-			
-			if (ImGui::Selectable(GenerateLabel(entity, entity.GetComponent<NameComponent>().name).c_str(), isSelected,
-				ImGuiSelectableFlags_AllowDoubleClick))
-			{
-				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-				{
-					DeselectAll(scene);
-					entity.AddTag<IsSelectedTag>();
-					FocusSelected(scene);
-				}
-				else if (isSelected)
-				{
-					entity.RemoveTag<IsSelectedTag>();
-				}
-				else
-				{
-					entity.AddTag<IsSelectedTag>();
-				}
-			}
-		}
-
-		ImGui::End();
-	}
+		void Display();
+	};
 }

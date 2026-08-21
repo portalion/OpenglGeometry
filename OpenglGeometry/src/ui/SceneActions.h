@@ -11,9 +11,14 @@
 
 namespace GUI
 {
+	inline auto GetSceneObjects(Ref<Scene> scene)
+	{
+		return scene->GetAllEntitiesWith<IdComponent, NameComponent, ObjectTypeComponent>();
+	}
+
 	inline void SelectAll(Ref<Scene> scene)
 	{
-		for (Entity entity : scene->GetAllEntitiesWith<NameComponent>())
+		for (Entity entity : GetSceneObjects(scene))
 		{
 			if (!entity.HasComponent<IsSelectedTag>())
 			{
@@ -41,6 +46,28 @@ namespace GUI
 	inline bool AnythingSelected(Ref<Scene> scene)
 	{
 		return !scene->GetAllEntitiesWith<IsSelectedTag>().empty();
+	}
+
+	inline Entity SingleSelected(Ref<Scene> scene)
+	{
+		Entity result;
+
+		for (Entity entity : scene->GetAllEntitiesWith<IsSelectedTag, NameComponent>())
+		{
+			if (result.IsValid())
+			{
+				return Entity{};
+			}
+
+			result = entity;
+		}
+
+		return result;
+	}
+
+	inline bool CanRename(Ref<Scene> scene)
+	{
+		return SingleSelected(scene).IsValid();
 	}
 
 	inline void FocusSelected(Ref<Scene> scene)
@@ -82,5 +109,11 @@ namespace GUI
 
 			cameraComponent.cameraHandling->Focus(center, radius);
 		}
+	}
+
+	inline void SelectOnly(Ref<Scene> scene, Entity entity)
+	{
+		DeselectAll(scene);
+		entity.AddTag<IsSelectedTag>();
 	}
 }
