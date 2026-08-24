@@ -39,6 +39,9 @@ add_executable(${PROJECT_NAME}
     "src/systems/gui/GUISystem.cpp"
     "src/systems/gui/PopupSystem.cpp"
     "src/ui/ShapeInspectorRegistry.cpp"
+    "src/ui/model/Fixture.cpp"
+    "src/ui/model/UiState.cpp"
+    "src/ui/sandbox/UiSandbox.cpp"
     "src/ui/ShapeList.cpp"
 
     "src/UI/popups/ShapeCreation.cpp"
