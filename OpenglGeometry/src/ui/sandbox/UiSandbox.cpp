@@ -144,7 +144,7 @@ int UiSandbox::Run()
 
 		bool resetLayout = false;
 		DrawMenuBar(showImGuiDemo, resetLayout, quit);
-		GUI::DrawToolbar();
+		GUI::DrawToolbar(state);
 		DrawStatusBar(state);
 
 		if (resetLayout || !dockspace.Created())

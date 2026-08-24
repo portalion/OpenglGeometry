@@ -1,18 +1,13 @@
 #pragma once
+#include <string>
 #include <imgui/imgui_internal.h>
+#include "model/UiState.h"
 
 namespace GUI
 {
-	enum class ToolbarPivotMode
-	{
-		Origin,
-		Centre,
-		Cursor,
-	};
-
 	namespace Detail
 	{
-		inline void PivotButton(const char* label, ToolbarPivotMode mode, ToolbarPivotMode& current)
+		inline void PivotButton(const char* label, PivotMode mode, PivotMode& current)
 		{
 			const bool active = current == mode;
 
@@ -31,16 +26,35 @@ namespace GUI
 				ImGui::PopStyleColor();
 			}
 		}
+
+		inline void ActiveCurveChip(UiState& uiState)
+		{
+			ImGui::TextUnformatted("Active curve:");
+			ImGui::SameLine();
+
+			if (!uiState.activeCurveId)
+			{
+				ImGui::TextDisabled("none");
+				return;
+			}
+
+			const ObjectRow* curve = uiState.Find(*uiState.activeCurveId);
+			const std::string label = curve ? curve->name : ("#" + std::to_string(*uiState.activeCurveId));
+
+			ImGui::BeginDisabled();
+			ImGui::Button(label.c_str());
+			ImGui::EndDisabled();
+
+			ImGui::SameLine(0.f, 2.f);
+			if (ImGui::SmallButton("x##ActiveCurveClear"))
+			{
+				uiState.activeCurveId.reset();
+			}
+		}
 	}
 
-	inline void DrawToolbar()
+	inline void DrawToolbar(UiState& uiState)
 	{
-		static ToolbarPivotMode s_Pivot = ToolbarPivotMode::Origin;
-		static bool s_ShowGrid = true;
-		static bool s_ShowControlNets = true;
-		static bool s_ShowVirtualPoints = false;
-		static bool s_Stereo = false;
-
 		const ImGuiStyle& style = ImGui::GetStyle();
 		const float height = ImGui::GetFrameHeight() + style.WindowPadding.y * 2.f;
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
@@ -49,26 +63,32 @@ namespace GUI
 		{
 			ImGui::TextUnformatted("Pivot");
 			ImGui::SameLine();
-			Detail::PivotButton("Origin##Pivot", ToolbarPivotMode::Origin, s_Pivot);
+			Detail::PivotButton("Origin##Pivot", PivotMode::Origin, uiState.pivot);
 			ImGui::SameLine(0.f, 1.f);
-			Detail::PivotButton("Centre##Pivot", ToolbarPivotMode::Centre, s_Pivot);
+			Detail::PivotButton("Centre##Pivot", PivotMode::Centre, uiState.pivot);
 			ImGui::SameLine(0.f, 1.f);
-			Detail::PivotButton("Cursor##Pivot", ToolbarPivotMode::Cursor, s_Pivot);
+			Detail::PivotButton("Cursor##Pivot", PivotMode::Cursor, uiState.pivot);
 
 			ImGui::SameLine();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
 
-			ImGui::Checkbox("Grid", &s_ShowGrid);
+			ImGui::Checkbox("Grid", &uiState.showGrid);
 			ImGui::SameLine();
-			ImGui::Checkbox("Control nets", &s_ShowControlNets);
+			ImGui::Checkbox("Control nets", &uiState.showControlNets);
 			ImGui::SameLine();
-			ImGui::Checkbox("Virtual points", &s_ShowVirtualPoints);
+			ImGui::Checkbox("Virtual points", &uiState.showVirtualPoints);
 			ImGui::SameLine();
-			ImGui::Checkbox("Stereo", &s_Stereo);
+			ImGui::Checkbox("Stereo", &uiState.stereo.enabled);
 
 			ImGui::SameLine();
-			ImGui::TextDisabled("(not yet wired to the scene)");
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+			ImGui::SameLine();
+
+			Detail::ActiveCurveChip(uiState);
+
+			ImGui::SameLine();
+			ImGui::TextDisabled("(flags not yet wired to the scene)");
 		}
 		ImGui::End();
 	}

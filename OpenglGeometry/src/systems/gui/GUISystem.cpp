@@ -13,9 +13,9 @@ GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
 
 void GUISystem::Process()
 {
-	GUI::DrawMenuBar(m_Scene, m_ShowImGuiDemo, m_Callbacks);
-	GUI::DrawToolbar();
-	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData());
+	GUI::DrawMenuBar(m_Scene, m_UiState, m_ShowImGuiDemo, m_Callbacks);
+	GUI::DrawToolbar(m_UiState);
+	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData(), m_UiState);
 
 	if (!m_Dockspace.Created())
 	{

@@ -3,6 +3,7 @@
 #include "utils/Initialization.h"
 #include "SceneActions.h"
 #include "Utils.h"
+#include "model/UiState.h"
 
 namespace GUI
 {
@@ -13,7 +14,7 @@ namespace GUI
 		ImGui::EndDisabled();
 	}
 
-	inline void DrawMenuBar(Ref<Scene> scene, bool& showImGuiDemo, const UICallbacks& callbacks)
+	inline void DrawMenuBar(Ref<Scene> scene, UiState& uiState, bool& showImGuiDemo, const UICallbacks& callbacks)
 	{
 		if (!ImGui::BeginMainMenuBar())
 		{
@@ -80,9 +81,9 @@ namespace GUI
 
 		if (ImGui::BeginMenu("View"))
 		{
-			DisabledMenuItem("Grid");
-			DisabledMenuItem("Control nets");
-			DisabledMenuItem("Virtual points");
+			ImGui::MenuItem("Grid", nullptr, &uiState.showGrid);
+			ImGui::MenuItem("Control nets", nullptr, &uiState.showControlNets);
+			ImGui::MenuItem("Virtual points", nullptr, &uiState.showVirtualPoints);
 			DisabledMenuItem("Stereoscopy...");
 			ImGui::Separator();
 			ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
