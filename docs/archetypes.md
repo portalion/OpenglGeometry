@@ -145,13 +145,14 @@ inline Entity AddPointToEntity(Entity entity, Algebra::Vector4 startingPosition)
     entity.AddComponent<NotificationComponent>();
     auto& meshComponent = entity.AddComponent<MeshComponent>();
     meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
-    meshComponent.shaderTypes.push_back(AvailableShaders::Default);
+    meshComponent.shaderTypes.push_back(AvailableShaders::Point);
     return entity;
 }
 ```
 
-Points share one static square mesh (0.1 units, XY-aligned) — no per-point geometry is
-generated. The `NotificationComponent` is added even before anything depends on the point;
+Points share one static square mesh — no per-point geometry is generated. The `Point` shader
+billboards that quad on the view plane so it always faces the camera (instead of lying flat in
+world XY) and holds a constant screen size regardless of camera zoom. The `NotificationComponent` is added even before anything depends on the point;
 it is both the "I can notify" capability and the marker that identifies control points
 (`<IsSelectedTag, NotificationComponent>`).
 

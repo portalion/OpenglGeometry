@@ -55,8 +55,9 @@ work in GL (they consume several consecutive locations). No current layout uses 
 
 | Layout | Used by |
 | --- | --- |
-| `{ Float4 "position" }` | Everything except the grid — torus, polylines, curves, surfaces, cursor, square, cube. Also the default in `MeshGenerator::GeneratedMesh`. |
-| `{ Float4 "position", Float3 "color" }` | `StaticMeshType::Grid`, matching `infiniteGrid.vert` |
+| `{ Float4 "position" }` | Everything except the grid and cursor — torus, polylines, curves, surfaces, square, cube. Also the default in `MeshGenerator::GeneratedMesh`. |
+| `{ Float4 "position", Float2 "lineInfo" }` | `StaticMeshType::Grid`, matching `infiniteGrid.vert` |
+| `{ Float4 "position", Float3 "color" }` | `StaticMeshType::Cursor` — per-axis colour, matching `cursor.vert` |
 | `{ Float4 "a_Position" }` | Bézier curve and surface generation in `MeshGeneratingSystem` — same layout, different name string |
 
 ---

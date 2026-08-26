@@ -10,7 +10,7 @@ namespace Archetypes
 		entity.AddComponent<NotificationComponent>();
 		auto& meshComponent = entity.AddComponent<MeshComponent>();
 		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Square);
-		meshComponent.shaderTypes.push_back(AvailableShaders::Default);
+		meshComponent.shaderTypes.push_back(AvailableShaders::Point);
 
 		return entity;
 	}

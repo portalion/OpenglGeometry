@@ -58,24 +58,26 @@ StaticMeshManager::StaticMeshManager()
 		m_Meshes[StaticMeshType::Cube] = VertexArray::CreateWithBuffers(cubeVertices, cubeIndices, layout);
 	}
 
-	//Cursor
 	{
 		std::vector<float> cursorVertices =
 		{
-			 0.0f,  0.0f, 0.0f, 1.f,
-			 0.2f,  0.0f, 0.0f, 1.f,
-			 0.0f,  0.2f, 0.0f, 1.f,
-			 0.0f,  0.0f, 0.2f, 1.f
+			 0.0f,  0.0f,  0.0f, 1.f,     1.f, 0.f, 0.f,
+			 0.2f,  0.0f,  0.0f, 1.f,     1.f, 0.f, 0.f,
+			 0.0f,  0.0f,  0.0f, 1.f,     0.f, 1.f, 0.f,
+			 0.0f,  0.2f,  0.0f, 1.f,     0.f, 1.f, 0.f,
+			 0.0f,  0.0f,  0.0f, 1.f,     0.f, 0.f, 1.f,
+			 0.0f,  0.0f,  0.2f, 1.f,     0.f, 0.f, 1.f
 		};
 		std::vector<unsigned int> cursorIndices =
 		{
-			0, 1, 
-			0, 2,
-			0, 3
+			0, 1,
+			2, 3,
+			4, 5
 		};
 		BufferLayout layout =
 		{
-			{ ShaderDataType::Float4, "position" }
+			{ ShaderDataType::Float4, "position" },
+			{ ShaderDataType::Float3, "color" }
 		};
 		m_Meshes[StaticMeshType::Cursor] = VertexArray::CreateWithBuffers(cursorVertices, cursorIndices, layout);
 	}

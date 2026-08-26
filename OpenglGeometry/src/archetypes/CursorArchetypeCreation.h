@@ -15,7 +15,7 @@ namespace Archetypes
 
 		auto& meshComponent = cursor.AddComponent<MeshComponent>();
 		meshComponent.mesh = StaticMeshManager::GetInstance().GetMesh(StaticMeshType::Cursor);
-		meshComponent.shaderTypes.push_back(AvailableShaders::Default);
+		meshComponent.shaderTypes.push_back(AvailableShaders::Cursor);
 		meshComponent.renderingMode = RenderingMode::Lines;
 
 		return cursor;

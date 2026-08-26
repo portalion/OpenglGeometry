@@ -46,7 +46,9 @@ enum class AvailableShaders
     InfiniteGrid            = 1,
     BezierCurveC0           = 2,
     BezierSurfaceHorizontal = 3,
-    BezierSurfaceVertical   = 4
+    BezierSurfaceVertical   = 4,
+    Point                   = 5,
+    Cursor                  = 6
 };
 ```
 
@@ -64,6 +66,14 @@ ShaderManager::ShaderManager()
     AssignShader(AvailableShaders::InfiniteGrid, ShaderBuilder("resources/shaders/")
         .AddShader(ShaderType::Vertex,   "infiniteGrid")
         .AddShader(ShaderType::Fragment, "infiniteGrid"));
+
+    AssignShader(AvailableShaders::Point, ShaderBuilder("resources/shaders/")
+        .AddShader(ShaderType::Vertex,   "point")
+        .AddShader(ShaderType::Fragment, "default"));
+
+    AssignShader(AvailableShaders::Cursor, ShaderBuilder("resources/shaders/")
+        .AddShader(ShaderType::Vertex,   "cursor")
+        .AddShader(ShaderType::Fragment, "cursor"));
 
     AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/bezierLine/")
         .AddShader(ShaderType::Vertex,                "default")

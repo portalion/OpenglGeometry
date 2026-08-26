@@ -7,6 +7,8 @@ registered in [`ShaderManager`](../managers.md#shadermanager).
 | --- | --- | --- | --- |
 | `Default` | `shaders/` | vert, frag | 4 (unused) |
 | `InfiniteGrid` | `shaders/` | vert, frag | 4 (unused) |
+| `Point` | `shaders/` | vert (`point`), frag (`default`) | 4 (unused) |
+| `Cursor` | `shaders/` | vert, frag (`cursor`) | 4 (unused) |
 | `BezierCurveC0` | `shaders/bezierLine/` | vert, tesc, tese, frag | 4 |
 | `BezierSurfaceHorizontal` | `shaders/bezierSurface/` | vert, tesc, tese, frag | 16 |
 | `BezierSurfaceVertical` | `shaders/bezierSurface/` | vert, tesc, tese, frag | 16 |
@@ -15,8 +17,10 @@ registered in [`ShaderManager`](../managers.md#shadermanager).
 
 ## `Default`
 
-`default.vert` + `default.frag`. The standard transform-and-flat-colour pair, used by points,
-the cursor and the torus.
+`default.vert` + `default.frag`. The standard transform-and-flat-colour pair, used by the
+torus, curves' control polylines and anything created through `ModifyOrCreateMesh` without an
+explicit shader. Points use their own vertex stage (`Point` below) but share this
+`default.frag`; the cursor has its own vert **and** frag.
 
 ```glsl
 // default.vert
@@ -39,6 +43,68 @@ void main() { color = u_color; }
 ```
 
 Expects the `{ Float4 "position" }` layout. Works with any `RenderingMode`.
+
+---
+
+## `Point`
+
+`point.vert` + `default.frag`, used by every point (`Archetypes::AddPointToEntity`), including
+Bézier-surface control points.
+
+```glsl
+// point.vert
+const float c_screenScale = 0.2;   // on-screen size, ~fraction of viewport half-height
+
+void main()
+{
+    vec4 originView = g_viewMatrix * u_modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    float distance  = max(-originView.z, 0.0001);
+    originView.xy  += position.xy * distance * c_screenScale;   // view-plane offset
+    gl_Position = g_projectionMatrix * originView;
+}
+```
+
+The entity origin goes into view space, then the square mesh's local `xy` offset is applied
+**in view space** rather than model space — so the quad is always parallel to the screen (a
+camera-facing billboard) — and stretched by the origin's depth so the perspective `1/z` shrink
+cancels out. Points face the camera **and** hold a constant screen size at any zoom. Adjust
+`c_screenScale` in the shader to resize them.
+
+---
+
+## `Cursor`
+
+`cursor.vert` + `cursor.frag`, used only by the cursor entity
+(`Archetypes::CreateCursor`, `StaticMeshType::Cursor`, `RenderingMode::Lines`).
+
+The cursor mesh carries a per-vertex colour — one line per axis, **X red, Y green, Z blue** —
+so its layout is `{ Float4 "position", Float3 "color" }` (6 vertices, not the old shared-origin
+4). `cursor.vert` passes the colour through; `cursor.frag` outputs it, multiplied by `u_color`
+(the white `ColorComponent`) as a global tint.
+
+```glsl
+// cursor.vert
+layout(location = 1) in vec3 color;
+out vec3 v_color;
+
+const float c_screenScale = 0.15;   // on-screen size, ~fraction of viewport half-height
+
+void main()
+{
+    vec4 originView = g_viewMatrix * u_modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    vec3 axisView   = mat3(g_viewMatrix * u_modelMatrix) * position.xyz;
+    float distance  = max(-originView.z, 0.0001);
+
+    vec4 viewPos = originView + vec4(axisView * distance * c_screenScale, 0.0);
+    gl_Position  = g_projectionMatrix * viewPos;
+    v_color = color;
+}
+```
+
+Each axis-line offset keeps its (view-rotated) world orientation but is stretched by the
+origin's view-space depth, which cancels the perspective `1/z` shrink — the cursor projects to
+a **constant screen size** no matter how far the camera orbits or zooms. Adjust `c_screenScale`
+in the shader to make it bigger or smaller.
 
 ---
 

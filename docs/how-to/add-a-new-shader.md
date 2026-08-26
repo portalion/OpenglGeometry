@@ -70,7 +70,9 @@ enum class AvailableShaders
     BezierCurveC0           = 2,
     BezierSurfaceHorizontal = 3,
     BezierSurfaceVertical   = 4,
-    MyShader                = 5      // ← new
+    Point                   = 5,
+    Cursor                  = 6,
+    MyShader                = 7      // ← new
 };
 ```
 
