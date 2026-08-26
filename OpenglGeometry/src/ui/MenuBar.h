@@ -42,7 +42,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Create"))
 		{
-			DrawCreateMenuItems(uiState);
+			DrawCreateMenuItems(scene);
 			ImGui::EndMenu();
 		}
 

@@ -1,5 +1,8 @@
 #pragma once
 #include <imgui/imgui.h>
+#include "core/Base.h"
+#include "scene/Scene.h"
+#include "SceneActions.h"
 #include "model/UiState.h"
 #include "popups/AboutDialog.h"
 #include "popups/BezierSurfaceDialog.h"
@@ -86,6 +89,62 @@ namespace GUI
 		ImGui::TextDisabled("Shift + A opens the creation menu");
 	}
 
+	inline void DrawCreateMenuItems(Ref<Scene> scene)
+	{
+		if (ImGui::MenuItem("Point"))
+		{
+			GUI::CreateShape(scene, ObjectType::Point);
+		}
+		if (ImGui::MenuItem("Torus"))
+		{
+			GUI::CreateShape(scene, ObjectType::Torus);
+		}
+
+		const bool hasPoints = !scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>().empty();
+
+		if (ImGui::MenuItem("Chain", nullptr, false, hasPoints))
+		{
+			GUI::CreateShape(scene, ObjectType::Chain);
+		}
+		ImGui::Separator();
+		if (ImGui::MenuItem("Bezier C0", nullptr, false, hasPoints))
+		{
+			GUI::CreateShape(scene, ObjectType::BezierC0);
+		}
+		if (ImGui::MenuItem("Bezier C2", nullptr, false, hasPoints))
+		{
+			GUI::CreateShape(scene, ObjectType::BezierC2);
+		}
+		if (ImGui::MenuItem("Interpolating C2", nullptr, false, hasPoints))
+		{
+			GUI::CreateShape(scene, ObjectType::InterpolatedC2);
+		}
+		if (!hasPoints && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetTooltip("select one or more points first");
+		}
+		ImGui::Separator();
+		if (ImGui::MenuItem("Bezier surface..."))
+		{
+			ImGui::OpenPopup(BezierSurfaceDialogTitle);
+		}
+
+		DisabledMenuItem("Gregory patch");
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetTooltip("needs a closed loop of 3 curve edges");
+		}
+
+		DisabledMenuItem("Intersection curve");
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetTooltip("needs 2 selected surfaces");
+		}
+
+		ImGui::Separator();
+		ImGui::TextDisabled("Shift + A opens the creation menu");
+	}
+
 	inline void DrawViewDisplayItems(UiState& uiState, bool& showParameterSpace)
 	{
 		ImGui::MenuItem("Grid", nullptr, &uiState.showGrid);
@@ -101,6 +160,15 @@ namespace GUI
 	inline void DrawAllDialogs(UiState& uiState)
 	{
 		DrawBezierSurfaceDialog(uiState);
+		DrawSaveSceneDialog(uiState);
+		DrawOpenSceneDialog(uiState);
+		DrawStereoDialog(uiState);
+		DrawAboutDialog();
+	}
+
+	inline void DrawAllDialogs(UiState& uiState, Ref<Scene> scene)
+	{
+		DrawBezierSurfaceDialog(uiState, scene);
 		DrawSaveSceneDialog(uiState);
 		DrawOpenSceneDialog(uiState);
 		DrawStereoDialog(uiState);

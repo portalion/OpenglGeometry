@@ -231,40 +231,38 @@ the **Shift + A** menu. Each menu item calls the matching archetype factory:
 ```cpp
 void ShapeCreation::Display()
 {
-    auto cursorPosition = m_Cursor.GetComponent<PositionComponent>().position;
-
     if (ImGui::MenuItem("Create Torus##Creation menu"))
-        Archetypes::CreateTorus(m_Scene.get(), cursorPosition);
+        GUI::CreateShape(m_Scene, ObjectType::Torus);
 
     if (ImGui::MenuItem("Create Point##Creation menu"))
-        Archetypes::CreatePoint(m_Scene.get(), cursorPosition);
+        GUI::CreateShape(m_Scene, ObjectType::Point);
 
     if (ImGui::MenuItem("Create Polyline##Creation menu"))
-    {
-        auto selectedPoints = GetSelectedPoints();
-        Archetypes::CreatePolyline(m_Scene.get(), selectedPoints.begin(), selectedPoints.end());
-    }
+        GUI::CreateShape(m_Scene, ObjectType::Chain);
     // ... Bezier C0, Bezier C2, Interpolated Bezier — same shape
 }
 ```
 
-`GetSelectedPoints` materialises the view into a `std::vector` before creating anything,
-because the archetypes mutate the registry (adding components to the selected points):
+`GUI::CreateShape` (`ui/SceneActions.h`) is the single dispatch point: it reads the 3D cursor,
+and for curve types materialises the selected control points into a `std::vector` via
+`GUI::GetSelectedControlPoints` before creating anything (the archetypes mutate the registry,
+adding components to the selected points):
 
 ```cpp
-std::vector<Entity> ShapeCreation::GetSelectedPoints()
+std::vector<Entity> GUI::GetSelectedControlPoints(Ref<Scene> scene)
 {
-    auto pointsView = m_Scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
-    return std::vector<Entity>(pointsView.begin(), pointsView.end());
+    auto view = scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
+    return std::vector<Entity>(view.begin(), view.end());
 }
 ```
 
 `<IsSelectedTag, NotificationComponent>` is the idiom for "selected points" —
 `NotificationComponent` is what marks an entity as usable as a control point.
 
-Note that *Create Bézier Surface* is not in the menu, even though
-`Archetypes::CreateBezierSurface` exists and works. Adding it would require a parameter
-dialog for `BezierSurfaceCreationParameters` (patch counts, size, cylinder flag).
+The menu-bar **Create** menu (`DrawCreateMenuItems(Ref<Scene>)` in `MenuItems.h`) goes through
+the same `GUI::CreateShape`, so it now creates real entities too. Its *Bézier surface...* item
+opens a parameter dialog (`BezierSurfaceDialog.cpp`) that calls `Archetypes::CreateBezierSurface`
+with a `BezierSurfaceCreationParameters` built from the draft (patch counts, size, cylinder flag).
 
 ### Adding a popup
 

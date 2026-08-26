@@ -151,14 +151,22 @@ view: `ShapeCreation` for where new shapes spawn, `CursorControl` for right-clic
 `DrawCursorPanel` for the panel's two-way binding. (Older docs describe a second cursor entity
 created by `ShapeCreation`; that is gone.)
 
-### The menu-bar *Create* menu doesn't create scene objects
+### Two `DrawCreateMenuItems` overloads — one real, one fixture-only
 
-`GUI::DrawCreateMenuItems` (`MenuItems.h`) — the **Create** menu in the top menu bar — calls
-`uiState.AppendObject(...)`, which only pushes a row into the fixture `UiState::objects` vector
-(a leftover from the UI sandbox). It adds nothing to the ECS scene. The **only** path that
-creates real entities is the **Shift + A** popup (`ShapeCreation`, driven by `PopupSystem`),
-which calls `Archetypes::Create*`. So automated/manual testing of shape creation must go
-through Shift + A, not the menu bar.
+`MenuItems.h` has two:
+
+- `DrawCreateMenuItems(Ref<Scene>)` — used by the real menu bar (`MenuBar.h`, via `GUISystem`).
+  Each item calls `GUI::CreateShape` (`SceneActions.h`), which dispatches to `Archetypes::Create*`
+  at the 3D cursor — the same path as the **Shift + A** popup (`ShapeCreation`). The Bézier
+  surface item opens `BezierSurfaceDialogTitle`, whose scene-aware overload
+  `DrawBezierSurfaceDialog(UiState&, Ref<Scene>)` calls `Archetypes::CreateBezierSurface`.
+- `DrawCreateMenuItems(UiState&)` — used only by the `--ui-sandbox` (`UiSandbox.cpp`). Still
+  calls `uiState.AppendObject(...)`, which just pushes a row into the fixture `UiState::objects`
+  vector and touches no ECS entity.
+
+Curve/chain items in the real menu are disabled unless at least one point
+(`<IsSelectedTag, NotificationComponent>`) is selected. Surface continuity C0/C2 is a visual
+choice only — the archetype always builds a C0 surface (no C2 backend yet).
 
 ### `IndexBuffer` uploads through `GL_ARRAY_BUFFER`
 

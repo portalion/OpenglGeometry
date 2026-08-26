@@ -7,7 +7,8 @@
 #include "scene/Components.h"
 #include "scene/Tags.h"
 #include "interfaces/ICamera.h"
-#include "archetypes/CursorArchetypeCreation.h"
+#include "core/ObjectType.h"
+#include "archetypes/Archetypes.h"
 
 namespace GUI
 {
@@ -115,5 +116,47 @@ namespace GUI
 	{
 		DeselectAll(scene);
 		entity.AddTag<IsSelectedTag>();
+	}
+
+	inline std::vector<Entity> GetSelectedControlPoints(Ref<Scene> scene)
+	{
+		auto view = scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
+		return std::vector<Entity>(view.begin(), view.end());
+	}
+
+	inline Entity CreateShape(Ref<Scene> scene, ObjectType type)
+	{
+		Scene* raw = scene.get();
+		const auto cursor = Archetypes::GetCursorPosition(raw);
+
+		switch (type)
+		{
+		case ObjectType::Point:
+			return Archetypes::CreatePoint(raw, cursor);
+		case ObjectType::Torus:
+			return Archetypes::CreateTorus(raw, cursor);
+		case ObjectType::Chain:
+		{
+			auto points = GetSelectedControlPoints(scene);
+			return Archetypes::CreatePolyline(raw, points.begin(), points.end());
+		}
+		case ObjectType::BezierC0:
+		{
+			auto points = GetSelectedControlPoints(scene);
+			return Archetypes::CreateBezierC0(raw, points.begin(), points.end());
+		}
+		case ObjectType::BezierC2:
+		{
+			auto points = GetSelectedControlPoints(scene);
+			return Archetypes::CreateBezierC2(raw, points.begin(), points.end());
+		}
+		case ObjectType::InterpolatedC2:
+		{
+			auto points = GetSelectedControlPoints(scene);
+			return Archetypes::CreateInterpolatedBezier(raw, points.begin(), points.end());
+		}
+		default:
+			return Entity{};
+		}
 	}
 }

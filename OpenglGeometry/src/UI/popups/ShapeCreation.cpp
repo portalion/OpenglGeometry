@@ -1,11 +1,11 @@
 #include "ShapeCreation.h"
 #include <imgui/imgui.h>
 #include <archetypes/Archetypes.h>
+#include <ui/SceneActions.h>
 
 std::vector<Entity> ShapeCreation::GetSelectedPoints()
 {
-	auto pointsView = m_Scene->GetAllEntitiesWith<IsSelectedTag, NotificationComponent>();
-	return std::vector<Entity>(pointsView.begin(), pointsView.end());
+	return GUI::GetSelectedControlPoints(m_Scene);
 }
 
 ShapeCreation::ShapeCreation(Ref<Scene> scene)
@@ -20,38 +20,33 @@ bool ShapeCreation::ShouldOpen()
 
 void ShapeCreation::Display()
 {
-	auto cursorPosition = Archetypes::GetCursorPosition(m_Scene.get());
 	if (ImGui::MenuItem("Create Torus##Creation menu"))
 	{
-		Archetypes::CreateTorus(m_Scene.get(), cursorPosition);
+		GUI::CreateShape(m_Scene, ObjectType::Torus);
 	}
 
 	if (ImGui::MenuItem("Create Point##Creation menu"))
 	{
-		Archetypes::CreatePoint(m_Scene.get(), cursorPosition);
+		GUI::CreateShape(m_Scene, ObjectType::Point);
 	}
 
 	if (ImGui::MenuItem("Create Polyline##Creation menu"))
 	{
-		auto selectedPoints = GetSelectedPoints();
-		Archetypes::CreatePolyline(m_Scene.get(), selectedPoints.begin(), selectedPoints.end());
+		GUI::CreateShape(m_Scene, ObjectType::Chain);
 	}
 
 	if (ImGui::MenuItem("Create Bezier C0##Creation menu"))
 	{
-		auto selectedPoints = GetSelectedPoints();
-		Archetypes::CreateBezierC0(m_Scene.get(), selectedPoints.begin(), selectedPoints.end());
+		GUI::CreateShape(m_Scene, ObjectType::BezierC0);
 	}
 
 	if (ImGui::MenuItem("Create Bezier C2##Creation menu"))
 	{
-		auto selectedPoints = GetSelectedPoints();
-		Archetypes::CreateBezierC2(m_Scene.get(), selectedPoints.begin(), selectedPoints.end());
+		GUI::CreateShape(m_Scene, ObjectType::BezierC2);
 	}
 
 	if (ImGui::MenuItem("Create Interpolated Bezier##Creation menu"))
 	{
-		auto selectedPoints = GetSelectedPoints();
-		Archetypes::CreateInterpolatedBezier(m_Scene.get(), selectedPoints.begin(), selectedPoints.end());
+		GUI::CreateShape(m_Scene, ObjectType::InterpolatedC2);
 	}
 }

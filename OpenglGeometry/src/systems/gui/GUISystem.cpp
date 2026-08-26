@@ -17,7 +17,7 @@ void GUISystem::Process()
 	GUI::DrawToolbar(m_UiState);
 	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData(), m_UiState);
 
-	GUI::DrawAllDialogs(m_UiState);
+	GUI::DrawAllDialogs(m_UiState, m_Scene);
 
 	if (!m_Dockspace.Created())
 	{
