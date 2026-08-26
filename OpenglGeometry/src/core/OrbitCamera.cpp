@@ -48,6 +48,11 @@ Algebra::Vector4 OrbitCamera::GetUp() const
 	return GetRotationMatrix().Transpose() * Algebra::Vector4(0.f, 1.f, 0.f, 0.f);
 }
 
+Algebra::Vector4 OrbitCamera::GetForward() const
+{
+	return GetRotationMatrix().Transpose() * Algebra::Vector4(0.f, 0.f, -1.f, 0.f);
+}
+
 void OrbitCamera::Focus(const Algebra::Vector4& point, float radius)
 {
 	target = Algebra::Vector4(point.x, point.y, point.z, 1.f);

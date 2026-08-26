@@ -141,13 +141,15 @@ Resizing the window updates the GL viewport but not the aspect ratio, so the sce
 Similarly `DragCamera::HandleRotations` divides deltas by `Globals::startingSceneWidth/Height`
 rather than the current size, so rotation sensitivity does not follow resizes.
 
-### Two cursor entities exist
+### One cursor entity, shared through `CursorTag`
 
-Both [`GUISystem`](../OpenglGeometry/src/systems/gui/GUISystem.cpp) and
-[`ShapeCreation`](../OpenglGeometry/src/UI/popups/ShapeCreation.cpp) create their own
-"Cursor" entity with identical setup. Two rows appear in the *Shape List*, two gizmos render
-at the origin, and it is `ShapeCreation`'s copy whose position determines where new shapes
-appear — so moving the other one has no effect on shape creation.
+There is a single cursor entity, created by `BaseScene` (`Archetypes::CreateCursor`:
+`CursorTag` + `PositionComponent` + `ColorComponent` + `MeshComponent`, but **no**
+`IdComponent` / `ObjectTypeComponent`, so it never appears in the *Shape List*). Everything
+reaches it the same way — `Archetypes::GetCursorPosition` or a `<CursorTag, PositionComponent>`
+view: `ShapeCreation` for where new shapes spawn, `CursorControl` for right-click placement,
+`DrawCursorPanel` for the panel's two-way binding. (Older docs describe a second cursor entity
+created by `ShapeCreation`; that is gone.)
 
 ### `IndexBuffer` uploads through `GL_ARRAY_BUFFER`
 

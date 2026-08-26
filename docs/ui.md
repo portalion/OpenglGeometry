@@ -10,6 +10,9 @@ popup implementations. The *systems* that call them are documented in
 | `ShapeList.h` | `GUI::DisplayShapeList` — the shape list panel |
 | `Utils.h` | `GUI::GenerateLabel`, `GUI::DragUInt` |
 | `ViewportPicking.{h,cpp}` | `GUI::HandleViewportPicking` — click / box selection of points in the 3D viewport |
+| `CursorControl.{h,cpp}` | `GUI::HandleCursorPlacement` — right-click to move the 3D cursor |
+| `ViewportMath.{h,cpp}` | `ActiveViewportCamera`, `ProjectToViewport`, `ViewportRayDirection` — shared world↔screen maths |
+| `CursorPanel.{h,cpp}` | `GUI::DrawCursorPanel` — the *3D Cursor* panel |
 | `popups/ShapeCreation.{h,cpp}` | The Shift + A creation menu |
 
 Small pure-function helpers in `namespace GUI` are `inline` and header-only; the panel and
@@ -19,12 +22,14 @@ picking helpers with real logic have a `.cpp` (listed in `OpenglGeometry/CMakeLi
 
 ## Panels
 
-The application has two ImGui windows plus (in debug builds) the ImGui demo window:
+The application's dockable ImGui windows, all driven from `GUISystem::Process` (plus the demo
+window in debug builds):
 
 | Window | Drawn by |
 | --- | --- |
-| *Shape List* | `GUI::DisplayShapeList`, called from `GUISystem::Process` |
-| *Selected Shapes Properties* | `ShapeInspectorSystem::Process` |
+| *Shape List* | `GUI::ShapeList::Display` |
+| *Selected Shapes Properties* | `ShapeInspectorRegistry::Display` |
+| *3D Cursor* | `GUI::DrawCursorPanel` |
 | *Dear ImGui Demo* | `App::Run`, `#ifdef _DEBUG` only |
 
 Docking is enabled (`ImGuiConfigFlags_DockingEnable` in `InitImgui`), so the user can
@@ -146,6 +151,52 @@ nearest point, drag box-selects, Shift/Ctrl make it additive, and it only tags
 `Dockspace::TryGetCentralNodeScreenRect` gives it the viewport rectangle in the same ImGui
 coordinate space as `ImGui::GetMousePos()` (unlike `TryGetCentralNodeRect`, which is
 framebuffer pixels for `glViewport`).
+
+---
+
+## `GUI::HandleCursorPlacement`
+
+```cpp
+struct CursorPlacementState { bool tracking; ImVec2 pressPos; };
+
+void HandleCursorPlacement(Ref<Scene> scene, const Dockspace& dockspace,
+    const CursorState& cursorState, CursorPlacementState& state);
+```
+
+Also called every frame from `GUISystem::Process`. A right-click tap in the viewport moves the
+`CursorTag` entity; a right-drag is left alone for the camera. `cursorState.snapToNearest`
+(set by the *3D Cursor* panel) chooses between snapping to the closest object and dropping onto
+the camera-facing plane through the cursor's current position. See
+[gui-systems.md](systems/gui-systems.md#viewport-cursor-placement).
+
+## `ViewportMath`
+
+```cpp
+struct ViewportCamera { Matrix4 view, projection; Vector4 position, right, up, forward; };
+
+std::optional<ViewportCamera> ActiveViewportCamera(Ref<Scene> scene);
+bool ProjectToViewport(const ViewportCamera&, const Vector4& world,
+    const ImVec2& rectMin, const ImVec2& rectMax, ImVec2& outScreen);   // false if behind camera
+Vector4 ViewportRayDirection(const ViewportCamera&, const ImVec2& screen,
+    const ImVec2& rectMin, const ImVec2& rectMax);                      // normalised, from position
+```
+
+Shared world↔screen maths for picking and cursor placement. `ProjectToViewport` reproduces the
+`projection * view` transform the vertex shaders do; `ViewportRayDirection` builds a pinhole ray
+from the camera basis and the FOV encoded in `projection[0][0]` / `[1][1]`. Both use the camera
+as it was at the end of the previous frame (see the picking note above).
+
+## `GUI::DrawCursorPanel`
+
+```cpp
+void DrawCursorPanel(UiState& state);                                        // sandbox, fixture only
+void DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace&);     // live, scene-synced
+```
+
+The live overload two-way-binds `UiState::cursor` to the scene's cursor entity: entity → panel
+at the top (`world`, projected `screenX/Y`, selection `centre` + count), panel → entity at the
+bottom if `world` changed. The one-arg overload is the pre-existing fixture version the
+UI sandbox (`--ui-sandbox`) still uses.
 
 ---
 

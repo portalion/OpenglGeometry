@@ -39,7 +39,7 @@ void GUISystem::Process()
 
 	m_ShapeList.Display();
 	m_ShapeInspector.Display();
-	GUI::DrawCursorPanel(m_UiState);
+	GUI::DrawCursorPanel(m_Scene, m_UiState, m_Dockspace);
 
 	if (m_ShowParameterSpace)
 	{
@@ -47,6 +47,7 @@ void GUISystem::Process()
 	}
 
 	GUI::HandleViewportPicking(m_Scene, m_Dockspace, m_Picking);
+	GUI::HandleCursorPlacement(m_Scene, m_Dockspace, m_UiState.cursor, m_CursorPlacement);
 
 	GUI::HandleShortcuts(m_Scene, m_Callbacks);
 	GUI::HandleFileShortcuts();

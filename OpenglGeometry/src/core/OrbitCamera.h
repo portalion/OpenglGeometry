@@ -14,9 +14,6 @@ private:
 	void HandlePan(const ViewportData& viewport);
 	void HandleZoom();
 	void HandleRotations(const ViewportData& viewport);
-
-	Algebra::Vector4 GetRight() const;
-	Algebra::Vector4 GetUp() const;
 public:
 	OrbitCamera(Algebra::Vector4 target = Algebra::Vector4(0.f, 0.f, 0.f, 1.f),
 		float distance = 10.f, float pitch = 0.f, float yaw = 0.f);
@@ -28,6 +25,9 @@ public:
 	inline float GetDistance() const { return distance; }
 
 	Algebra::Vector4 GetPosition() const override;
+	Algebra::Vector4 GetRight() const override;
+	Algebra::Vector4 GetUp() const override;
+	Algebra::Vector4 GetForward() const override;
 	void Focus(const Algebra::Vector4& point, float radius) override;
 
 	void HandleInput(CameraComponent& cameraComponent, const ViewportData& viewport) override;

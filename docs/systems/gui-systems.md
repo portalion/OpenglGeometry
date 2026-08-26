@@ -69,6 +69,30 @@ matrix is written later in the frame by `RenderingSystem`, picking runs against 
 frame's** camera pose — invisible in practice. Camera orbit/pan/zoom use the right/middle
 buttons, so left-drag selection never fights the camera.
 
+### Viewport cursor placement
+
+`GUISystem` also calls [`GUI::HandleCursorPlacement`](../ui.md#handlecursorplacement)
+(`src/ui/CursorControl.{h,cpp}`) with a `CursorPlacementState` member:
+
+- **Right click** (a tap — a right *drag* is a camera orbit, cancelled once travel passes
+  `io.MouseDragThreshold`) in the viewport moves the scene's cursor entity
+  (`CursorTag` + `PositionComponent`).
+- **Keep depth** (default): the cursor lands on the camera-facing plane through its current
+  position, so it keeps its distance from the eye.
+- **Snap to nearest object**: it jumps to the closest object's position within 16 px, falling
+  back to keep-depth when nothing is close.
+
+The mode is the *On right-click* segmented control in the **3D Cursor** panel. That panel
+([`GUI::DrawCursorPanel`](../ui.md#drawcursorpanel), `src/ui/CursorPanel.cpp`) is now wired to
+the same entity: each frame it copies the entity's position into `UiState::cursor.world`,
+projects it to the read-only *Screen X/Y* fields, fills *Centre* / the object count from the
+live `IsSelectedTag` selection, and writes `world` back to the entity if the *World* row or the
+*Cursor → centre* / *Cursor → origin* buttons changed it. The ray maths for both placement and
+the *Screen X/Y* projection live in [`ViewportMath`](../ui.md#viewportmath).
+
+`ShapeCreation` reads the same cursor via `Archetypes::GetCursorPosition`, so newly created
+shapes appear wherever the cursor was last placed.
+
 ---
 
 ## `ShapeInspectorSystem`

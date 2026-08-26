@@ -206,7 +206,7 @@ so resizing the window stretches the scene. See [gotchas](gotchas.md).
 
 ---
 
-## `ICamera` / `DragCamera`
+## `ICamera` / `OrbitCamera`
 
 [`interfaces/ICamera.h`](../OpenglGeometry/src/interfaces/ICamera.h)
 
@@ -214,58 +214,53 @@ so resizing the window stretches the scene. See [gotchas](gotchas.md).
 class ICamera
 {
 public:
-    virtual void HandleInput(CameraComponent& cameraComponent) = 0;
+    virtual ~ICamera() = default;
+
+    virtual void HandleInput(CameraComponent&, const ViewportData&) = 0;
+
+    virtual Algebra::Vector4 GetPosition() const = 0;
+    virtual Algebra::Vector4 GetTarget()   const = 0;
+    virtual Algebra::Vector4 GetRight()    const = 0;
+    virtual Algebra::Vector4 GetUp()       const = 0;
+    virtual Algebra::Vector4 GetForward()  const = 0;
+    virtual void Focus(const Algebra::Vector4& point, float radius) = 0;
 };
 ```
 
-A camera implementation reads input and writes `cameraComponent.viewMatrix`.
+`HandleInput` reads ImGui IO and writes `cameraComponent.viewMatrix`.
 `CameraComponent::cameraHandling` holds a `Ref<ICamera>`, so camera behaviour is swappable
-per entity without touching `RenderingSystem`.
+per entity without touching `RenderingSystem`. The `GetPosition/Right/Up/Forward` accessors
+give viewport picking and cursor placement a world-space camera basis for building rays
+(`src/ui/ViewportMath.cpp`).
 
-`ICamera` has no virtual destructor, which is a latent problem given it is held by
-`shared_ptr` — in practice `shared_ptr` stores the concrete deleter, so it works.
+### `OrbitCamera`
 
-### `DragCamera`
+[`OrbitCamera.h`](../OpenglGeometry/src/core/OrbitCamera.h) ·
+[`.cpp`](../OpenglGeometry/src/core/OrbitCamera.cpp)
 
-[`DragCamera.h`](../OpenglGeometry/src/core/DragCamera.h) ·
-[`.cpp`](../OpenglGeometry/src/core/DragCamera.cpp)
-
-An orbit camera storing position, a rotation quaternion and a zoom scalar:
+Orbits a `target` point at a given `distance`, with Euler `yaw` / `pitch` / `roll`:
 
 ```cpp
-Algebra::Matrix4 GetViewMatrix()
+Algebra::Matrix4 GetViewMatrix() const
 {
-    return GetRotationMatrix() * GetTranslationMatrix() * GetZoomMatrix();
+    return Matrix4::Translation(0, 0, -distance)
+         * GetRotationMatrix()                       // RotZ(roll) * RotX(pitch) * RotY(yaw)
+         * Matrix4::Translation(-target.x, -target.y, -target.z);
 }
 ```
 
 | Input | Handler | Behaviour |
 | --- | --- | --- |
-| Middle-drag | `HandleTranslation` | Pans; the drag direction is normalised and rotated into camera space, so pan speed is constant regardless of drag distance |
-| Wheel | `HandleZoom` | `zoom += wheel * 0.1f`, clamped to `[0.1, 5.0]`; applied as a uniform scale |
-| Right-drag | `HandleRotations` | Yaw around world Y, then pitch around the camera's own right axis |
-| Shift + right-drag | `HandleRotations` | Roll around the camera's forward axis |
+| Middle-drag | `HandlePan` | Moves `target` along the camera right/up axes; speed scales with `distance` and FOV so it tracks the cursor |
+| Wheel | `HandleZoom` | `distance *= 0.9^wheel`, clamped to `[0.5, 500]` |
+| Right-drag | `HandleRotations` | `yaw`/`pitch` from the drag delta over viewport width/height; pitch clamped to `±1.56` rad |
+| Shift + right-drag | `HandleRotations` | `roll` from the horizontal delta |
 
-Rotations use quaternions and renormalise after each step to prevent drift. Yaw is applied
-first, then the right axis is recomputed from the intermediate rotation before pitch — which
-is what avoids gimbal-style coupling:
-
-```cpp
-Algebra::Quaternion yawQuat   = Quaternion::CreateFromAxisAngle({0,1,0,0}, -yawDelta);
-Algebra::Quaternion tempRot   = (yawQuat * rotation).Normalize();
-Algebra::Vector4    right     = tempRot.Rotate({1,0,0,0});
-Algebra::Quaternion pitchQuat = Quaternion::CreateFromAxisAngle(right, -pitchDelta);
-rotation = (pitchQuat * tempRot).Normalize();
-```
-
-`ResetMouseDragDelta` is called after each rotation so deltas are per-frame increments rather
-than cumulative — but *not* after translation, so panning accelerates the longer you drag.
-
-Input comes from ImGui (`ImGui::IsMouseDragging`, `ImGui::GetIO()`), never from GLFW
-directly, which means ImGui's "is a widget capturing the mouse" logic applies automatically.
-
-Rotation sensitivity divides by `Globals::startingSceneWidth/Height` — the *starting* size,
-not the current one.
+`GetPosition()` is `target + Rᵀ·(0,0,distance)`; `Focus(point, radius)` recentres `target`
+and pulls `distance` in to frame a sphere of that radius. Input comes from ImGui
+(`ImGui::IsMouseDragging`, `ImGui::GetIO()`), so a right-drag that started over a panel still
+counts — and a right *click* that never crosses the drag threshold does nothing, which is what
+frees it for [cursor placement](systems/gui-systems.md#viewport-point-picking).
 
 ---
 

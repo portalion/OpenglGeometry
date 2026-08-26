@@ -48,6 +48,8 @@ add_executable(${PROJECT_NAME}
     "src/ui/sandbox/UiSandbox.cpp"
     "src/ui/ShapeList.cpp"
     "src/ui/ViewportPicking.cpp"
+    "src/ui/ViewportMath.cpp"
+    "src/ui/CursorControl.cpp"
 
     "src/UI/popups/ShapeCreation.cpp"
     "src/ui/popups/AboutDialog.cpp"

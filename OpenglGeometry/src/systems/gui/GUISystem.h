@@ -5,6 +5,7 @@
 #include <scene/Entity.h>
 #include <core/Viewport.h>
 #include <ui/core/DockSpace.h>
+#include <ui/CursorControl.h>
 #include <ui/ShapeInspectorRegistry.h>
 #include <ui/ShapeList.h>
 #include <ui/Utils.h>
@@ -25,6 +26,7 @@ private:
 	ShapeInspectorRegistry m_ShapeInspector;
 
 	GUI::ViewportPickingState m_Picking;
+	GUI::CursorPlacementState m_CursorPlacement;
 
 	GUI::UICallbacks m_Callbacks;
 public:
