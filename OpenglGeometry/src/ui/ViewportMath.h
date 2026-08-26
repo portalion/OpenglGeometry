@@ -21,7 +21,7 @@ namespace GUI
 	std::optional<ViewportCamera> ActiveViewportCamera(Ref<Scene> scene);
 
 	bool ProjectToViewport(const ViewportCamera& camera, const Algebra::Vector4& world,
-		const ImVec2& rectMin, const ImVec2& rectMax, ImVec2& outScreen);.
+		const ImVec2& rectMin, const ImVec2& rectMax, ImVec2& outScreen);
 	Algebra::Vector4 ViewportRayDirection(const ViewportCamera& camera, const ImVec2& screen,
 		const ImVec2& rectMin, const ImVec2& rectMax);
 }
