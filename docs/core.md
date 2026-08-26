@@ -140,14 +140,15 @@ struct Globals
     static const float            startingCameraPitch;    // 0.3
 
     static const Algebra::Vector4 defaultPointsColor;     // (1, 0.2, 0, 1)   - EntityContext default u_color
-    static const Algebra::Vector4 selectionColor;         // (1, 0.85, 0.15, 1) - tint for IsSelectedTag entities
+    static const Algebra::Vector4 selectionColor;         // (1, 0.85, 0.15, 1) - selection yellow
 };
 ```
 
 Compile-time configuration constants, defined in `Globals.cpp`. The camera frustum values feed
 `Matrix4::Projection` in `RenderingSystem` / `BaseScene`; the starting target/distance/pitch
-seed the `OrbitCamera`. `defaultPointsColor` is the `EntityContext::Color` default, and
-`RenderingSystem` swaps in `selectionColor` for any entity carrying `IsSelectedTag`.
+seed the `OrbitCamera`. `defaultPointsColor` is the `EntityContext::Color` default;
+`selectionColor` is used both by `RenderingSystem` (which swaps it in for any entity carrying
+`IsSelectedTag`) and as the `ColorComponent` of the selection-centre crosshair.
 
 ## `core/Window.h`
 

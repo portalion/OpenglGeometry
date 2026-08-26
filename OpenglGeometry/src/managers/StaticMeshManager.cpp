@@ -82,6 +82,33 @@ StaticMeshManager::StaticMeshManager()
 		m_Meshes[StaticMeshType::Cursor] = VertexArray::CreateWithBuffers(cursorVertices, cursorIndices, layout);
 	}
 
+	// Crosshair
+	{
+		std::vector<float> crosshairVertices =
+		{
+			-0.60f,  0.00f, 0.f, 1.f,
+			-0.15f,  0.00f, 0.f, 1.f,
+			 0.15f,  0.00f, 0.f, 1.f,
+			 0.60f,  0.00f, 0.f, 1.f,
+			 0.00f, -0.60f, 0.f, 1.f,
+			 0.00f, -0.15f, 0.f, 1.f,
+			 0.00f,  0.15f, 0.f, 1.f,
+			 0.00f,  0.60f, 0.f, 1.f
+		};
+		std::vector<unsigned int> crosshairIndices =
+		{
+			0, 1,
+			2, 3,
+			4, 5,
+			6, 7
+		};
+		BufferLayout layout =
+		{
+			{ ShaderDataType::Float4, "position" }
+		};
+		m_Meshes[StaticMeshType::Crosshair] = VertexArray::CreateWithBuffers(crosshairVertices, crosshairIndices, layout);
+	}
+
 	// Grid
 	{
 		std::vector<float> vertices;

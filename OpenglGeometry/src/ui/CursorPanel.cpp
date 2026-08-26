@@ -133,20 +133,21 @@ void GUI::DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace& doc
 	const SelectionSummary selection = SummariseSelection(scene);
 	cursor.selectionCentre = selection.centre;
 
-	bool cursorOnScreen = false;
 	ImVec2 rectMin;
 	ImVec2 rectMax;
-	if (dockspace.TryGetCentralNodeScreenRect(rectMin, rectMax))
+	const bool haveViewport = dockspace.TryGetCentralNodeScreenRect(rectMin, rectMax);
+	const std::optional<ViewportCamera> camera =
+		haveViewport ? ActiveViewportCamera(scene) : std::nullopt;
+
+	bool cursorOnScreen = false;
+	if (camera.has_value())
 	{
-		if (const std::optional<ViewportCamera> camera = ActiveViewportCamera(scene))
+		ImVec2 projected;
+		if (ProjectToViewport(*camera, cursor.world, rectMin, rectMax, projected))
 		{
-			ImVec2 projected;
-			if (ProjectToViewport(*camera, cursor.world, rectMin, rectMax, projected))
-			{
-				cursor.screenX = projected.x - rectMin.x;
-				cursor.screenY = projected.y - rectMin.y;
-				cursorOnScreen = true;
-			}
+			cursor.screenX = projected.x - rectMin.x;
+			cursor.screenY = projected.y - rectMin.y;
+			cursorOnScreen = true;
 		}
 	}
 
@@ -158,16 +159,26 @@ void GUI::DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace& doc
 	{
 		PropertyRow("World", cursor.world);
 
-		ImGui::BeginDisabled();
-		PropertyRow("Screen X", cursor.screenX, 1.0f);
-		PropertyRow("Screen Y", cursor.screenY, 1.0f);
+		ImGui::BeginDisabled(!cursorOnScreen);
+		bool screenChanged = PropertyRow("Screen X", cursor.screenX, 1.0f);
+		screenChanged = PropertyRow("Screen Y", cursor.screenY, 1.0f) || screenChanged;
 		ImGui::EndDisabled();
+
+		if (screenChanged && cursorOnScreen)
+		{
+			const ImVec2 target(rectMin.x + cursor.screenX, rectMin.y + cursor.screenY);
+			Algebra::Vector4 hit;
+			if (ViewportRayPlaneHit(*camera, target, rectMin, rectMax, worldBefore, camera->forward, hit))
+			{
+				cursor.world = hit;
+			}
+		}
 
 		EndPropertyTable();
 	}
 
 	ImGui::TextDisabled(cursorOnScreen
-		? "screen pixels, relative to the viewport"
+		? "screen pixels within the viewport - editable"
 		: "cursor is off screen");
 
 	ImGui::Separator();

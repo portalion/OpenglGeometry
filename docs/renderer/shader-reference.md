@@ -49,7 +49,9 @@ Expects the `{ Float4 "position" }` layout. Works with any `RenderingMode`.
 ## `Point`
 
 `point.vert` + `default.frag`, used by every point (`Archetypes::AddPointToEntity`), including
-Bézier-surface control points.
+Bézier-surface control points, and by the yellow selection-centre crosshair
+(`StaticMeshType::Crosshair`, `RenderingMode::Lines`) — anything that should billboard on the
+view plane at a constant screen size.
 
 ```glsl
 // point.vert

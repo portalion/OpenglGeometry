@@ -151,6 +151,15 @@ view: `ShapeCreation` for where new shapes spawn, `CursorControl` for right-clic
 `DrawCursorPanel` for the panel's two-way binding. (Older docs describe a second cursor entity
 created by `ShapeCreation`; that is gone.)
 
+### The menu-bar *Create* menu doesn't create scene objects
+
+`GUI::DrawCreateMenuItems` (`MenuItems.h`) — the **Create** menu in the top menu bar — calls
+`uiState.AppendObject(...)`, which only pushes a row into the fixture `UiState::objects` vector
+(a leftover from the UI sandbox). It adds nothing to the ECS scene. The **only** path that
+creates real entities is the **Shift + A** popup (`ShapeCreation`, driven by `PopupSystem`),
+which calls `Archetypes::Create*`. So automated/manual testing of shape creation must go
+through Shift + A, not the menu bar.
+
 ### `IndexBuffer` uploads through `GL_ARRAY_BUFFER`
 
 [`renderer/IndexBuffer.cpp:8`](../OpenglGeometry/src/renderer/IndexBuffer.cpp)

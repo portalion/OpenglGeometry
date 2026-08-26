@@ -13,3 +13,5 @@ struct IsTransparentTag { };
 struct ToBeDestroyedTag { };
 
 struct CursorTag { };
+
+struct SelectionCentreTag { };

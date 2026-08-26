@@ -13,7 +13,14 @@ struct IsSelectedTag { };
 struct ObserverChangedState { };
 struct IsInvisibleTag { };
 struct ToBeDestroyedTag { };
+struct CursorTag { };
+struct SelectionCentreTag { };
 ```
+
+`CursorTag` and `SelectionCentreTag` mark the two viewport gizmo entities (the 3D cursor and
+the yellow selection-centre crosshair). Neither has an `IdComponent`, so they stay out of the
+*Shape List*. `SelectionMarkerSystem` parks the crosshair on the selection median each frame
+and toggles its `IsInvisibleTag`.
 
 ---
 
@@ -76,8 +83,12 @@ is its *output*. See [change-propagation.md](change-propagation.md).
 
 ## `IsInvisibleTag` — "don't draw me"
 
-**Set / cleared by:** `ShapeInspectorSystem::VirtualInspect`'s checkbox, which toggles the
-visibility of a shape's helper geometry (e.g. a Bézier curve's control polyline).
+**Set / cleared by:**
+
+- `ShapeInspectorRegistry::VirtualInspect`'s checkbox, which toggles the visibility of a
+  shape's helper geometry (e.g. a Bézier curve's control polyline)
+- `SelectionMarkerSystem`, which hides the selection-centre crosshair whenever nothing is
+  selected
 
 **Read by:** `RenderingSystem`, as a view exclusion:
 

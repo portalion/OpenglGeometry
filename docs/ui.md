@@ -11,7 +11,7 @@ popup implementations. The *systems* that call them are documented in
 | `Utils.h` | `GUI::GenerateLabel`, `GUI::DragUInt` |
 | `ViewportPicking.{h,cpp}` | `GUI::HandleViewportPicking` — click / box selection of points in the 3D viewport |
 | `CursorControl.{h,cpp}` | `GUI::HandleCursorPlacement` — right-click to move the 3D cursor |
-| `ViewportMath.{h,cpp}` | `ActiveViewportCamera`, `ProjectToViewport`, `ViewportRayDirection` — shared world↔screen maths |
+| `ViewportMath.{h,cpp}` | `ActiveViewportCamera`, `ProjectToViewport`, `ViewportRayDirection`, `ViewportRayPlaneHit` — shared world↔screen maths |
 | `CursorPanel.{h,cpp}` | `GUI::DrawCursorPanel` — the *3D Cursor* panel |
 | `popups/ShapeCreation.{h,cpp}` | The Shift + A creation menu |
 
@@ -179,12 +179,17 @@ bool ProjectToViewport(const ViewportCamera&, const Vector4& world,
     const ImVec2& rectMin, const ImVec2& rectMax, ImVec2& outScreen);   // false if behind camera
 Vector4 ViewportRayDirection(const ViewportCamera&, const ImVec2& screen,
     const ImVec2& rectMin, const ImVec2& rectMax);                      // normalised, from position
+bool ViewportRayPlaneHit(const ViewportCamera&, const ImVec2& screen,
+    const ImVec2& rectMin, const ImVec2& rectMax,
+    const Vector4& planePoint, const Vector4& planeNormal, Vector4& outWorld);
 ```
 
 Shared world↔screen maths for picking and cursor placement. `ProjectToViewport` reproduces the
 `projection * view` transform the vertex shaders do; `ViewportRayDirection` builds a pinhole ray
-from the camera basis and the FOV encoded in `projection[0][0]` / `[1][1]`. Both use the camera
-as it was at the end of the previous frame (see the picking note above).
+from the camera basis and the FOV encoded in `projection[0][0]` / `[1][1]`; `ViewportRayPlaneHit`
+adds the ray/plane intersection used to turn a viewport pixel back into a world point on the
+cursor's depth plane (right-click placement, and the editable *Screen X/Y* fields). All use the
+camera as it was at the end of the previous frame (see the picking note above).
 
 ## `GUI::DrawCursorPanel`
 
@@ -195,8 +200,10 @@ void DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace&);     //
 
 The live overload two-way-binds `UiState::cursor` to the scene's cursor entity: entity → panel
 at the top (`world`, projected `screenX/Y`, selection `centre` + count), panel → entity at the
-bottom if `world` changed. The one-arg overload is the pre-existing fixture version the
-UI sandbox (`--ui-sandbox`) still uses.
+bottom if `world` changed. The *World* row and *Screen X/Y* rows are all editable — dragging
+*Screen X/Y* back-projects the pixel onto the view-facing plane through the cursor's current
+position (`ViewportRayPlaneHit`), so it slides the cursor without changing its depth. The
+one-arg overload is the pre-existing fixture version the UI sandbox (`--ui-sandbox`) still uses.
 
 ---
 

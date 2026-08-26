@@ -127,20 +127,11 @@ void GUI::HandleCursorPlacement(Ref<Scene> scene, const Dockspace& dockspace,
 		}
 	}
 
-	const Algebra::Vector4 rayDirection = ViewportRayDirection(*camera, state.pressPos, rectMin, rectMax);
 	const Algebra::Vector4 planePoint = cursor.GetComponent<PositionComponent>().position;
 
-	const float denominator = rayDirection * camera->forward;
-	if (std::abs(denominator) < 1e-6f)
+	Algebra::Vector4 hit;
+	if (ViewportRayPlaneHit(*camera, state.pressPos, rectMin, rectMax, planePoint, camera->forward, hit))
 	{
-		return;
+		MoveCursorTo(cursor, hit);
 	}
-
-	const float t = ((planePoint - camera->position) * camera->forward) / denominator;
-	if (t <= 0.f)
-	{
-		return;
-	}
-
-	MoveCursorTo(cursor, camera->position + rayDirection * t);
 }

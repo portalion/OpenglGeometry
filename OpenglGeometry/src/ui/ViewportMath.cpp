@@ -1,5 +1,7 @@
 #include "ViewportMath.h"
 
+#include <cmath>
+
 #include "interfaces/ICamera.h"
 #include "scene/Components.h"
 #include "scene/Entity.h"
@@ -64,4 +66,28 @@ Algebra::Vector4 GUI::ViewportRayDirection(const ViewportCamera& camera, const I
 		+ camera.up * (ndcY * tanY);
 
 	return direction.Normalize();
+}
+
+bool GUI::ViewportRayPlaneHit(const ViewportCamera& camera, const ImVec2& screen,
+	const ImVec2& rectMin, const ImVec2& rectMax,
+	const Algebra::Vector4& planePoint, const Algebra::Vector4& planeNormal,
+	Algebra::Vector4& outWorld)
+{
+	const Algebra::Vector4 direction = ViewportRayDirection(camera, screen, rectMin, rectMax);
+
+	const float denominator = direction * planeNormal;
+	if (std::abs(denominator) < 1e-6f)
+	{
+		return false;
+	}
+
+	const float t = ((planePoint - camera.position) * planeNormal) / denominator;
+	if (t <= 0.f)
+	{
+		return false;
+	}
+
+	outWorld = camera.position + direction * t;
+	outWorld.w = 1.f;
+	return true;
 }

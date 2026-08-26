@@ -24,4 +24,9 @@ namespace GUI
 		const ImVec2& rectMin, const ImVec2& rectMax, ImVec2& outScreen);
 	Algebra::Vector4 ViewportRayDirection(const ViewportCamera& camera, const ImVec2& screen,
 		const ImVec2& rectMin, const ImVec2& rectMax);
+
+	bool ViewportRayPlaneHit(const ViewportCamera& camera, const ImVec2& screen,
+		const ImVec2& rectMin, const ImVec2& rectMax,
+		const Algebra::Vector4& planePoint, const Algebra::Vector4& planeNormal,
+		Algebra::Vector4& outWorld);
 }

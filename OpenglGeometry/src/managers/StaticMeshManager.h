@@ -8,6 +8,7 @@ enum class StaticMeshType
 	Cube,
 	Square,
 	Cursor,
+	Crosshair,
 	Grid
 };
 

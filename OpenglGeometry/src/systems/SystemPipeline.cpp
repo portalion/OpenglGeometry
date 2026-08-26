@@ -7,6 +7,7 @@
 #include "MeshGeneratingSystem.h"
 #include "NotificationSystem.h"
 #include "RemovalSystem.h"
+#include "SelectionMarkerSystem.h"
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
 #include <core/Globals.h>
@@ -24,6 +25,7 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 		CreateRef<PopupSystem>(m_Scene),
 
 		CreateRef<MeshGeneratingSystem>(m_Scene),
+		CreateRef<SelectionMarkerSystem>(m_Scene),
 		CreateRef<RenderingSystem>(m_Scene, viewport)
 	};
 }

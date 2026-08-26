@@ -18,7 +18,7 @@ Systems hold a `Ref<Scene>` and are constructed once. `Process()` is called once
 [`src/systems/SystemPipeline.cpp`](../../OpenglGeometry/src/systems/SystemPipeline.cpp)
 
 ```cpp
-SystemPipeline::SystemPipeline(Ref<Scene> scene)
+SystemPipeline::SystemPipeline(Ref<Scene> scene, Viewport& viewport)
 {
     m_Scene = scene;
     m_Systems =
@@ -26,12 +26,12 @@ SystemPipeline::SystemPipeline(Ref<Scene> scene)
         CreateRef<NotificationSystem>(scene),
         CreateRef<RemovalSystem>(scene),
 
-        CreateRef<GUISystem>(scene),
-        CreateRef<ShapeInspectorSystem>(scene),
+        CreateRef<GUISystem>(scene, viewport),   // draws panels + shape-list/inspector, viewport picking, cursor
         CreateRef<PopupSystem>(scene),
 
         CreateRef<MeshGeneratingSystem>(scene),
-        CreateRef<RenderingSystem>(scene)
+        CreateRef<SelectionMarkerSystem>(scene),
+        CreateRef<RenderingSystem>(scene, viewport)
     };
 }
 
@@ -54,7 +54,8 @@ Owned by `App` as a `Unique<SystemPipeline>`, rebuilt if the scene is replaced.
 | 4 | `ShapeInspectorSystem` | `IsSelectedTag` + every bound component | component values, `IsDirtyTag`, `IsInvisibleTag` | [→](gui-systems.md) |
 | 5 | `PopupSystem` | keyboard, `IsSelectedTag` | creates entities | [→](gui-systems.md) |
 | 6 | `MeshGeneratingSystem` | `IsDirtyTag` + generation components | `MeshComponent`, GPU buffers; clears `IsDirtyTag` | [→](mesh-generating-system.md) |
-| 7 | `RenderingSystem` | `CameraComponent`, `MeshComponent` | GL draw calls | [→](rendering-system.md) |
+| 7 | `SelectionMarkerSystem` | `IsSelectedTag` + `PositionComponent` | the selection-centre marker's `PositionComponent` / `IsInvisibleTag` | [→](selection-marker-system.md) |
+| 8 | `RenderingSystem` | `CameraComponent`, `MeshComponent` | GL draw calls | [→](rendering-system.md) |
 
 The rationale, in one line each:
 
