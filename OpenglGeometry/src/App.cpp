@@ -4,12 +4,14 @@
 #include <iostream>
 #include "core/Globals.h"
 #include <scene/BaseScene.h>
+#include <ui/Style.h>
 
 App::App()
     : m_Window{Globals::startingSceneWidth + Globals::rightInterfaceWidth, Globals::startingSceneHeight, "Geometry"}
 {
     InitImgui(m_Window.GetWindowPointer());
     ImGui::StyleColorsDark();
+    GUI::ApplyStyle();
     m_Window.SetAppPointerData(this);
 
 	m_CurrentScene = CreateRef<BaseScene>();

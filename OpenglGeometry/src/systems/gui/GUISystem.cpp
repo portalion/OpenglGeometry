@@ -13,9 +13,11 @@ GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
 
 void GUISystem::Process()
 {
-	GUI::DrawMenuBar(m_Scene, m_UiState, m_ShowImGuiDemo, m_Callbacks);
+	GUI::DrawMenuBar(m_Scene, m_UiState, m_ShowImGuiDemo, m_ShowParameterSpace, m_Callbacks);
 	GUI::DrawToolbar(m_UiState);
 	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData(), m_UiState);
+
+	GUI::DrawAllDialogs(m_UiState);
 
 	if (!m_Dockspace.Created())
 	{
@@ -37,6 +39,13 @@ void GUISystem::Process()
 
 	m_ShapeList.Display();
 	m_ShapeInspector.Display();
+	GUI::DrawCursorPanel(m_UiState);
+
+	if (m_ShowParameterSpace)
+	{
+		GUI::DrawParameterSpace(m_UiState);
+	}
 
 	GUI::HandleShortcuts(m_Scene, m_Callbacks);
+	GUI::HandleFileShortcuts();
 }

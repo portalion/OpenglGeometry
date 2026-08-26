@@ -3,18 +3,13 @@
 #include "utils/Initialization.h"
 #include "SceneActions.h"
 #include "Utils.h"
+#include "MenuItems.h"
 #include "model/UiState.h"
 
 namespace GUI
 {
-	inline void DisabledMenuItem(const char* label, const char* shortcut = nullptr)
-	{
-		ImGui::BeginDisabled();
-		ImGui::MenuItem(label, shortcut);
-		ImGui::EndDisabled();
-	}
-
-	inline void DrawMenuBar(Ref<Scene> scene, UiState& uiState, bool& showImGuiDemo, const UICallbacks& callbacks)
+	inline void DrawMenuBar(Ref<Scene> scene, UiState& uiState, bool& showImGuiDemo, bool& showParameterSpace,
+		const UICallbacks& callbacks)
 	{
 		if (!ImGui::BeginMainMenuBar())
 		{
@@ -23,10 +18,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("File"))
 		{
-			DisabledMenuItem("New scene");
-			DisabledMenuItem("Open...", "Ctrl+O");
-			DisabledMenuItem("Save", "Ctrl+S");
-			DisabledMenuItem("Save as...");
+			DrawFileMenuItems(uiState);
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 			{
@@ -50,19 +42,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Create"))
 		{
-			DisabledMenuItem("Point");
-			DisabledMenuItem("Torus");
-			DisabledMenuItem("Chain");
-			ImGui::Separator();
-			DisabledMenuItem("Bezier C0");
-			DisabledMenuItem("Bezier C2");
-			DisabledMenuItem("Interpolating C2");
-			ImGui::Separator();
-			DisabledMenuItem("Bezier surface...");
-			DisabledMenuItem("Gregory patch");
-			DisabledMenuItem("Intersection curve");
-			ImGui::Separator();
-			ImGui::TextDisabled("Shift + A opens the creation menu");
+			DrawCreateMenuItems(uiState);
 			ImGui::EndMenu();
 		}
 
@@ -81,10 +61,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("View"))
 		{
-			ImGui::MenuItem("Grid", nullptr, &uiState.showGrid);
-			ImGui::MenuItem("Control nets", nullptr, &uiState.showControlNets);
-			ImGui::MenuItem("Virtual points", nullptr, &uiState.showVirtualPoints);
-			DisabledMenuItem("Stereoscopy...");
+			DrawViewDisplayItems(uiState, showParameterSpace);
 			ImGui::Separator();
 			ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
 			if (ImGui::MenuItem("Reset layout"))
@@ -96,7 +73,10 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Help"))
 		{
-			DisabledMenuItem("About");
+			if (ImGui::MenuItem("About"))
+			{
+				ImGui::OpenPopup(AboutDialogTitle);
+			}
 			ImGui::EndMenu();
 		}
 

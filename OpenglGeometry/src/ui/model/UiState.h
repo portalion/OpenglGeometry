@@ -27,4 +27,6 @@ struct UiState
 	std::size_t SelectedCount() const;
 	std::vector<const ObjectRow*> Selected() const;
 	const ObjectRow* Find(uint32_t id) const;
+
+	uint32_t AppendObject(ObjectType type, const std::string& namePrefix);
 };

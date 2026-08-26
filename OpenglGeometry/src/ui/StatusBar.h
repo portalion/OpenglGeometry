@@ -4,6 +4,7 @@
 #include "core/Globals.h"
 #include "core/Viewport.h"
 #include "SceneActions.h"
+#include "Style.h"
 #include "model/UiState.h"
 
 namespace GUI
@@ -11,8 +12,9 @@ namespace GUI
 	inline void DrawStatusBar(Ref<Scene> scene, const ViewportData& viewport, const UiState& uiState)
 	{
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
+		const float height = ImGui::GetFrameHeight() + Style::StatusBarExtraHeight;
 
-		if (ImGui::BeginViewportSideBar("##StatusBar", ImGui::GetMainViewport(), ImGuiDir_Down, ImGui::GetFrameHeight() + 12, flags))
+		if (ImGui::BeginViewportSideBar("##StatusBar", ImGui::GetMainViewport(), ImGuiDir_Down, height, flags))
 		{
 			const auto objectCount = std::ranges::distance(GetSceneObjects(scene));
 			const auto selectedCount = std::ranges::distance(scene->GetAllEntitiesWith<IsSelectedTag>());
@@ -46,4 +48,4 @@ namespace GUI
 		}
 		ImGui::End();
 	}
-}
+}

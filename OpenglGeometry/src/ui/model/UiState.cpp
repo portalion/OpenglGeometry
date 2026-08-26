@@ -35,3 +35,21 @@ const ObjectRow* UiState::Find(uint32_t id) const
 
 	return nullptr;
 }
+
+uint32_t UiState::AppendObject(ObjectType type, const std::string& namePrefix)
+{
+	uint32_t maxId = 0;
+
+	for (const ObjectRow& row : objects)
+	{
+		maxId = std::max(maxId, row.id);
+	}
+
+	ObjectRow row;
+	row.id = maxId + 1;
+	row.name = namePrefix + " " + std::to_string(row.id);
+	row.type = type;
+
+	objects.push_back(row);
+	return row.id;
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <imgui/imgui_internal.h>
+#include "Style.h"
 #include "model/UiState.h"
 
 namespace GUI
@@ -64,9 +65,9 @@ namespace GUI
 			ImGui::TextUnformatted("Pivot");
 			ImGui::SameLine();
 			Detail::PivotButton("Origin##Pivot", PivotMode::Origin, uiState.pivot);
-			ImGui::SameLine(0.f, 1.f);
+			ImGui::SameLine(0.f, Style::SegmentedButtonSpacing);
 			Detail::PivotButton("Centre##Pivot", PivotMode::Centre, uiState.pivot);
-			ImGui::SameLine(0.f, 1.f);
+			ImGui::SameLine(0.f, Style::SegmentedButtonSpacing);
 			Detail::PivotButton("Cursor##Pivot", PivotMode::Cursor, uiState.pivot);
 
 			ImGui::SameLine();

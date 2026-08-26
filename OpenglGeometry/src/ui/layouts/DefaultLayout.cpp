@@ -17,12 +17,17 @@ void GUI::Layout::Default(Dockspace& dockspace)
 	ImGuiID centralId = 0;
 	ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, ratio, &rightId, &centralId);
 
-	ImGuiID rightTopId = 0;
-	ImGuiID rightBottomId = 0;
-	ImGui::DockBuilderSplitNode(rightId, ImGuiDir_Down, 0.5f, &rightBottomId, &rightTopId);
+	ImGuiID shapeListId = 0;
+	ImGuiID restId = 0;
+	ImGui::DockBuilderSplitNode(rightId, ImGuiDir_Down, 0.72f, &restId, &shapeListId);
 
-	ImGui::DockBuilderDockWindow(GUI::ShapeListWindow, rightTopId);
-	ImGui::DockBuilderDockWindow(GUI::InspectorWindow, rightBottomId);
+	ImGuiID cursorId = 0;
+	ImGuiID inspectorId = 0;
+	ImGui::DockBuilderSplitNode(restId, ImGuiDir_Down, 0.35f, &cursorId, &inspectorId);
+
+	ImGui::DockBuilderDockWindow(GUI::ShapeListWindow, shapeListId);
+	ImGui::DockBuilderDockWindow(GUI::InspectorWindow, inspectorId);
+	ImGui::DockBuilderDockWindow(GUI::CursorPanelWindow, cursorId);
 
 	dockspace.FinishCreation();
-}
+}

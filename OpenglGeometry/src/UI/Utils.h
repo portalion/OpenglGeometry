@@ -9,6 +9,7 @@ namespace GUI
 {
 	inline constexpr const char* ShapeListWindow = "Shape List##Shape List";
 	inline constexpr const char* InspectorWindow = "Selected Shapes Properties##Selected Shapes Properties";
+	inline constexpr const char* CursorPanelWindow = "3D Cursor##Cursor Panel";
 
 	struct UICallbacks
 	{
