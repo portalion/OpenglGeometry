@@ -3,6 +3,7 @@
 #include "core/Base.h"
 #include "scene/Scene.h"
 #include "SceneActions.h"
+#include "Utils.h"
 #include "model/UiState.h"
 #include "popups/AboutDialog.h"
 #include "popups/BezierSurfaceDialog.h"
@@ -145,16 +146,53 @@ namespace GUI
 		ImGui::TextDisabled("Shift + A opens the creation menu");
 	}
 
+	inline void DrawEditMenuItems(Ref<Scene> scene, const UICallbacks& callbacks)
+	{
+		if (ImGui::MenuItem("Rename", "F2", false, GUI::CanRename(scene)))
+		{
+			callbacks.renameSelected();
+		}
+		if (ImGui::MenuItem("Delete selected", "Del", false, GUI::AnythingSelected(scene)))
+		{
+			GUI::DeleteSelected(scene);
+		}
+	}
+
+	inline void DrawSelectMenuItems(Ref<Scene> scene)
+	{
+		if (ImGui::MenuItem("Select all", "A"))
+		{
+			GUI::SelectAll(scene);
+		}
+		if (ImGui::MenuItem("Deselect all", "Alt+A", false, GUI::AnythingSelected(scene)))
+		{
+			GUI::DeselectAll(scene);
+		}
+	}
+
 	inline void DrawViewDisplayItems(UiState& uiState, bool& showParameterSpace)
 	{
 		ImGui::MenuItem("Grid", nullptr, &uiState.showGrid);
 		ImGui::MenuItem("Control nets", nullptr, &uiState.showControlNets);
 		ImGui::MenuItem("Virtual points", nullptr, &uiState.showVirtualPoints);
+		ImGui::MenuItem("Selection centre", nullptr, &uiState.showSelectionCentre);
 		if (ImGui::MenuItem("Stereoscopy..."))
 		{
 			ImGui::OpenPopup(StereoDialogTitle);
 		}
 		ImGui::MenuItem("Parameter space", nullptr, &showParameterSpace);
+	}
+
+	inline void DrawViewMenuItems(UiState& uiState, bool& showParameterSpace, bool& showImGuiDemo,
+		const UICallbacks& callbacks)
+	{
+		DrawViewDisplayItems(uiState, showParameterSpace);
+		ImGui::Separator();
+		ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
+		if (ImGui::MenuItem("Reset layout"))
+		{
+			callbacks.resetLayout();
+		}
 	}
 
 	inline void DrawAllDialogs(UiState& uiState)

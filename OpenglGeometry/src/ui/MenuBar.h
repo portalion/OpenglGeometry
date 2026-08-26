@@ -29,14 +29,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Edit"))
 		{
-			if (ImGui::MenuItem("Rename", "F2", false, GUI::CanRename(scene)))
-			{
-				callbacks.renameSelected();
-			}
-			if (ImGui::MenuItem("Delete selected", "Del", false, GUI::AnythingSelected(scene)))
-			{
-				GUI::DeleteSelected(scene);
-			}
+			DrawEditMenuItems(scene, callbacks);
 			ImGui::EndMenu();
 		}
 
@@ -48,26 +41,13 @@ namespace GUI
 
 		if (ImGui::BeginMenu("Select"))
 		{
-			if (ImGui::MenuItem("Select all", "A"))
-			{
-				GUI::SelectAll(scene);
-			}
-			if (ImGui::MenuItem("Deselect all", "Alt+A", false, GUI::AnythingSelected(scene)))
-			{
-				GUI::DeselectAll(scene);
-			}
+			DrawSelectMenuItems(scene);
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu("View"))
 		{
-			DrawViewDisplayItems(uiState, showParameterSpace);
-			ImGui::Separator();
-			ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
-			if (ImGui::MenuItem("Reset layout"))
-			{
-				callbacks.resetLayout();
-			}
+			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, callbacks);
 			ImGui::EndMenu();
 		}
 

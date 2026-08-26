@@ -159,4 +159,20 @@ namespace GUI
 			return Entity{};
 		}
 	}
+
+	inline void SyncSelectionCentreVisibility(Ref<Scene> scene, bool visible)
+	{
+		for (Entity marker : scene->GetAllEntitiesWith<SelectionCentreTag>())
+		{
+			const bool hidden = marker.HasComponent<SelectionCentreHiddenTag>();
+			if (visible && hidden)
+			{
+				marker.RemoveTag<SelectionCentreHiddenTag>();
+			}
+			else if (!visible && !hidden)
+			{
+				marker.AddTag<SelectionCentreHiddenTag>();
+			}
+		}
+	}
 }

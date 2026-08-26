@@ -15,12 +15,16 @@ struct IsInvisibleTag { };
 struct ToBeDestroyedTag { };
 struct CursorTag { };
 struct SelectionCentreTag { };
+struct SelectionCentreHiddenTag { };
 ```
 
 `CursorTag` and `SelectionCentreTag` mark the two viewport gizmo entities (the 3D cursor and
 the yellow selection-centre crosshair). Neither has an `IdComponent`, so they stay out of the
 *Shape List*. `SelectionMarkerSystem` parks the crosshair on the selection median each frame
-and toggles its `IsInvisibleTag`.
+and toggles its `IsInvisibleTag`. `SelectionCentreHiddenTag` is the user override for the
+*View > Selection centre* checkbox — while it is present the marker stays hidden regardless of
+the selection (`GUISystem` syncs it from `UiState::showSelectionCentre` via
+`GUI::SyncSelectionCentreVisibility`).
 
 ---
 

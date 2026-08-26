@@ -18,6 +18,9 @@ void GUISystem::Process()
 	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData(), m_UiState);
 
 	GUI::DrawAllDialogs(m_UiState, m_Scene);
+	GUI::DrawViewportContextMenu(m_Scene, m_Dockspace, m_UiState, m_ShowParameterSpace,
+		m_ShowImGuiDemo, m_Callbacks);
+	GUI::SyncSelectionCentreVisibility(m_Scene, m_UiState.showSelectionCentre);
 
 	if (!m_Dockspace.Created())
 	{

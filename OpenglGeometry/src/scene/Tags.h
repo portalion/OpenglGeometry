@@ -15,3 +15,5 @@ struct ToBeDestroyedTag { };
 struct CursorTag { };
 
 struct SelectionCentreTag { };
+
+struct SelectionCentreHiddenTag { };

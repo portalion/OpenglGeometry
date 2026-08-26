@@ -264,6 +264,15 @@ the same `GUI::CreateShape`, so it now creates real entities too. Its *Bézier s
 opens a parameter dialog (`BezierSurfaceDialog.cpp`) that calls `Archetypes::CreateBezierSurface`
 with a `BezierSurfaceCreationParameters` built from the draft (patch counts, size, cylinder flag).
 
+### Viewport context menu
+
+`ContextMenu.h` — `GUI::DrawViewportContextMenu`, called from `GUISystem::Process`. **Shift +
+right-click** in the central viewport opens an ImGui popup with the *Create / Edit / Select /
+View* submenus, reusing the same `DrawCreateMenuItems` / `DrawEditMenuItems` /
+`DrawSelectMenuItems` / `DrawViewMenuItems` helpers as the menu bar. Plain right-click still
+places the 3D cursor — `HandleCursorPlacement` bails when `io.KeyShift` is held so the two
+don't fight.
+
 ### Adding a popup
 
 1. Implement `IPopup` under `src/UI/popups/`.

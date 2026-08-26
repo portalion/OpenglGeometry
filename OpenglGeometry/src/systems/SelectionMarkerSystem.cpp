@@ -26,6 +26,15 @@ void SelectionMarkerSystem::Process()
 		return;
 	}
 
+	if (marker.HasComponent<SelectionCentreHiddenTag>())
+	{
+		if (!marker.HasComponent<IsInvisibleTag>())
+		{
+			marker.AddTag<IsInvisibleTag>();
+		}
+		return;
+	}
+
 	Algebra::Vector4 sum(0.f, 0.f, 0.f, 0.f);
 	int count = 0;
 

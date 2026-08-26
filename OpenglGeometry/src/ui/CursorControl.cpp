@@ -80,7 +80,8 @@ void GUI::HandleCursorPlacement(Ref<Scene> scene, const Dockspace& dockspace,
 	if (!state.tracking
 		&& ImGui::IsMouseClicked(ImGuiMouseButton_Right)
 		&& mouseInViewport
-		&& !io.WantCaptureMouse)
+		&& !io.WantCaptureMouse
+		&& !io.KeyShift)
 	{
 		state.tracking = true;
 		state.pressPos = mouse;

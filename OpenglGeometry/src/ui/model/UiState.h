@@ -15,6 +15,7 @@ struct UiState
 	bool showGrid = true;
 	bool showControlNets = true;
 	bool showVirtualPoints = false;
+	bool showSelectionCentre = true;
 
 	std::optional<uint32_t> activeCurveId;
 	std::string             statusMessage;
