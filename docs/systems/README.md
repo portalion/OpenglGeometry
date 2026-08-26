@@ -50,7 +50,7 @@ Owned by `App` as a `Unique<SystemPipeline>`, rebuilt if the scene is replaced.
 | --- | --- | --- | --- | --- |
 | 1 | `NotificationSystem` | `ObserverChangedState`, `ToBeDestroyedTag`, `NotificationComponent`, `VirtualEntityComponent` | `IsDirtyTag`, `ToBeDestroyedTag`; clears `ObserverChangedState` | [→](notification-system.md) |
 | 2 | `RemovalSystem` | `ToBeDestroyedTag`, `IsParentOfVirtualEntitiesComponent` | destroys entities | [→](removal-system.md) |
-| 3 | `GUISystem` | `NameComponent` | `IsSelectedTag`, `ToBeDestroyedTag` | [→](gui-systems.md) |
+| 3 | `GUISystem` | `NameComponent`, `CameraComponent`, `ObjectTypeComponent`/`PositionComponent` (viewport picking) | `IsSelectedTag`, `ToBeDestroyedTag` | [→](gui-systems.md) |
 | 4 | `ShapeInspectorSystem` | `IsSelectedTag` + every bound component | component values, `IsDirtyTag`, `IsInvisibleTag` | [→](gui-systems.md) |
 | 5 | `PopupSystem` | keyboard, `IsSelectedTag` | creates entities | [→](gui-systems.md) |
 | 6 | `MeshGeneratingSystem` | `IsDirtyTag` + generation components | `MeshComponent`, GPU buffers; clears `IsDirtyTag` | [→](mesh-generating-system.md) |

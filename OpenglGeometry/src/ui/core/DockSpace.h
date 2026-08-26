@@ -14,4 +14,6 @@ public:
 	void FinishCreation();
 	void ClaimSize();
 	bool TryGetCentralNodeRect(ViewportData& out) const;
+
+	bool TryGetCentralNodeScreenRect(ImVec2& outMin, ImVec2& outMax) const;
 };

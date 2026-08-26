@@ -9,9 +9,11 @@ popup implementations. The *systems* that call them are documented in
 | `GUI.h` | Umbrella header (currently just includes `ShapeList.h`) |
 | `ShapeList.h` | `GUI::DisplayShapeList` — the shape list panel |
 | `Utils.h` | `GUI::GenerateLabel`, `GUI::DragUInt` |
+| `ViewportPicking.{h,cpp}` | `GUI::HandleViewportPicking` — click / box selection of points in the 3D viewport |
 | `popups/ShapeCreation.{h,cpp}` | The Shift + A creation menu |
 
-Everything in `namespace GUI` is `inline` and header-only.
+Small pure-function helpers in `namespace GUI` are `inline` and header-only; the panel and
+picking helpers with real logic have a `.cpp` (listed in `OpenglGeometry/CMakeLists.txt`).
 
 ---
 
@@ -124,6 +126,26 @@ segment counts with `min = 3, max = 64`.
 
 Note `min`/`max` are taken by value and their addresses passed to ImGui — fine because
 `DragScalar` reads them synchronously.
+
+---
+
+## `GUI::HandleViewportPicking`
+
+```cpp
+struct ViewportPickingState { bool dragging; ImVec2 dragStart; };
+
+void HandleViewportPicking(Ref<Scene> scene, const Dockspace& dockspace, ViewportPickingState& state);
+```
+
+Called once per frame from `GUISystem::Process`; the `state` is a `GUISystem` member so the
+drag survives between frames. Behaviour is described in
+[systems/gui-systems.md](systems/gui-systems.md#viewport-point-picking) — click picks the
+nearest point, drag box-selects, Shift/Ctrl make it additive, and it only tags
+`ObjectType::Point` entities.
+
+`Dockspace::TryGetCentralNodeScreenRect` gives it the viewport rectangle in the same ImGui
+coordinate space as `ImGui::GetMousePos()` (unlike `TryGetCentralNodeRect`, which is
+framebuffer pixels for `glViewport`).
 
 ---
 

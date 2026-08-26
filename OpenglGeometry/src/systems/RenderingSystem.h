@@ -37,6 +37,12 @@ inline void RenderingSystem::RenderEntities(Entities entities)
 
 		EntityContext context;
 		m_UniformApplier.PerformFunctions(entity, context);
+
+		if (entity.HasComponent<IsSelectedTag>())
+		{
+			context.Color = Globals::selectionColor;
+		}
+
 		m_Renderer->SetMesh(meshComponent.mesh);
 		for (auto shaderType : meshComponent.shaderTypes)
 		{

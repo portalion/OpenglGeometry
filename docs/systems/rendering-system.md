@@ -63,7 +63,10 @@ for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvis
     auto& meshComponent = entity.GetComponent<MeshComponent>();
 
     EntityContext context;
-    m_UniformApplier.PerformFunctions(entity, context);   // fills Position/Rotation/Scale
+    m_UniformApplier.PerformFunctions(entity, context);   // fills Position/Rotation/Scale/Color
+
+    if (entity.HasComponent<IsSelectedTag>())
+        context.Color = Globals::selectionColor;          // highlight the current selection
 
     m_Renderer->SetMesh(meshComponent.mesh);
     for (auto shaderType : meshComponent.shaderTypes)
@@ -78,6 +81,8 @@ for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvis
   [`UniformApplier`](../ecs/component-function-registry.md) contributes identity for
   whatever is missing.
 - `IsInvisibleTag` is excluded at the view level, so hidden helper geometry costs nothing.
+- Entities carrying `IsSelectedTag` are drawn in `Globals::selectionColor` instead of their
+  own colour — this is the in-viewport feedback for both shape-list and box selection.
 - The inner loop over `shaderTypes` is what lets a Bézier surface be drawn twice from one
   buffer (horizontal + vertical isolines).
 - There is no sorting, no batching and no depth pre-pass — entities are drawn in registry
@@ -119,5 +124,7 @@ likely places to extend:
   registry order, which is fine for wireframes but will look wrong for solid surfaces.
 - **No frustum culling or sorting.**
 - **No per-entity colour, line width, or material.**
-- **No render targets / picking pass.** `App::GetClickedPoint` and `App::ScreenToNDC` exist
-  as stubs from the previous architecture and are not wired to anything.
+- **No render targets / GL picking pass.** Point selection is done on the CPU in
+  `GUI::HandleViewportPicking` — it projects each point with the camera's view/projection and
+  hit-tests in screen space — not by reading an ID buffer. Fine for points; a real GL picking
+  pass would be needed to click curves or surfaces.

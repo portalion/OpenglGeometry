@@ -51,22 +51,26 @@ is its *output*. See [change-propagation.md](change-propagation.md).
 
 ## `IsSelectedTag` — "the user selected me"
 
-**Set / cleared by:** `GUI::DisplayShapeList` (clicking a row toggles it; *Select All* /
-*Deselect All* apply it in bulk).
+**Set / cleared by:**
+
+- `GUI::ShapeList` — clicking a row toggles it; *Select All* / *Deselect All* apply it in bulk
+- `GUI::HandleViewportPicking` — left-click / box-drag in the 3D viewport selects points
+  (`src/ui/ViewportPicking.cpp`, driven by `GUISystem`)
 
 **Read by:**
 
-- `ShapeInspectorSystem::Process` — views `<IsSelectedTag>` to decide what to inspect
+- `ShapeInspectorRegistry::Display` — views `<IsSelectedTag>` to decide what to inspect
 - `ShapeCreation::GetSelectedPoints` — views `<IsSelectedTag, NotificationComponent>` to
   collect control points for a new curve
+- `RenderingSystem` — tints selected entities with `Globals::selectionColor`
 - *Remove All Selected* in the shape list, which converts selection into `ToBeDestroyedTag`
 
 **Lifetime:** persists until the user changes the selection.
 
-> `ShapeInspectorSystem::Process` calls `entity.GetComponent<NameComponent>()` on every
-> selected entity without checking. That is safe only because selection is only ever set
-> from the shape list, which itself only lists entities with a `NameComponent`. If you ever
-> select entities from elsewhere, add the guard.
+> Viewport picking only ever tags entities whose `ObjectTypeComponent` is `Point`, and those
+> always carry `NameComponent` / `IdComponent` / `NotificationComponent` (via
+> `Archetypes::AddShapeToEntity` + `AddPointToEntity`), so the inspector and curve-creation
+> consumers stay safe. `ShapeInspectorRegistry` also guards `NameComponent` access anyway.
 
 ---
 

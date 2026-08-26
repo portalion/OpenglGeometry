@@ -131,19 +131,23 @@ struct Globals
     static const int startingSceneHeight;   //  960
     static const int rightInterfaceWidth;   //  400
 
-    static const Algebra::Vector4 startingCameraPosition;      // (0, 0, 10, 1)
-    static const Algebra::Vector4 defaultPointsColor;          // (1, 0.2, 0, 1)
-    static const Algebra::Vector4 defaultMiddlePointColor;     // (1, 1, 1, 1)
+    static const float cameraNearPlane;     // 0.1
+    static const float cameraFarPlane;      // 1000
+    static const float cameraFieldOfView;   // pi/2
+
+    static const Algebra::Vector4 startingCameraTarget;   // (0, 0, 0, 1)
+    static const float            startingCameraDistance; // 10
+    static const float            startingCameraPitch;    // 0.3
+
+    static const Algebra::Vector4 defaultPointsColor;     // (1, 0.2, 0, 1)   - EntityContext default u_color
+    static const Algebra::Vector4 selectionColor;         // (1, 0.85, 0.15, 1) - tint for IsSelectedTag entities
 };
 ```
 
-Compile-time configuration constants, defined in `Globals.cpp`.
-
-Only the three sizes are actually used (window creation, viewport, and — oddly — as the
-divisor for camera rotation sensitivity in `DragCamera`, which means rotation speed does not
-follow window resizes). The three `Vector4`s are currently dead: `startingCameraPosition` is
-not passed to `DragCamera` (which defaults to the origin), and the colours are unused because
-`Renderer::Render` hard-codes `u_color`.
+Compile-time configuration constants, defined in `Globals.cpp`. The camera frustum values feed
+`Matrix4::Projection` in `RenderingSystem` / `BaseScene`; the starting target/distance/pitch
+seed the `OrbitCamera`. `defaultPointsColor` is the `EntityContext::Color` default, and
+`RenderingSystem` swaps in `selectionColor` for any entity carrying `IsSelectedTag`.
 
 ## `core/Window.h`
 

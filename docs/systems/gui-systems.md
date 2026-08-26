@@ -50,6 +50,25 @@ position component if the user deletes it via some other path.
 The panel itself is [`GUI::DisplayShapeList`](../ui.md#displayshapelist) in
 `src/UI/ShapeList.h`.
 
+### Viewport point picking
+
+At the end of `Process()`, `GUISystem` calls
+[`GUI::HandleViewportPicking`](../ui.md#handleviewportpicking)
+(`src/ui/ViewportPicking.{h,cpp}`), passing its `Dockspace` and a small persistent
+`ViewportPickingState` member:
+
+- **Left click** in the empty central (3D) area picks the nearest point within ~12 px
+  (screen-space distance, camera depth breaks ties). A click on nothing clears the selection.
+- **Left drag** rubber-bands a box (drawn on the ImGui foreground draw list, clamped to the
+  viewport) and selects every point whose projected position lands inside it on release.
+- **Shift / Ctrl** make either mode additive — a box adds, a click toggles the hit point.
+
+It only ever touches entities with `ObjectTypeComponent == Point`. Points are projected on the
+CPU with the active `CameraComponent`'s `viewMatrix` / `projectionMatrix`; because that view
+matrix is written later in the frame by `RenderingSystem`, picking runs against the **previous
+frame's** camera pose — invisible in practice. Camera orbit/pan/zoom use the right/middle
+buttons, so left-drag selection never fights the camera.
+
 ---
 
 ## `ShapeInspectorSystem`

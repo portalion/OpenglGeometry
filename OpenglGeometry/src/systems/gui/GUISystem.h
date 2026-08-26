@@ -8,6 +8,7 @@
 #include <ui/ShapeInspectorRegistry.h>
 #include <ui/ShapeList.h>
 #include <ui/Utils.h>
+#include <ui/ViewportPicking.h>
 #include <ui/model/UiState.h>
 
 class GUISystem : public ISystem
@@ -22,6 +23,8 @@ private:
 
 	GUI::ShapeList m_ShapeList;
 	ShapeInspectorRegistry m_ShapeInspector;
+
+	GUI::ViewportPickingState m_Picking;
 
 	GUI::UICallbacks m_Callbacks;
 public:

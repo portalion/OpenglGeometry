@@ -21,5 +21,6 @@ struct Globals
 	static const float startingCameraPitch;
 
 	static const Algebra::Vector4 defaultPointsColor;
+	static const Algebra::Vector4 selectionColor;
 };
 

@@ -57,3 +57,17 @@ bool Dockspace::TryGetCentralNodeRect(ViewportData& out) const
 	out = result;
 	return true;
 }
+
+bool Dockspace::TryGetCentralNodeScreenRect(ImVec2& outMin, ImVec2& outMax) const
+{
+	const ImGuiDockNode* centralNode = ImGui::DockBuilderGetCentralNode(m_Id);
+	if (centralNode == nullptr)
+	{
+		return false;
+	}
+
+	const ImRect rect = centralNode->Rect();
+	outMin = rect.Min;
+	outMax = rect.Max;
+	return true;
+}
