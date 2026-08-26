@@ -70,7 +70,8 @@ is its *output*. See [change-propagation.md](change-propagation.md).
 
 **Read by:**
 
-- `ShapeInspectorRegistry::Display` — views `<IsSelectedTag>` to decide what to inspect
+- the inspector (`GUISystem::SyncInspectorState` → `GUI::DrawInspector`) — views
+  `<IsSelectedTag>` to decide what to inspect
 - `ShapeCreation::GetSelectedPoints` — views `<IsSelectedTag, NotificationComponent>` to
   collect control points for a new curve
 - `RenderingSystem` — tints selected entities with `Globals::selectionColor`
@@ -90,9 +91,10 @@ is its *output*. See [change-propagation.md](change-propagation.md).
 **Set / cleared by:**
 
 - `ShapeInspectorRegistry::VirtualInspect`'s checkbox, which toggles the visibility of a
-  shape's helper geometry (e.g. a Bézier curve's control polyline)
+  shape's helper geometry (e.g. a Bézier curve's control polyline) — currently unused, the
+  inspector no longer binds it (see [gui-systems.md](../systems/gui-systems.md))
 - `SelectionMarkerSystem`, which hides the selection-centre crosshair whenever nothing is
-  selected
+  selected or `SelectionCentreHiddenTag` is set
 
 **Read by:** `RenderingSystem`, as a view exclusion:
 

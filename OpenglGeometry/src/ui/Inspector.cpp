@@ -251,7 +251,7 @@ namespace
 			state.cursor.selectionCentre.x, state.cursor.selectionCentre.y, state.cursor.selectionCentre.z);
 	}
 
-	void DrawTransformSelectionBlock(UiState& state)
+	void DrawTransformSelectionBlock(UiState& state, const GUI::InspectorCallbacks* callbacks)
 	{
 		if (!SectionHeader("TRANSFORM THE SELECTION"))
 		{
@@ -268,6 +268,21 @@ namespace
 			state.pivot = static_cast<PivotMode>(pivotIndex);
 		}
 
+		if (state.pivot == PivotMode::Origin)
+		{
+			ImGui::TextDisabled("each object in its own local axes");
+		}
+		else if (state.pivot == PivotMode::Cursor)
+		{
+			const Algebra::Vector4 c = state.cursor.world;
+			ImGui::TextDisabled("pivot: 3D cursor  %.3f, %.3f, %.3f", c.x, c.y, c.z);
+		}
+		else
+		{
+			const Algebra::Vector4 c = state.cursor.selectionCentre;
+			ImGui::TextDisabled("pivot: selection centre  %.3f, %.3f, %.3f", c.x, c.y, c.z);
+		}
+
 		static Algebra::Vector4 s_MoveBy(0.f, 0.f, 0.f, 0.f);
 		static Algebra::Vector4 s_RotateBy(0.f, 0.f, 0.f, 0.f);
 		static Algebra::Vector4 s_ScaleBy(1.f, 1.f, 1.f, 0.f);
@@ -280,10 +295,16 @@ namespace
 			EndPropertyTable();
 		}
 
-		ImGui::TextDisabled("applied to each object's stored parameters - no matrix is ever accumulated");
+		const bool canApply = callbacks && callbacks->applySelectionTransform;
 
-		ImGui::BeginDisabled(true);
-		ImGui::Button("Apply");
+		ImGui::BeginDisabled(!canApply);
+		if (ImGui::Button("Apply") && canApply)
+		{
+			callbacks->applySelectionTransform(state.pivot, s_MoveBy, s_RotateBy, s_ScaleBy);
+			s_MoveBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_RotateBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_ScaleBy = Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
+		}
 		ImGui::EndDisabled();
 
 		ImGui::SameLine();
@@ -317,7 +338,7 @@ namespace
 	}
 }
 
-void GUI::DrawInspector(UiState& state)
+void GUI::DrawInspector(UiState& state, const InspectorCallbacks* callbacks)
 {
 	ImGui::Begin(InspectorWindow);
 
@@ -346,6 +367,8 @@ void GUI::DrawInspector(UiState& state)
 		if (state.surface)   DrawSurfaceSection(*state.surface);
 
 		ImGui::PopID();
+
+		if (state.transform) DrawTransformSelectionBlock(state, callbacks);
 	}
 	else
 	{
@@ -353,7 +376,7 @@ void GUI::DrawInspector(UiState& state)
 		DrawSelectionSummary(state);
 		ImGui::Separator();
 
-		DrawTransformSelectionBlock(state);
+		DrawTransformSelectionBlock(state, callbacks);
 		DrawPerObjectSection(state);
 	}
 

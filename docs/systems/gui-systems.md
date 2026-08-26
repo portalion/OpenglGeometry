@@ -95,82 +95,42 @@ shapes appear wherever the cursor was last placed.
 
 ---
 
-## `ShapeInspectorSystem`
+## The inspector (*Selected Shapes Properties*)
 
-[`ShapeInspectorSystem.h`](../../OpenglGeometry/src/systems/gui/ShapeInspectorSystem.h) ·
-[`.cpp`](../../OpenglGeometry/src/systems/gui/ShapeInspectorSystem.cpp)
+`GUISystem` renders the panel with [`GUI::DrawInspector`](../../OpenglGeometry/src/ui/Inspector.cpp)
+— the panel that used to be sandbox-only. `GUISystem::Process` mirrors the scene into
+`m_UiState` each frame (`SyncInspectorState`), calls `DrawInspector`, then pushes edits back
+(`WriteBackInspectorState`):
 
-Draws the *Selected Shapes Properties* panel. It inherits from **both**
-[`ComponentFunctionRegistry<>`](../ecs/component-function-registry.md) and `ISystem`:
+- `m_UiState.objects` ← every `<IdComponent, NameComponent, ObjectTypeComponent>` entity, with
+  `selected` from `IsSelectedTag`.
+- On a **single** selection: `m_UiState.transform` ← `PositionComponent` / `RotationComponent`
+  (quaternion → Euler degrees via `GUI::QuaternionToEulerDegrees`) / `ScaleComponent`;
+  `m_UiState.torus` ← `TorusGenerationComponent`. A snapshot is kept; write-back only touches a
+  component whose mirrored value actually changed (torus changes also add `IsDirtyTag`).
+- `m_UiState.cursor.selectionCentre` ← `GUI::SelectionCentre`.
 
-```cpp
-ShapeInspectorSystem::ShapeInspectorSystem(Ref<Scene> scene)
-    : m_Scene{ scene }
-{
-    Bind<PositionComponent>(&ShapeInspectorSystem::PositionInspect);
-    Bind<RotationComponent>(&ShapeInspectorSystem::RotationInspect);
-    Bind<ScaleComponent>(&ShapeInspectorSystem::ScaleInspect);
-    Bind<LineGenerationComponent>(&ShapeInspectorSystem::LineInspect);
-    Bind<IsParentOfVirtualEntitiesComponent>(&ShapeInspectorSystem::VirtualInspect);
-    Bind<TorusGenerationComponent>(&ShapeInspectorSystem::TorusInspect);
-}
+`m_UiState.curve` / `m_UiState.surface` are not synced yet, so the CURVE / SURFACE sections and
+the old `LineInspect` / `VirtualInspect` editors are not shown. `ShapeInspectorRegistry` is the
+former implementation and is now unused.
 
-void ShapeInspectorSystem::Process()
-{
-    ImGui::Begin("Selected Shapes Properties##Selected Shapes Properties");
-    auto selectedShapes = m_Scene->GetAllEntitiesWith<IsSelectedTag>();
+### Transform the selection
 
-    if (selectedShapes.empty())
-        ImGui::Text("No shapes selected.");
+With ≥ 1 object selected, `DrawTransformSelectionBlock` (in `Inspector.cpp`) shows a relative
+*Move / Rotate (deg) / Scale* delta plus a **pivot** toggle, applied on *Apply* through
+`InspectorCallbacks::applySelectionTransform` → `GUI::ApplySelectionTransform`
+(`ui/SceneActions.h`). The toggle is the same `UiState::pivot` the toolbar shows:
 
-    for (Entity entity : selectedShapes)
-    {
-        ImGui::Text("Properties of %s", entity.GetComponent<NameComponent>().name.c_str());
-        this->PerformFunctions(entity);      // ← runs every bound handler this entity has
-    }
+| Pivot (`PivotMode`) | `TransformSpace` | Behaviour |
+| --- | --- | --- |
+| `Origin` ("Own origin") | `Local` | each object about its own position, in its own frame (`rotation * delta`, intrinsic); Move is along local axes |
+| `Cursor` ("3D cursor") | `Cursor` | world axes, about the shared 3D-cursor pivot (`delta * rotation`, extrinsic) |
+| `Centre` | `Centre` | world axes, about the mean of the selected positions |
 
-    ImGui::End();
-}
-```
-
-Each selected entity contributes exactly the editors for the components it actually carries.
-Adding a new editable component is one `Bind` plus one handler — see
-[how-to/add-an-inspector-field.md](../how-to/add-an-inspector-field.md).
-
-### The handlers
-
-| Handler | Component | Widget | Side effect |
-| --- | --- | --- | --- |
-| `PositionInspect` | `PositionComponent` | `DragFloat3` | Assigns through `Observable` → `ObserverChangedState` |
-| `RotationInspect` | `RotationComponent` | `DragFloat3` on `rotation.x/y/z` | Mutates in place |
-| `ScaleInspect` | `ScaleComponent` | `DragFloat3` | Mutates in place |
-| `TorusInspect` | `TorusGenerationComponent` | `DragFloat` ×2, `GUI::DragUInt` ×2 | Adds `IsDirtyTag` on change |
-| `LineInspect` | `LineGenerationComponent` | Read-only text | none |
-| `VirtualInspect` | `IsParentOfVirtualEntitiesComponent` | `Checkbox` | Toggles `IsInvisibleTag` on children |
-
-`PositionInspect` shows the required pattern for observable values — copy out, edit the copy,
-assign back:
-
-```cpp
-Algebra::Vector4 tmpPosition = entity.GetComponent<PositionComponent>().position;
-auto& position = entity.GetComponent<PositionComponent>().position;
-if (ImGui::DragFloat3(GUI::GenerateLabel(entity, "Position").c_str(), &tmpPosition.x, 0.1f))
-    position = tmpPosition;
-```
-
-`TorusInspect` shows the required pattern for generation parameters — mark dirty on every
-widget that returns `true`:
-
-```cpp
-if (ImGui::DragFloat(GUI::GenerateLabel(entity, "Radius").c_str(), &torusComponent.radius, 0.1f))
-    entity.AddTag<IsDirtyTag>();
-```
-
-Segment counts are clamped to `[3, 64]` by `GUI::DragUInt`.
-
-`VirtualInspect` renders one checkbox per virtual child but generates the label from the
-*parent* entity, so with more than one child the labels collide and only one checkbox is
-functional — see [gotchas](../gotchas.md).
+`ApplySelectionTransform` writes `PositionComponent` (through the `Observable`, so dependent
+curves rebuild) / `RotationComponent` / `ScaleComponent` directly. Non-uniform scale of rotated
+objects is applied per-component and introduces no shear — an approximation, matching the
+`T * R * S` model matrix with no accumulated matrix.
 
 ---
 

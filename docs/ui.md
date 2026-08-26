@@ -28,7 +28,7 @@ window in debug builds):
 | Window | Drawn by |
 | --- | --- |
 | *Shape List* | `GUI::ShapeList::Display` |
-| *Selected Shapes Properties* | `ShapeInspectorRegistry::Display` |
+| *Selected Shapes Properties* | `GUI::DrawInspector` (synced to the scene by `GUISystem`) |
 | *3D Cursor* | `GUI::DrawCursorPanel` |
 | *Dear ImGui Demo* | `App::Run`, `#ifdef _DEBUG` only |
 

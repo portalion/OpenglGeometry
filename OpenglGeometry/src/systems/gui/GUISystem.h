@@ -6,7 +6,7 @@
 #include <core/Viewport.h>
 #include <ui/core/DockSpace.h>
 #include <ui/CursorControl.h>
-#include <ui/ShapeInspectorRegistry.h>
+#include <ui/Inspector.h>
 #include <ui/ShapeList.h>
 #include <ui/Utils.h>
 #include <ui/ViewportPicking.h>
@@ -23,12 +23,20 @@ private:
 	UiState m_UiState;
 
 	GUI::ShapeList m_ShapeList;
-	ShapeInspectorRegistry m_ShapeInspector;
 
 	GUI::ViewportPickingState m_Picking;
 	GUI::CursorPlacementState m_CursorPlacement;
 
 	GUI::UICallbacks m_Callbacks;
+	GUI::InspectorCallbacks m_InspectorCallbacks;
+
+	Entity m_InspectedEntity;
+	TransformValues m_TransformSnapshot;
+	TorusValues m_TorusSnapshot;
+	std::string m_NameSnapshot;
+
+	void SyncInspectorState();
+	void WriteBackInspectorState();
 public:
 	GUISystem(Ref<Scene> scene, Viewport& viewport);
 	void Process() override;
