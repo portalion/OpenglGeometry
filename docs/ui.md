@@ -195,7 +195,8 @@ camera as it was at the end of the previous frame (see the picking note above).
 
 ```cpp
 void DrawCursorPanel(UiState& state);                                        // sandbox, fixture only
-void DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace&);     // live, scene-synced
+void DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace&,
+                     const CursorPanelCallbacks* = nullptr);                 // live, scene-synced
 ```
 
 The live overload two-way-binds `UiState::cursor` to the scene's cursor entity: entity → panel
@@ -204,6 +205,11 @@ bottom if `world` changed. The *World* row and *Screen X/Y* rows are all editabl
 *Screen X/Y* back-projects the pixel onto the view-facing plane through the cursor's current
 position (`ViewportRayPlaneHit`), so it slides the cursor without changing its depth. The
 one-arg overload is the pre-existing fixture version the UI sandbox (`--ui-sandbox`) still uses.
+
+Below the cursor controls it also draws the *Transform the selection* block (relative
+Move / Rotate / Scale delta + pivot toggle); *Apply* runs `CursorPanelCallbacks::applySelectionTransform`
+(`GUISystem` wires it to `GUI::ApplySelectionTransform`), disabled with no callback so the
+sandbox still shows the widgets. See [gui-systems](systems/gui-systems.md#transform-the-selection).
 
 ---
 

@@ -18,6 +18,8 @@
 
 namespace
 {
+	using namespace GUI;
+
 	Entity FindCursorEntity(Ref<Scene> scene)
 	{
 		for (Entity entity : scene->GetAllEntitiesWith<CursorTag, PositionComponent>())
@@ -56,6 +58,77 @@ namespace
 		}
 
 		return result;
+	}
+
+	bool SectionHeader(const char* label)
+	{
+		return ImGui::CollapsingHeader(label,
+			ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth);
+	}
+
+	void DrawTransformSelectionBlock(UiState& state, const GUI::CursorPanelCallbacks* callbacks)
+	{
+		if (!SectionHeader("TRANSFORM THE SELECTION"))
+		{
+			return;
+		}
+
+		static constexpr std::array<const char*, 3> pivotOptions = { "Own origin", "Centre", "3D cursor" };
+		int pivotIndex = static_cast<int>(state.pivot);
+
+		ImGui::TextUnformatted("Pivot");
+		ImGui::SameLine();
+		if (SegmentedControl("##MultiPivot", pivotIndex, pivotOptions))
+		{
+			state.pivot = static_cast<PivotMode>(pivotIndex);
+		}
+
+		if (state.pivot == PivotMode::Origin)
+		{
+			ImGui::TextDisabled("each object in its own local axes");
+		}
+		else if (state.pivot == PivotMode::Cursor)
+		{
+			const Algebra::Vector4 c = state.cursor.world;
+			ImGui::TextDisabled("pivot: 3D cursor  %.3f, %.3f, %.3f", c.x, c.y, c.z);
+		}
+		else
+		{
+			const Algebra::Vector4 c = state.cursor.selectionCentre;
+			ImGui::TextDisabled("pivot: selection centre  %.3f, %.3f, %.3f", c.x, c.y, c.z);
+		}
+
+		static Algebra::Vector4 s_MoveBy(0.f, 0.f, 0.f, 0.f);
+		static Algebra::Vector4 s_RotateBy(0.f, 0.f, 0.f, 0.f);
+		static Algebra::Vector4 s_ScaleBy(1.f, 1.f, 1.f, 0.f);
+
+		if (BeginPropertyTable("##MultiTransform"))
+		{
+			PropertyRow("Move by", s_MoveBy);
+			PropertyRow("Rotate by", s_RotateBy);
+			PropertyRow("Scale by", s_ScaleBy);
+			EndPropertyTable();
+		}
+
+		const bool canApply = callbacks && callbacks->applySelectionTransform;
+
+		ImGui::BeginDisabled(!canApply);
+		if (ImGui::Button("Apply") && canApply)
+		{
+			callbacks->applySelectionTransform(state.pivot, s_MoveBy, s_RotateBy, s_ScaleBy);
+			s_MoveBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_RotateBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_ScaleBy = Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
+		}
+		ImGui::EndDisabled();
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset fields"))
+		{
+			s_MoveBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_RotateBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
+			s_ScaleBy = Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
+		}
 	}
 }
 
@@ -117,10 +190,15 @@ void GUI::DrawCursorPanel(UiState& state)
 		cursor.world = Algebra::Vector4(0.f, 0.f, 0.f, 1.f);
 	}
 
+	ImGui::Separator();
+
+	DrawTransformSelectionBlock(state, nullptr);
+
 	ImGui::End();
 }
 
-void GUI::DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace& dockspace)
+void GUI::DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace& dockspace,
+	const CursorPanelCallbacks* callbacks)
 {
 	CursorState& cursor = state.cursor;
 
@@ -220,6 +298,10 @@ void GUI::DrawCursorPanel(Ref<Scene> scene, UiState& state, const Dockspace& doc
 	{
 		cursor.world = Algebra::Vector4(0.f, 0.f, 0.f, 1.f);
 	}
+
+	ImGui::Separator();
+
+	DrawTransformSelectionBlock(state, callbacks);
 
 	ImGui::End();
 

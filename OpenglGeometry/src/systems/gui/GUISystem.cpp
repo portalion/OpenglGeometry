@@ -1,5 +1,7 @@
 #include "GUISystem.h"
 #include "UI/GUI.h"
+#include <algorithm>
+#include <cmath>
 #include <archetypes/SimpleArchetypeCreation.h>
 #include <managers/StaticMeshManager.h>
 #include <ui/SceneActions.h>
@@ -18,6 +20,12 @@ namespace
 		}
 	}
 
+	bool SameRotation(const Algebra::Quaternion& a, const Algebra::Quaternion& b)
+	{
+		const float dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+		return std::abs(dot) > 0.99999f;
+	}
+
 	Entity FindEntityById(Ref<Scene> scene, uint32_t id)
 	{
 		for (Entity entity : scene->GetAllEntitiesWith<IdComponent>())
@@ -34,11 +42,6 @@ namespace
 	{
 		TransformValues values;
 		values.position = entity.GetComponent<PositionComponent>().position;
-
-		if (entity.HasComponent<RotationComponent>())
-		{
-			values.rotationEuler = GUI::QuaternionToEulerDegrees(entity.GetComponent<RotationComponent>().rotation);
-		}
 
 		values.scale = entity.HasComponent<ScaleComponent>()
 			? entity.GetComponent<ScaleComponent>().scale
@@ -59,16 +62,6 @@ namespace
 		if (!(currentPosition == wantPosition))
 		{
 			entity.GetComponent<PositionComponent>().position = wantPosition;
-		}
-
-		if (entity.HasComponent<RotationComponent>())
-		{
-			const Algebra::Vector4 currentEuler =
-				GUI::QuaternionToEulerDegrees(entity.GetComponent<RotationComponent>().rotation);
-			if (!(currentEuler == values.rotationEuler))
-			{
-				entity.GetComponent<RotationComponent>().rotation = GUI::EulerDegreesToQuaternion(values.rotationEuler);
-			}
 		}
 
 		if (entity.HasComponent<ScaleComponent>() && !(entity.GetComponent<ScaleComponent>().scale == values.scale))
@@ -116,7 +109,7 @@ GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
 	m_Callbacks.resetLayout = [this]() { GUI::Layout::Default(this->m_Dockspace); };
 	m_Callbacks.renameSelected = [this]() { this->m_ShapeList.RequestRename(); };
 
-	m_InspectorCallbacks.applySelectionTransform =
+	m_CursorPanelCallbacks.applySelectionTransform =
 		[this](PivotMode pivot, Algebra::Vector4 moveBy, Algebra::Vector4 rotateBy, Algebra::Vector4 scaleBy)
 		{
 			GUI::SelectionTransform transform;
@@ -144,6 +137,21 @@ void GUISystem::SyncInspectorState()
 			if (entity.HasComponent<PositionComponent>())
 			{
 				row.transform = ReadTransform(entity);
+
+				if (entity.HasComponent<RotationComponent>())
+				{
+					const Algebra::Quaternion current = entity.GetComponent<RotationComponent>().rotation;
+					RotationEdit& edit = m_RotationEdits[row.id];
+
+					if (!edit.seeded || !SameRotation(current, edit.applied))
+					{
+						edit.euler = GUI::QuaternionToEulerDegrees(current);
+						edit.applied = current;
+						edit.seeded = true;
+					}
+
+					row.transform->rotationEuler = edit.euler;
+				}
 			}
 			if (entity.HasComponent<TorusGenerationComponent>())
 			{
@@ -153,6 +161,12 @@ void GUISystem::SyncInspectorState()
 
 		m_UiState.objects.push_back(row);
 	}
+
+	std::erase_if(m_RotationEdits, [this](const auto& pair)
+		{
+			return std::none_of(m_UiState.objects.begin(), m_UiState.objects.end(),
+				[&](const ObjectRow& row) { return row.selected && row.id == pair.first; });
+		});
 
 	m_UiState.cursor.selectionCentre = GUI::SelectionCentre(m_Scene);
 
@@ -208,6 +222,7 @@ void GUISystem::WriteBackInspectorState()
 		if (row.transform)
 		{
 			WriteTransform(entity, *row.transform);
+			WriteBackRotation(entity, row.id, row.transform->rotationEuler);
 		}
 		if (row.torus)
 		{
@@ -221,12 +236,53 @@ void GUISystem::WriteBackInspectorState()
 		if (m_UiState.transform)
 		{
 			WriteTransform(entity, *m_UiState.transform);
+			WriteBackRotation(entity, onlySelected->id, m_UiState.transform->rotationEuler);
 		}
 		if (m_UiState.torus)
 		{
 			WriteTorus(entity, *m_UiState.torus);
 		}
 	}
+}
+
+void GUISystem::WriteBackRotation(Entity entity, uint32_t id, const Algebra::Vector4& editedEuler)
+{
+	if (!entity.IsValid() || !entity.HasComponent<RotationComponent>())
+	{
+		return;
+	}
+
+	RotationEdit& edit = m_RotationEdits[id];
+	if (!edit.seeded)
+	{
+		return;
+	}
+
+	const Algebra::Vector4 delta = editedEuler - edit.euler;
+	if (delta.x == 0.f && delta.y == 0.f && delta.z == 0.f)
+	{
+		return;
+	}
+
+	Algebra::Quaternion rotation = entity.GetComponent<RotationComponent>().rotation;
+
+	const auto nudge = [&rotation](const Algebra::Vector4& axis, float degrees)
+	{
+		if (degrees != 0.f)
+		{
+			rotation = rotation * Algebra::Quaternion::CreateFromAxisAngle(axis, Algebra::DegreeToRadians(degrees));
+		}
+	};
+
+	nudge(Algebra::Vector4(1.f, 0.f, 0.f, 0.f), delta.x);
+	nudge(Algebra::Vector4(0.f, 1.f, 0.f, 0.f), delta.y);
+	nudge(Algebra::Vector4(0.f, 0.f, 1.f, 0.f), delta.z);
+
+	rotation = rotation.Normalize();
+	entity.GetComponent<RotationComponent>().rotation = rotation;
+
+	edit.euler = editedEuler;
+	edit.applied = rotation;
 }
 
 void GUISystem::Process()
@@ -262,10 +318,10 @@ void GUISystem::Process()
 
 	m_ShapeList.Display();
 
-	GUI::DrawInspector(m_UiState, &m_InspectorCallbacks);
+	GUI::DrawInspector(m_UiState);
 	WriteBackInspectorState();
 
-	GUI::DrawCursorPanel(m_Scene, m_UiState, m_Dockspace);
+	GUI::DrawCursorPanel(m_Scene, m_UiState, m_Dockspace, &m_CursorPanelCallbacks);
 
 	if (m_ShowParameterSpace)
 	{

@@ -47,39 +47,51 @@ namespace
 		TextDisabledRightAligned(("id " + std::to_string(row.id)).c_str());
 	}
 
-	void DrawTransformSection(TransformValues& transform)
+	void DrawTransformRows(TransformValues& transform, bool rotationAndScale)
 	{
-		if (!SectionHeader("TRANSFORM"))
+		if (!BeginPropertyTable("##Transform"))
 		{
 			return;
 		}
 
-		if (BeginPropertyTable("##Transform"))
+		PropertyRow("Position", transform.position);
+		if (rotationAndScale)
 		{
-			PropertyRow("Position", transform.position);
 			PropertyRow("Rotation", transform.rotationEuler);
 			PropertyRow("Scale", transform.scale);
-			EndPropertyTable();
+		}
+		EndPropertyTable();
+	}
+
+	void DrawTorusRows(TorusValues& torus)
+	{
+		if (!BeginPropertyTable("##Torus"))
+		{
+			return;
+		}
+
+		PropertyRow("Large radius", torus.largeRadius, 0.05f);
+		PropertyRow("Tube radius", torus.tubeRadius, 0.05f);
+		PropertyRow("Samples U", torus.samplesU, 3u, 64u);
+		PropertyRow("Samples V", torus.samplesV, 3u, 64u);
+		EndPropertyTable();
+	}
+
+	void DrawTransformSection(TransformValues& transform)
+	{
+		if (SectionHeader("TRANSFORM"))
+		{
+			DrawTransformRows(transform, true);
 		}
 	}
 
 	void DrawTorusSection(TorusValues& torus)
 	{
-		if (!SectionHeader("TORUS"))
+		if (SectionHeader("TORUS"))
 		{
-			return;
+			DrawTorusRows(torus);
+			ImGui::TextDisabled("3 - 64 samples per ring");
 		}
-
-		if (BeginPropertyTable("##Torus"))
-		{
-			PropertyRow("Large radius", torus.largeRadius, 0.05f);
-			PropertyRow("Tube radius", torus.tubeRadius, 0.05f);
-			PropertyRow("Samples U", torus.samplesU, 3u, 64u);
-			PropertyRow("Samples V", torus.samplesV, 3u, 64u);
-			EndPropertyTable();
-		}
-
-		ImGui::TextDisabled("3 - 64 samples per ring");
 	}
 
 	void DrawCurveSection(UiState& state, CurveValues& curve)
@@ -251,104 +263,57 @@ namespace
 			state.cursor.selectionCentre.x, state.cursor.selectionCentre.y, state.cursor.selectionCentre.z);
 	}
 
-	void DrawTransformSelectionBlock(UiState& state, const GUI::InspectorCallbacks* callbacks)
+	void DrawPerObjectEntry(ObjectRow& row)
 	{
-		if (!SectionHeader("TRANSFORM THE SELECTION"))
+		ImGui::PushID(static_cast<int>(row.id));
+
+		const std::string label =
+			row.name + "      " + ToFormatString(row.type) + "  #" + std::to_string(row.id) + "###entry";
+
+		if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			return;
+			ImGui::Indent();
+
+			if (BeginPropertyTable("##Name"))
+			{
+				Detail::BeginPropertyValue("Name");
+				ImGui::InputText("##NameValue", &row.name);
+				EndPropertyTable();
+			}
+
+			if (row.transform)
+			{
+				DrawTransformRows(*row.transform, row.type != ObjectType::Point);
+			}
+
+			if (row.torus)
+			{
+				ImGui::Spacing();
+				DrawTorusRows(*row.torus);
+			}
+
+			ImGui::Unindent();
+			ImGui::Spacing();
 		}
 
-		static constexpr std::array<const char*, 3> pivotOptions = { "Own origin", "Centre", "3D cursor" };
-		int pivotIndex = static_cast<int>(state.pivot);
-
-		ImGui::TextUnformatted("Pivot");
-		ImGui::SameLine();
-		if (SegmentedControl("##MultiPivot", pivotIndex, pivotOptions))
-		{
-			state.pivot = static_cast<PivotMode>(pivotIndex);
-		}
-
-		if (state.pivot == PivotMode::Origin)
-		{
-			ImGui::TextDisabled("each object in its own local axes");
-		}
-		else if (state.pivot == PivotMode::Cursor)
-		{
-			const Algebra::Vector4 c = state.cursor.world;
-			ImGui::TextDisabled("pivot: 3D cursor  %.3f, %.3f, %.3f", c.x, c.y, c.z);
-		}
-		else
-		{
-			const Algebra::Vector4 c = state.cursor.selectionCentre;
-			ImGui::TextDisabled("pivot: selection centre  %.3f, %.3f, %.3f", c.x, c.y, c.z);
-		}
-
-		static Algebra::Vector4 s_MoveBy(0.f, 0.f, 0.f, 0.f);
-		static Algebra::Vector4 s_RotateBy(0.f, 0.f, 0.f, 0.f);
-		static Algebra::Vector4 s_ScaleBy(1.f, 1.f, 1.f, 0.f);
-
-		if (BeginPropertyTable("##MultiTransform"))
-		{
-			PropertyRow("Move by", s_MoveBy);
-			PropertyRow("Rotate by", s_RotateBy);
-			PropertyRow("Scale by", s_ScaleBy);
-			EndPropertyTable();
-		}
-
-		const bool canApply = callbacks && callbacks->applySelectionTransform;
-
-		ImGui::BeginDisabled(!canApply);
-		if (ImGui::Button("Apply") && canApply)
-		{
-			callbacks->applySelectionTransform(state.pivot, s_MoveBy, s_RotateBy, s_ScaleBy);
-			s_MoveBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
-			s_RotateBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
-			s_ScaleBy = Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
-		}
-		ImGui::EndDisabled();
-
-		ImGui::SameLine();
-		if (ImGui::Button("Reset fields"))
-		{
-			s_MoveBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
-			s_RotateBy = Algebra::Vector4(0.f, 0.f, 0.f, 0.f);
-			s_ScaleBy = Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
-		}
+		ImGui::PopID();
 	}
 
 	void DrawPerObjectSection(UiState& state)
 	{
-		if (!SectionHeader("PER OBJECT"))
-		{
-			return;
-		}
+		ImGui::SeparatorText("Per object");
 
 		for (ObjectRow& row : state.objects)
 		{
-			if (!row.selected)
+			if (row.selected)
 			{
-				continue;
+				DrawPerObjectEntry(row);
 			}
-
-			ImGui::PushID(static_cast<int>(row.id));
-
-			if (ImGui::TreeNodeEx(row.name.c_str(),
-				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				ImGui::TextDisabled("%s - id %u", ToDisplayString(row.type), row.id);
-
-				if (row.transform) DrawTransformSection(*row.transform);
-				if (row.torus)     DrawTorusSection(*row.torus);
-
-				ImGui::TreePop();
-			}
-
-			ImGui::PopID();
 		}
 	}
 }
 
-void GUI::DrawInspector(UiState& state, const InspectorCallbacks* callbacks)
+void GUI::DrawInspector(UiState& state)
 {
 	ImGui::Begin(InspectorWindow);
 
@@ -377,8 +342,6 @@ void GUI::DrawInspector(UiState& state, const InspectorCallbacks* callbacks)
 		if (state.surface)   DrawSurfaceSection(*state.surface);
 
 		ImGui::PopID();
-
-		if (state.transform) DrawTransformSelectionBlock(state, callbacks);
 	}
 	else
 	{
@@ -386,7 +349,6 @@ void GUI::DrawInspector(UiState& state, const InspectorCallbacks* callbacks)
 		DrawSelectionSummary(state);
 		ImGui::Separator();
 
-		DrawTransformSelectionBlock(state, callbacks);
 		DrawPerObjectSection(state);
 	}
 

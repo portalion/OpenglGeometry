@@ -90,6 +90,9 @@ live `IsSelectedTag` selection, and writes `world` back to the entity if the *Wo
 *Cursor → centre* / *Cursor → origin* buttons changed it. The ray maths for both placement and
 the *Screen X/Y* projection live in [`ViewportMath`](../ui.md#viewportmath).
 
+The panel also hosts the [*Transform the selection*](#transform-the-selection) block (moved
+here from the inspector), wired through `CursorPanelCallbacks::applySelectionTransform`.
+
 `ShapeCreation` reads the same cursor via `Archetypes::GetCursorPosition`, so newly created
 shapes appear wherever the cursor was last placed.
 
@@ -104,8 +107,7 @@ shapes appear wherever the cursor was last placed.
 
 - `m_UiState.objects` ← every `<IdComponent, NameComponent, ObjectTypeComponent>` entity
   (`selected` from `IsSelectedTag`). Each **selected** row also carries `row.transform` ←
-  `PositionComponent` / `RotationComponent` (quaternion → Euler degrees via
-  `GUI::QuaternionToEulerDegrees`) / `ScaleComponent`, and `row.torus` ←
+  `PositionComponent` / `ScaleComponent` (+ rotation, see below), and `row.torus` ←
   `TorusGenerationComponent`.
 - When exactly one object is selected, `m_UiState.transform` / `m_UiState.torus` are also set
   (a copy of that row) — `DrawInspector`'s single-selection view edits those.
@@ -113,26 +115,44 @@ shapes appear wherever the cursor was last placed.
 
 Write-back is **diff-against-scene**, no snapshots: `WriteTransform` / `WriteTorus` compare the
 mirrored value to the entity's current component and only assign on a real change (torus
-changes also add `IsDirtyTag`). It runs for every selected row (so the multi-select PER OBJECT
-editors work) plus the single-selection `m_UiState.transform`/`torus`.
+changes also add `IsDirtyTag`). It runs for every selected row (so the multi-select Per object
+editors work) plus the single-selection `m_UiState.transform`/`torus`. Editing a row's `name`
+writes `NameComponent` back, so objects can be renamed from the multi-select list too.
+
+**Rotation edits are applied incrementally, never as a 3-angle reconstruction** — that
+reconstruction is what gimbal-locks. `GUISystem` keeps a per-entity
+`RotationEdit { euler, applied, seeded }` (`m_RotationEdits`, pruned to the selection each
+frame). `euler` is only a display accumulator: seeded from `GUI::QuaternionToEulerDegrees` when
+the entity's quaternion no longer matches the last one the inspector applied (`SameRotation`
+dot-product test — first inspect or an external change), otherwise left alone.
+`WriteBackRotation` takes the per-frame drag delta (`editedEuler - edit.euler`, one axis at a
+time from a `DragFloat3`) and post-multiplies a single `Quaternion::CreateFromAxisAngle` onto
+the current rotation — `rotation = rotation * axisAngle(axisᵢ, Δᵢ)`. So dragging an axis always
+rotates about that axis, at any orientation, and the numbers never snap to a canonical
+decomposition. `GUI::EulerDegreesToQuaternion` is still used for the group *Rotate by* delta in
+`GUI::ApplySelectionTransform`.
 
 `m_UiState.curve` / `m_UiState.surface` are not synced yet, so the CURVE / SURFACE sections and
 the old `LineInspect` / `VirtualInspect` editors are not shown. `ShapeInspectorRegistry` is the
 former implementation and is now unused.
 
-### PER OBJECT
+### Per object
 
 With more than one object selected, `DrawPerObjectSection` (in `Inspector.cpp`) lists each
-selected object as a `DefaultOpen` tree node containing its full `DrawTransformSection` (and
-`DrawTorusSection` for toruses), editing `row.transform` / `row.torus`. This is how a single
-object is transformed while several are selected — independent of the group *Transform the
-selection* block above it.
+selected object under a `SeparatorText("Per object")` as a `DefaultOpen` `CollapsingHeader`
+(display `"<name>   <type> #<id>"`, stable `###entry` id so it survives a rename). The body is
+an indented property table: an editable **Name** row, then `DrawTransformRows` (Position only
+for a `Point`, Position/Rotation/Scale otherwise) and `DrawTorusRows` for toruses — no nested
+sub-headers. Editing a row writes `row.name` / `row.transform` / `row.torus`, applied per
+selected row by `WriteBackInspectorState`. This is how a single object is renamed or
+transformed while several are selected, independent of the *Transform the selection* block
+(now in the **3D Cursor** panel).
 
 ### Transform the selection
 
-With ≥ 1 object selected, `DrawTransformSelectionBlock` (in `Inspector.cpp`) shows a relative
-*Move / Rotate (deg) / Scale* delta plus a **pivot** toggle, applied on *Apply* through
-`InspectorCallbacks::applySelectionTransform` → `GUI::ApplySelectionTransform`
+Lives in the **3D Cursor** panel. `DrawTransformSelectionBlock` (in `CursorPanel.cpp`) shows a
+relative *Move / Rotate (deg) / Scale* delta plus a **pivot** toggle, applied on *Apply*
+through `CursorPanelCallbacks::applySelectionTransform` → `GUI::ApplySelectionTransform`
 (`ui/SceneActions.h`). The toggle is the same `UiState::pivot` the toolbar shows:
 
 | Pivot (`PivotMode`) | `TransformSpace` | Behaviour |

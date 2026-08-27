@@ -245,19 +245,22 @@ calls `ImGui::ResetMouseDragDelta` after each step so deltas are per-frame, but
 `HandleTranslation` does not. The direction is normalised, so speed is constant per frame,
 but the drag delta keeps growing and is re-applied every frame while the button is held.
 
-### Rotation is edited as raw quaternion components
+### Rotation editing — Euler buffer, and `CreateFromEulerAngles` is unimplemented
 
-[`systems/gui/ShapeInspectorSystem.cpp:52`](../OpenglGeometry/src/systems/gui/ShapeInspectorSystem.cpp)
+The live inspector's rotation field is **incremental**: each per-frame `DragFloat3` delta is
+post-multiplied onto the quaternion as a single `CreateFromAxisAngle` (`GUISystem::WriteBackRotation`),
+so it never gimbal-locks. The displayed Euler numbers are just an accumulator
+(`m_RotationEdits`), reseeded from the quaternion only on an external change. See
+[gui-systems.md](systems/gui-systems.md#the-inspector-selected-shapes-properties).
 
-```cpp
-auto& rotation = entity.GetComponent<RotationComponent>().rotation;
-ImGui::DragFloat3(GUI::GenerateLabel(entity, "Rotation").c_str(), &rotation.x, 0.1f);
-```
+`Algebra::Quaternion::CreateFromEulerAngles` is **declared but never defined** — using it is a
+link error. `GUI::EulerDegreesToQuaternion` (`ui/SceneActions.h`) is the working substitute
+(`qZ·qY·qX` from three `CreateFromAxisAngle` calls); `GUI::QuaternionToEulerDegrees` is its
+inverse (standard ZYX extraction with the pitch term clamped).
 
-Dragging `x/y/z` of a quaternion without touching `w` and without renormalising is not a
-usable rotation UI. `Quaternion::CreateFromEulerAngles` exists and would be the basis of a
-better one. Note also that `Quaternion`'s layout is `(w, x, y, z)`, so `&rotation.x` starts at
-the *second* float — which is what makes `DragFloat3` reach x/y/z rather than w/x/y.
+The dead `ShapeInspectorRegistry` still drags `&rotation.x` of the quaternion directly
+(`Quaternion` layout is `(w, x, y, z)`, so `&rotation.x` is the *second* float) — but that
+class is no longer used.
 
 ### `2 * 3.14f` instead of τ
 
