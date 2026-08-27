@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "core/Globals.h"
+#include "core/Log.h"
 #include <scene/BaseScene.h>
 #include <ui/Style.h>
 
@@ -16,6 +17,8 @@ App::App()
 
 	m_CurrentScene = CreateRef<BaseScene>();
 	m_SystemPipeline = CreateUnique<SystemPipeline>(m_CurrentScene, m_Viewport);
+
+	Logger::Info("Application started");
 }
 
 App::~App()

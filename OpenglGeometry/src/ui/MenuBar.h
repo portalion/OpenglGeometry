@@ -9,7 +9,7 @@
 namespace GUI
 {
 	inline void DrawMenuBar(Ref<Scene> scene, UiState& uiState, bool& showImGuiDemo, bool& showParameterSpace,
-		const UICallbacks& callbacks)
+		bool& showLog, const UICallbacks& callbacks)
 	{
 		if (!ImGui::BeginMainMenuBar())
 		{
@@ -47,7 +47,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("View"))
 		{
-			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, callbacks);
+			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, showLog, callbacks);
 			ImGui::EndMenu();
 		}
 

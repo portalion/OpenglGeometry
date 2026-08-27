@@ -9,6 +9,7 @@
 #include "scene/Tags.h"
 #include "interfaces/ICamera.h"
 #include "core/ObjectType.h"
+#include "core/Log.h"
 #include "archetypes/Archetypes.h"
 
 namespace GUI
@@ -39,9 +40,16 @@ namespace GUI
 
 	inline void DeleteSelected(Ref<Scene> scene)
 	{
+		int count = 0;
 		for (Entity entity : scene->GetAllEntitiesWith<IsSelectedTag>())
 		{
 			entity.AddTag<ToBeDestroyedTag>();
+			count++;
+		}
+
+		if (count > 0)
+		{
+			Logger::Info("Deleted {} selected object(s)", count);
 		}
 	}
 
@@ -130,35 +138,54 @@ namespace GUI
 		Scene* raw = scene.get();
 		const auto cursor = Archetypes::GetCursorPosition(raw);
 
+		Entity created;
+
 		switch (type)
 		{
 		case ObjectType::Point:
-			return Archetypes::CreatePoint(raw, cursor);
+			created = Archetypes::CreatePoint(raw, cursor);
+			break;
 		case ObjectType::Torus:
-			return Archetypes::CreateTorus(raw, cursor);
+			created = Archetypes::CreateTorus(raw, cursor);
+			break;
 		case ObjectType::Chain:
 		{
 			auto points = GetSelectedControlPoints(scene);
-			return Archetypes::CreatePolyline(raw, points.begin(), points.end());
+			created = Archetypes::CreatePolyline(raw, points.begin(), points.end());
+			break;
 		}
 		case ObjectType::BezierC0:
 		{
 			auto points = GetSelectedControlPoints(scene);
-			return Archetypes::CreateBezierC0(raw, points.begin(), points.end());
+			created = Archetypes::CreateBezierC0(raw, points.begin(), points.end());
+			break;
 		}
 		case ObjectType::BezierC2:
 		{
 			auto points = GetSelectedControlPoints(scene);
-			return Archetypes::CreateBezierC2(raw, points.begin(), points.end());
+			created = Archetypes::CreateBezierC2(raw, points.begin(), points.end());
+			break;
 		}
 		case ObjectType::InterpolatedC2:
 		{
 			auto points = GetSelectedControlPoints(scene);
-			return Archetypes::CreateInterpolatedBezier(raw, points.begin(), points.end());
+			created = Archetypes::CreateInterpolatedBezier(raw, points.begin(), points.end());
+			break;
 		}
 		default:
 			return Entity{};
 		}
+
+		if (created.IsValid())
+		{
+			Logger::Info("Created {}", ToDisplayString(type));
+		}
+		else
+		{
+			Logger::Warning("Could not create {}", ToDisplayString(type));
+		}
+
+		return created;
 	}
 
 	inline void SyncSelectionCentreVisibility(Ref<Scene> scene, bool visible)

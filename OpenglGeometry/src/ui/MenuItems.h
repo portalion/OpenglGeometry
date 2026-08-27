@@ -184,9 +184,10 @@ namespace GUI
 	}
 
 	inline void DrawViewMenuItems(UiState& uiState, bool& showParameterSpace, bool& showImGuiDemo,
-		const UICallbacks& callbacks)
+		bool& showLog, const UICallbacks& callbacks)
 	{
 		DrawViewDisplayItems(uiState, showParameterSpace);
+		ImGui::MenuItem("Log", nullptr, &showLog);
 		ImGui::Separator();
 		ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
 		if (ImGui::MenuItem("Reset layout"))

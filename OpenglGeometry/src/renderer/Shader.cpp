@@ -1,8 +1,8 @@
 #include "Shader.h"
 
-#include <iostream>
 #include "utils/GlCall.h"
 #include "RendererContext.h"
+#include "core/Log.h"
 #include <functional>
 
 struct UniformInfo
@@ -68,8 +68,8 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
         GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         char* message = (char*)alloca(length * sizeof(char));
         GLCall(glGetShaderInfoLog(id, length, &length, message));
-        printf("Failed to compile %s shader!\n", (type == GL_VERTEX_SHADER) ? "vertex" : "fragment");
-        std::cout << message << std::endl;
+        Logger::Error("Failed to compile {} shader: {}",
+            (type == GL_VERTEX_SHADER) ? "vertex" : "fragment", message);
         GLCall(glDeleteShader(id));
         return 0;
     }
@@ -112,7 +112,7 @@ int Shader::GetUniformLocation(const std::string& name)
         return m_UniformLocationCache[name];
 
     GLCall(unsigned int location = glGetUniformLocation(m_RendererID, name.c_str()));
-    if (location == -1) printf("Warning: uniform '%s' doesn't exist!\n", name.c_str());
+    if (location == -1) Logger::Warning("uniform '{}' doesn't exist!", name);
     else m_UniformLocationCache[name] = location;
 
     return location;
@@ -140,7 +140,7 @@ void Shader::WarnOnce(const std::string& uniformName, const std::string& message
 {
     if (!m_WarnedUniforms.insert(uniformName).second) return;
 
-    std::cout << "WARNING: " << message << ": " << uniformName << std::endl;
+    Logger::Warning("{}: {}", message, uniformName);
 }
 
 void Shader::ApplyContext(UniformContext context)

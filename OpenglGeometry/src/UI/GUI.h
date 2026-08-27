@@ -10,5 +10,6 @@
 #include "Widgets.h"
 #include "Inspector.h"
 #include "CursorPanel.h"
+#include "LogPanel.h"
 #include "ParameterSpace.h"
 #include "Style.h"

@@ -289,13 +289,13 @@ void GUISystem::Process()
 {
 	SyncInspectorState();
 
-	GUI::DrawMenuBar(m_Scene, m_UiState, m_ShowImGuiDemo, m_ShowParameterSpace, m_Callbacks);
+	GUI::DrawMenuBar(m_Scene, m_UiState, m_ShowImGuiDemo, m_ShowParameterSpace, m_ShowLog, m_Callbacks);
 	GUI::DrawToolbar(m_UiState);
 	GUI::DrawStatusBar(m_Scene, m_Viewport.GetData(), m_UiState);
 
 	GUI::DrawAllDialogs(m_UiState, m_Scene);
 	GUI::DrawViewportContextMenu(m_Scene, m_Dockspace, m_UiState, m_ShowParameterSpace,
-		m_ShowImGuiDemo, m_Callbacks);
+		m_ShowImGuiDemo, m_ShowLog, m_Callbacks);
 	GUI::SyncSelectionCentreVisibility(m_Scene, m_UiState.showSelectionCentre);
 
 	if (!m_Dockspace.Created())
@@ -322,6 +322,11 @@ void GUISystem::Process()
 	WriteBackInspectorState();
 
 	GUI::DrawCursorPanel(m_Scene, m_UiState, m_Dockspace, &m_CursorPanelCallbacks);
+
+	if (m_ShowLog)
+	{
+		GUI::DrawLogPanel(&m_ShowLog);
+	}
 
 	if (m_ShowParameterSpace)
 	{

@@ -30,6 +30,7 @@ private:
 	Dockspace m_Dockspace;
 	bool m_ShowImGuiDemo = false;
 	bool m_ShowParameterSpace = false;
+	bool m_ShowLog = true;
 	UiState m_UiState;
 
 	GUI::ShapeList m_ShapeList;

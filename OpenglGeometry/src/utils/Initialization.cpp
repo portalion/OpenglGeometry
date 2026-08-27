@@ -1,6 +1,6 @@
 #include "Initialization.h"
 #include <GL/glew.h>
-#include <iostream>
+#include "core/Log.h"
 
 bool InitImgui(GLFWwindow* window)
 {
@@ -24,11 +24,11 @@ bool InitGLEW()
 {
     if (glewInit() != GLEW_OK)
     {
-        std::cerr << "Cannot initiate glew" << std::endl;
+        Logger::Error("Cannot initiate glew");
         return false;
     }
 
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    Logger::Info("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+    Logger::Info("GLSL Version: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
     return true;
 }

@@ -1,11 +1,10 @@
 #include "ShaderManager.h"
-#include <iostream>
 #include "renderer/ShaderBuilder.h"
+#include "core/Log.h"
 
 ShaderManager::ShaderManager()
 {
-	//TODO: Change into logger
-	std::clog << "INFO: Loading Shaders" << std::endl;
+	Logger::Info("Loading shaders");
 	AssignShader(AvailableShaders::Default, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "default")
 		.AddShader(ShaderType::Fragment, "default"));
@@ -36,7 +35,7 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::TesselationEvaluation, "defaultVertical")
 		.AddShader(ShaderType::Fragment, "default")
 		.ChangePatchSize(16));
-	std::clog << "INFO: Loaded Shaders" << std::endl;
+	Logger::Info("Loaded shaders");
 }
 
 ShaderManager& ShaderManager::GetInstance()
@@ -55,7 +54,7 @@ std::shared_ptr<Shader> ShaderManager::AssignShader(AvailableShaders name, const
 {
 	if (shaders.find(name) != shaders.end())
 	{
-		std::cerr << "WARNING: shader with name: " << static_cast<int>(name) << " already existing\n";
+		Logger::Warning("shader with name: {} already existing", static_cast<int>(name));
 		return shaders[name];
 	}
 	shaders[name] = builder.BuildShared();

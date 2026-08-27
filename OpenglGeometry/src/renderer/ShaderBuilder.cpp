@@ -1,8 +1,8 @@
 #include "ShaderBuilder.h"
 
-#include <iostream>
 #include <sstream>
 #include <fstream>
+#include "core/Log.h"
 
 std::stringstream ShaderBuilder::ParseShaderCode(const std::string& filepath)
 {
@@ -27,7 +27,7 @@ ShaderBuilder& ShaderBuilder::AddShader(ShaderType type, const std::string& file
 {
     if (shaderSourceCodes.find(type) != shaderSourceCodes.end())
     {
-        std::cout << "WARNING: shader with type: " << static_cast<int>(type) << " already existing.\n";
+        Logger::Warning("shader with type: {} already existing", static_cast<int>(type));
     }
 
     std::string filepath = resourceDirectory + filename + Shader::shaderInfoMap.at(type).fileExtension;

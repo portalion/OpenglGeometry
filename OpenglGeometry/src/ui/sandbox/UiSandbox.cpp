@@ -3,9 +3,11 @@
 #include <imgui/imgui_internal.h>
 
 #include "core/Globals.h"
+#include "core/Log.h"
 #include "core/Window.h"
 #include "ui/CursorPanel.h"
 #include "ui/Inspector.h"
+#include "ui/LogPanel.h"
 #include "ui/MenuItems.h"
 #include "ui/ParameterSpace.h"
 #include "ui/Style.h"
@@ -28,6 +30,10 @@ namespace
 		ImGuiID centralId = 0;
 		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, 0.32f, &rightId, &centralId);
 
+		ImGuiID logId = 0;
+		ImGuiID mainId = 0;
+		ImGui::DockBuilderSplitNode(centralId, ImGuiDir_Down, 0.25f, &logId, &mainId);
+
 		ImGuiID objectsId = 0;
 		ImGuiID restId = 0;
 		ImGui::DockBuilderSplitNode(rightId, ImGuiDir_Down, 0.72f, &restId, &objectsId);
@@ -39,12 +45,14 @@ namespace
 		ImGui::DockBuilderDockWindow(ObjectsWindow, objectsId);
 		ImGui::DockBuilderDockWindow(GUI::InspectorWindow, inspectorId);
 		ImGui::DockBuilderDockWindow(GUI::CursorPanelWindow, cursorId);
-		ImGui::DockBuilderDockWindow(GUI::ParameterSpaceWindow, centralId);
+		ImGui::DockBuilderDockWindow(GUI::ParameterSpaceWindow, mainId);
+		ImGui::DockBuilderDockWindow(GUI::LogPanelWindow, logId);
 
 		dockspace.FinishCreation();
 	}
 
-	void DrawMenuBar(UiState& state, bool& showImGuiDemo, bool& showParameterSpace, bool& resetLayout, bool& quit)
+	void DrawMenuBar(UiState& state, bool& showImGuiDemo, bool& showParameterSpace, bool& showLog,
+		bool& resetLayout, bool& quit)
 	{
 		if (!ImGui::BeginMainMenuBar())
 		{
@@ -68,6 +76,7 @@ namespace
 		if (ImGui::BeginMenu("View"))
 		{
 			GUI::DrawViewDisplayItems(state, showParameterSpace);
+			ImGui::MenuItem("Log", nullptr, &showLog);
 			ImGui::Separator();
 			ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
 			resetLayout |= ImGui::MenuItem("Reset layout");
@@ -174,7 +183,10 @@ int UiSandbox::Run()
 
 	bool showImGuiDemo = false;
 	bool showParameterSpace = true;
+	bool showLog = true;
 	bool quit = false;
+
+	Logger::Info("UI sandbox started");
 
 	while (!quit && !window.ShouldClose())
 	{
@@ -185,7 +197,7 @@ int UiSandbox::Run()
 		ImGui::NewFrame();
 
 		bool resetLayout = false;
-		DrawMenuBar(state, showImGuiDemo, showParameterSpace, resetLayout, quit);
+		DrawMenuBar(state, showImGuiDemo, showParameterSpace, showLog, resetLayout, quit);
 		GUI::DrawToolbar(state);
 		DrawStatusBar(state);
 
@@ -202,6 +214,11 @@ int UiSandbox::Run()
 		DrawObjects(state);
 		GUI::DrawInspector(state);
 		GUI::DrawCursorPanel(state);
+
+		if (showLog)
+		{
+			GUI::DrawLogPanel(&showLog);
+		}
 
 		if (showParameterSpace)
 		{

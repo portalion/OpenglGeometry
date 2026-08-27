@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME}
 
     "src/core/OrbitCamera.cpp"
     "src/core/Globals.cpp"
+    "src/core/Log.cpp"
     "src/core/Viewport.cpp"
     "src/core/Window.cpp"
 
@@ -42,6 +43,7 @@ add_executable(${PROJECT_NAME}
     "src/ui/ShapeInspectorRegistry.cpp"
     "src/ui/Inspector.cpp"
     "src/ui/CursorPanel.cpp"
+    "src/ui/LogPanel.cpp"
     "src/ui/ParameterSpace.cpp"
     "src/ui/Style.cpp"
     "src/ui/model/Fixture.cpp"

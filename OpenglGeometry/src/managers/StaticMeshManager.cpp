@@ -1,13 +1,13 @@
 #include "StaticMeshManager.h"
-#include <iostream>
 #include <vector>
 #include <chrono>
 #include "Algebra.h"
+#include "core/Log.h"
 
 StaticMeshManager::StaticMeshManager()
 {
 	//TODO: Make it loaded from files
-	std::clog << "INFO: Loading Meshes" << std::endl;
+	Logger::Info("Loading meshes");
 	auto start = std::chrono::high_resolution_clock::now();
 
 	//Square
@@ -150,7 +150,7 @@ StaticMeshManager::StaticMeshManager()
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::clog << "INFO: Loaded Meshes - Elasped time: " << duration << std::endl;
+	Logger::Info("Loaded meshes - elapsed time: {}ms", duration.count());
 }
 
 StaticMeshManager& StaticMeshManager::GetInstance()

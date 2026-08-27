@@ -12,7 +12,7 @@ namespace GUI
 	inline constexpr const char* ViewportContextMenuId = "ViewportContextMenu";
 
 	inline void DrawViewportContextMenu(Ref<Scene> scene, const Dockspace& dockspace, UiState& uiState,
-		bool& showParameterSpace, bool& showImGuiDemo, const UICallbacks& callbacks)
+		bool& showParameterSpace, bool& showImGuiDemo, bool& showLog, const UICallbacks& callbacks)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -54,7 +54,7 @@ namespace GUI
 		}
 		if (ImGui::BeginMenu("View"))
 		{
-			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, callbacks);
+			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, showLog, callbacks);
 			ImGui::EndMenu();
 		}
 

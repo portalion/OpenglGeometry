@@ -1,5 +1,5 @@
 #include "glCall.h"
-#include <iostream>
+#include "core/Log.h"
 
 void GLClearError()
 {
@@ -10,7 +10,7 @@ bool GLLogCall(const char* function, const char* file, int line)
 {
     while (GLenum error = glGetError())
     {
-        printf("[OpenGL Error] (0x%x): %s %s:%d\n", error, function, file, line);
+        Logger::Error("[OpenGL Error] ({:#x}): {} {}:{}", error, function, file, line);
         return false;
     }
 

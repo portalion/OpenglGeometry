@@ -30,6 +30,7 @@ window in debug builds):
 | *Shape List* | `GUI::ShapeList::Display` |
 | *Selected Shapes Properties* | `GUI::DrawInspector` (synced to the scene by `GUISystem`) |
 | *3D Cursor* | `GUI::DrawCursorPanel` |
+| *Log* | `GUI::DrawLogPanel` — reads the `Logger` ring buffer (`src/core/Log.h`) |
 | *Dear ImGui Demo* | `App::Run`, `#ifdef _DEBUG` only |
 
 Docking is enabled (`ImGuiConfigFlags_DockingEnable` in `InitImgui`), so the user can
