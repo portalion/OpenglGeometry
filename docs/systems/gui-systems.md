@@ -102,17 +102,31 @@ shapes appear wherever the cursor was last placed.
 `m_UiState` each frame (`SyncInspectorState`), calls `DrawInspector`, then pushes edits back
 (`WriteBackInspectorState`):
 
-- `m_UiState.objects` ← every `<IdComponent, NameComponent, ObjectTypeComponent>` entity, with
-  `selected` from `IsSelectedTag`.
-- On a **single** selection: `m_UiState.transform` ← `PositionComponent` / `RotationComponent`
-  (quaternion → Euler degrees via `GUI::QuaternionToEulerDegrees`) / `ScaleComponent`;
-  `m_UiState.torus` ← `TorusGenerationComponent`. A snapshot is kept; write-back only touches a
-  component whose mirrored value actually changed (torus changes also add `IsDirtyTag`).
+- `m_UiState.objects` ← every `<IdComponent, NameComponent, ObjectTypeComponent>` entity
+  (`selected` from `IsSelectedTag`). Each **selected** row also carries `row.transform` ←
+  `PositionComponent` / `RotationComponent` (quaternion → Euler degrees via
+  `GUI::QuaternionToEulerDegrees`) / `ScaleComponent`, and `row.torus` ←
+  `TorusGenerationComponent`.
+- When exactly one object is selected, `m_UiState.transform` / `m_UiState.torus` are also set
+  (a copy of that row) — `DrawInspector`'s single-selection view edits those.
 - `m_UiState.cursor.selectionCentre` ← `GUI::SelectionCentre`.
+
+Write-back is **diff-against-scene**, no snapshots: `WriteTransform` / `WriteTorus` compare the
+mirrored value to the entity's current component and only assign on a real change (torus
+changes also add `IsDirtyTag`). It runs for every selected row (so the multi-select PER OBJECT
+editors work) plus the single-selection `m_UiState.transform`/`torus`.
 
 `m_UiState.curve` / `m_UiState.surface` are not synced yet, so the CURVE / SURFACE sections and
 the old `LineInspect` / `VirtualInspect` editors are not shown. `ShapeInspectorRegistry` is the
 former implementation and is now unused.
+
+### PER OBJECT
+
+With more than one object selected, `DrawPerObjectSection` (in `Inspector.cpp`) lists each
+selected object as a `DefaultOpen` tree node containing its full `DrawTransformSection` (and
+`DrawTorusSection` for toruses), editing `row.transform` / `row.torus`. This is how a single
+object is transformed while several are selected — independent of the group *Transform the
+selection* block above it.
 
 ### Transform the selection
 

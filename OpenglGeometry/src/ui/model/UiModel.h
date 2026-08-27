@@ -1,18 +1,10 @@
 #pragma once
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #include "Algebra.h"
 #include "core/ObjectType.h"
-
-struct ObjectRow
-{
-	uint32_t    id = 0;
-	std::string name;
-	ObjectType  type = ObjectType::Point;
-	bool        selected = false;
-	bool        visible = true;
-};
 
 struct TransformValues
 {
@@ -27,6 +19,18 @@ struct TorusValues
 	float    tubeRadius = 0.2f;
 	uint32_t samplesU = 16;
 	uint32_t samplesV = 32;
+};
+
+struct ObjectRow
+{
+	uint32_t    id = 0;
+	std::string name;
+	ObjectType  type = ObjectType::Point;
+	bool        selected = false;
+	bool        visible = true;
+
+	std::optional<TransformValues> transform;
+	std::optional<TorusValues>     torus;
 };
 
 struct CurveValues

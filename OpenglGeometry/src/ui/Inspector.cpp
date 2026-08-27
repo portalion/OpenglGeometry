@@ -323,13 +323,23 @@ namespace
 			return;
 		}
 
-		for (const ObjectRow* selected : state.Selected())
+		for (ObjectRow& row : state.objects)
 		{
-			ImGui::PushID(static_cast<int>(selected->id));
-
-			if (ImGui::TreeNodeEx(selected->name.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth))
+			if (!row.selected)
 			{
-				ImGui::TextDisabled("%s - id %u", ToDisplayString(selected->type), selected->id);
+				continue;
+			}
+
+			ImGui::PushID(static_cast<int>(row.id));
+
+			if (ImGui::TreeNodeEx(row.name.c_str(),
+				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				ImGui::TextDisabled("%s - id %u", ToDisplayString(row.type), row.id);
+
+				if (row.transform) DrawTransformSection(*row.transform);
+				if (row.torus)     DrawTorusSection(*row.torus);
+
 				ImGui::TreePop();
 			}
 

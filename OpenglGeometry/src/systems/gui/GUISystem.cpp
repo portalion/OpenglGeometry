@@ -17,6 +17,97 @@ namespace
 		default:                return GUI::TransformSpace::Centre;
 		}
 	}
+
+	Entity FindEntityById(Ref<Scene> scene, uint32_t id)
+	{
+		for (Entity entity : scene->GetAllEntitiesWith<IdComponent>())
+		{
+			if (entity.GetComponent<IdComponent>().id == id)
+			{
+				return entity;
+			}
+		}
+		return Entity{};
+	}
+
+	TransformValues ReadTransform(Entity entity)
+	{
+		TransformValues values;
+		values.position = entity.GetComponent<PositionComponent>().position;
+
+		if (entity.HasComponent<RotationComponent>())
+		{
+			values.rotationEuler = GUI::QuaternionToEulerDegrees(entity.GetComponent<RotationComponent>().rotation);
+		}
+
+		values.scale = entity.HasComponent<ScaleComponent>()
+			? entity.GetComponent<ScaleComponent>().scale
+			: Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
+
+		return values;
+	}
+
+	void WriteTransform(Entity entity, const TransformValues& values)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<PositionComponent>())
+		{
+			return;
+		}
+
+		const Algebra::Vector4 wantPosition(values.position.x, values.position.y, values.position.z, 1.f);
+		const Algebra::Vector4 currentPosition = entity.GetComponent<PositionComponent>().position;
+		if (!(currentPosition == wantPosition))
+		{
+			entity.GetComponent<PositionComponent>().position = wantPosition;
+		}
+
+		if (entity.HasComponent<RotationComponent>())
+		{
+			const Algebra::Vector4 currentEuler =
+				GUI::QuaternionToEulerDegrees(entity.GetComponent<RotationComponent>().rotation);
+			if (!(currentEuler == values.rotationEuler))
+			{
+				entity.GetComponent<RotationComponent>().rotation = GUI::EulerDegreesToQuaternion(values.rotationEuler);
+			}
+		}
+
+		if (entity.HasComponent<ScaleComponent>() && !(entity.GetComponent<ScaleComponent>().scale == values.scale))
+		{
+			entity.GetComponent<ScaleComponent>().scale = values.scale;
+		}
+	}
+
+	TorusValues ReadTorus(Entity entity)
+	{
+		const auto& torus = entity.GetComponent<TorusGenerationComponent>();
+		TorusValues values;
+		values.largeRadius = torus.radius;
+		values.tubeRadius = torus.tubeRadius;
+		values.samplesU = torus.radialSegments;
+		values.samplesV = torus.tubularSegments;
+		return values;
+	}
+
+	void WriteTorus(Entity entity, const TorusValues& values)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<TorusGenerationComponent>())
+		{
+			return;
+		}
+
+		auto& torus = entity.GetComponent<TorusGenerationComponent>();
+		if (torus.radius == values.largeRadius && torus.tubeRadius == values.tubeRadius
+			&& torus.radialSegments == values.samplesU && torus.tubularSegments == values.samplesV)
+		{
+			return;
+		}
+
+		torus.radius = values.largeRadius;
+		torus.tubeRadius = values.tubeRadius;
+		torus.radialSegments = values.samplesU;
+		torus.tubularSegments = values.samplesV;
+		entity.AddTag<IsDirtyTag>();
+	}
 }
 
 GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
@@ -39,6 +130,7 @@ GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
 void GUISystem::SyncInspectorState()
 {
 	m_UiState.objects.clear();
+
 	for (Entity entity : GUI::GetSceneObjects(m_Scene))
 	{
 		ObjectRow row;
@@ -46,6 +138,19 @@ void GUISystem::SyncInspectorState()
 		row.name = entity.GetComponent<NameComponent>().name;
 		row.type = entity.GetComponent<ObjectTypeComponent>().type;
 		row.selected = entity.HasComponent<IsSelectedTag>();
+
+		if (row.selected)
+		{
+			if (entity.HasComponent<PositionComponent>())
+			{
+				row.transform = ReadTransform(entity);
+			}
+			if (entity.HasComponent<TorusGenerationComponent>())
+			{
+				row.torus = ReadTorus(entity);
+			}
+		}
+
 		m_UiState.objects.push_back(row);
 	}
 
@@ -55,122 +160,71 @@ void GUISystem::SyncInspectorState()
 	m_UiState.torus.reset();
 	m_UiState.curve.reset();
 	m_UiState.surface.reset();
-	m_InspectedEntity = Entity{};
 
-	Entity single;
-	int count = 0;
-	for (Entity entity : m_Scene->GetAllEntitiesWith<IsSelectedTag>())
+	const ObjectRow* onlySelected = nullptr;
+	int selectedCount = 0;
+	for (const ObjectRow& row : m_UiState.objects)
 	{
-		single = entity;
-		if (++count > 1)
+		if (row.selected)
 		{
-			break;
+			selectedCount++;
+			onlySelected = &row;
 		}
 	}
 
-	if (count != 1)
+	if (selectedCount == 1 && onlySelected)
 	{
-		return;
-	}
-
-	m_InspectedEntity = single;
-
-	if (single.HasComponent<NameComponent>())
-	{
-		m_NameSnapshot = single.GetComponent<NameComponent>().name;
-	}
-
-	if (single.HasComponent<PositionComponent>())
-	{
-		TransformValues values;
-		values.position = single.GetComponent<PositionComponent>().position;
-
-		if (single.HasComponent<RotationComponent>())
-		{
-			values.rotationEuler = GUI::QuaternionToEulerDegrees(single.GetComponent<RotationComponent>().rotation);
-		}
-
-		values.scale = single.HasComponent<ScaleComponent>()
-			? single.GetComponent<ScaleComponent>().scale
-			: Algebra::Vector4(1.f, 1.f, 1.f, 0.f);
-
-		m_UiState.transform = values;
-		m_TransformSnapshot = values;
-	}
-
-	if (single.HasComponent<TorusGenerationComponent>())
-	{
-		const auto& torus = single.GetComponent<TorusGenerationComponent>();
-		TorusValues values;
-		values.largeRadius = torus.radius;
-		values.tubeRadius = torus.tubeRadius;
-		values.samplesU = torus.radialSegments;
-		values.samplesV = torus.tubularSegments;
-
-		m_UiState.torus = values;
-		m_TorusSnapshot = values;
+		m_UiState.transform = onlySelected->transform;
+		m_UiState.torus = onlySelected->torus;
 	}
 }
 
 void GUISystem::WriteBackInspectorState()
 {
-	if (!m_InspectedEntity.IsValid())
-	{
-		return;
-	}
+	const ObjectRow* onlySelected = nullptr;
+	int selectedCount = 0;
 
-	Entity entity = m_InspectedEntity;
-
-	if (entity.HasComponent<NameComponent>() && entity.HasComponent<IdComponent>())
+	for (const ObjectRow& row : m_UiState.objects)
 	{
-		const auto id = entity.GetComponent<IdComponent>().id;
-		for (const ObjectRow& row : m_UiState.objects)
+		if (!row.selected)
 		{
-			if (row.id == id && row.name != m_NameSnapshot)
-			{
-				entity.GetComponent<NameComponent>().name = row.name;
-			}
+			continue;
+		}
+
+		selectedCount++;
+		onlySelected = &row;
+
+		Entity entity = FindEntityById(m_Scene, row.id);
+		if (!entity.IsValid())
+		{
+			continue;
+		}
+
+		if (entity.HasComponent<NameComponent>() && entity.GetComponent<NameComponent>().name != row.name)
+		{
+			entity.GetComponent<NameComponent>().name = row.name;
+		}
+
+		if (row.transform)
+		{
+			WriteTransform(entity, *row.transform);
+		}
+		if (row.torus)
+		{
+			WriteTorus(entity, *row.torus);
 		}
 	}
 
-	if (m_UiState.transform && entity.HasComponent<PositionComponent>())
+	if (selectedCount == 1 && onlySelected)
 	{
-		const TransformValues& values = *m_UiState.transform;
-
-		if (!(values.position == m_TransformSnapshot.position))
+		Entity entity = FindEntityById(m_Scene, onlySelected->id);
+		if (m_UiState.transform)
 		{
-			entity.GetComponent<PositionComponent>().position =
-				Algebra::Vector4(values.position.x, values.position.y, values.position.z, 1.f);
+			WriteTransform(entity, *m_UiState.transform);
 		}
-
-		if (entity.HasComponent<RotationComponent>() && !(values.rotationEuler == m_TransformSnapshot.rotationEuler))
+		if (m_UiState.torus)
 		{
-			entity.GetComponent<RotationComponent>().rotation = GUI::EulerDegreesToQuaternion(values.rotationEuler);
-		}
-
-		if (entity.HasComponent<ScaleComponent>() && !(values.scale == m_TransformSnapshot.scale))
-		{
-			entity.GetComponent<ScaleComponent>().scale = values.scale;
-		}
-	}
-
-	if (m_UiState.torus && entity.HasComponent<TorusGenerationComponent>())
-	{
-		const TorusValues& values = *m_UiState.torus;
-		const bool changed =
-			values.largeRadius != m_TorusSnapshot.largeRadius ||
-			values.tubeRadius != m_TorusSnapshot.tubeRadius ||
-			values.samplesU != m_TorusSnapshot.samplesU ||
-			values.samplesV != m_TorusSnapshot.samplesV;
-
-		if (changed)
-		{
-			auto& torus = entity.GetComponent<TorusGenerationComponent>();
-			torus.radius = values.largeRadius;
-			torus.tubeRadius = values.tubeRadius;
-			torus.radialSegments = values.samplesU;
-			torus.tubularSegments = values.samplesV;
-			entity.AddTag<IsDirtyTag>();
+			WriteTorus(entity, *m_UiState.torus);
 		}
 	}
 }

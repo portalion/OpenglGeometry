@@ -30,11 +30,6 @@ private:
 	GUI::UICallbacks m_Callbacks;
 	GUI::InspectorCallbacks m_InspectorCallbacks;
 
-	Entity m_InspectedEntity;
-	TransformValues m_TransformSnapshot;
-	TorusValues m_TorusSnapshot;
-	std::string m_NameSnapshot;
-
 	void SyncInspectorState();
 	void WriteBackInspectorState();
 public:
