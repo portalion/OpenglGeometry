@@ -66,6 +66,11 @@ namespace
 				continue;
 			}
 
+			if (entity.HasComponent<IsInvisibleTag>())
+			{
+				continue;
+			}
+
 			const Algebra::Vector4 position = entity.GetComponent<PositionComponent>().position;
 			const Algebra::Vector4 clip = camera.projection * (camera.view
 				* Algebra::Vector4(position.x, position.y, position.z, 1.f));

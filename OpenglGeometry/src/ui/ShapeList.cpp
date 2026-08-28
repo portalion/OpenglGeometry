@@ -17,6 +17,36 @@ namespace
 
 		return text;
 	}
+
+	void SetInvisibleTag(Entity entity, bool hidden)
+	{
+		if (!entity.IsValid() || hidden == entity.HasComponent<IsInvisibleTag>())
+		{
+			return;
+		}
+
+		if (hidden)
+		{
+			entity.AddTag<IsInvisibleTag>();
+		}
+		else
+		{
+			entity.RemoveTag<IsInvisibleTag>();
+		}
+	}
+
+	void SetHidden(Entity entity, bool hidden)
+	{
+		SetInvisibleTag(entity, hidden);
+
+		if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			for (Entity virtualEntity : entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+			{
+				SetInvisibleTag(virtualEntity, hidden);
+			}
+		}
+	}
 }
 
 GUI::ShapeList::ShapeList(Ref<Scene> scene)
@@ -244,7 +274,26 @@ void GUI::ShapeList::DrawRow(Entity entity)
 	}
 
 	const bool isSelected = entity.HasComponent<IsSelectedTag>();
+	const bool visible = !entity.HasComponent<IsInvisibleTag>();
 	const auto& name = entity.GetComponent<NameComponent>().name;
+
+	bool toggled = visible;
+	if (ImGui::Checkbox(GenerateLabel(entity, "##visible").c_str(), &toggled))
+	{
+		SetHidden(entity, !toggled);
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip(visible ? "Hide" : "Show");
+	}
+
+	ImGui::SameLine();
+
+	if (!visible)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	}
 
 	if (ImGui::Selectable(GenerateLabel(entity, name).c_str(), isSelected,
 		ImGuiSelectableFlags_AllowDoubleClick))
@@ -262,6 +311,11 @@ void GUI::ShapeList::DrawRow(Entity entity)
 		{
 			entity.AddTag<IsSelectedTag>();
 		}
+	}
+
+	if (!visible)
+	{
+		ImGui::PopStyleColor();
 	}
 
 	DrawRowContextMenu(entity);
@@ -292,6 +346,13 @@ void GUI::ShapeList::DrawRowContextMenu(Entity entity)
 		SelectOnly(m_Scene, entity);
 		FocusSelected(m_Scene);
 	}
+
+	const bool hidden = entity.HasComponent<IsInvisibleTag>();
+	if (ImGui::MenuItem(hidden ? "Show" : "Hide"))
+	{
+		SetHidden(entity, !hidden);
+	}
+
 	ImGui::Separator();
 	if (ImGui::MenuItem("Delete", "Del"))
 	{
