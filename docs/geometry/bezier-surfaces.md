@@ -193,10 +193,16 @@ params.isCylinder = false;
 Archetypes::CreateBezierSurface(scene, params);
 ```
 
-**There is currently no UI for this** — `ShapeCreation::Display` has no surface entry, because
-the parameters need a small dialog rather than a one-click menu item. Adding it is a natural
-next step: a popup with two `DragInt`s, two `DragFloat`s and a checkbox, calling
-`CreateBezierSurface` on confirm.
+The UI entry points are the **Create** menu (menu bar and the Shift + right-click viewport
+context menu), plus the **Shift + A** creation popup (`ShapeCreation::Display`). Each *Bezier
+surface...* item calls `GUI::RequestDialog(BezierSurfaceDialogTitle)`; the request is drained by
+`GUI::FlushDialogRequest()` at the top of `DrawAllDialogs` (so `ImGui::OpenPopup` and the
+matching `BeginPopupModal` run in the same ID scope — a menu/popup scope would not match).
+`BezierSurfaceDialog.cpp` then draws the draft — a `GUI::BeginPropertyTable` with a
+continuity segmented control, paired `u`/`v` fields for patch counts, size and samples
+(`GUI::PropertyRowUV`), a cylinder checkbox, and a live `ImDrawList` control-net preview with
+the point count — laid out after `plans/ui-mockups.html`. On confirm it calls
+`Archetypes::CreateBezierSurface` and writes `samplesU`/`samplesV` onto the generation component.
 
 ## Possible extensions
 

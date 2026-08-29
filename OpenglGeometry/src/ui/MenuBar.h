@@ -55,7 +55,7 @@ namespace GUI
 		{
 			if (ImGui::MenuItem("About"))
 			{
-				ImGui::OpenPopup(AboutDialogTitle);
+				RequestDialog(AboutDialogTitle);
 			}
 			ImGui::EndMenu();
 		}

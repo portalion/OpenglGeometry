@@ -158,8 +158,14 @@ created by `ShapeCreation`; that is gone.)
 - `DrawCreateMenuItems(Ref<Scene>)` — used by the real menu bar (`MenuBar.h`, via `GUISystem`).
   Each item calls `GUI::CreateShape` (`SceneActions.h`), which dispatches to `Archetypes::Create*`
   at the 3D cursor — the same path as the **Shift + A** popup (`ShapeCreation`). The Bézier
-  surface item opens `BezierSurfaceDialogTitle`, whose scene-aware overload
-  `DrawBezierSurfaceDialog(UiState&, Ref<Scene>)` calls `Archetypes::CreateBezierSurface`.
+  surface item (in all three: menu bar, context menu, Shift + A popup) calls
+  `GUI::RequestDialog(BezierSurfaceDialogTitle)`; `GUI::FlushDialogRequest()` at the top of
+  `DrawAllDialogs` turns that into `ImGui::OpenPopup` in the same ID scope as the matching
+  `BeginPopupModal` (calling `OpenPopup` from inside a menu/popup would seed a different ID and
+  the modal would never show). The scene-aware overload
+  `DrawBezierSurfaceDialog(UiState&, Ref<Scene>)` then calls `Archetypes::CreateBezierSurface`.
+  The same `RequestDialog`/`FlushDialogRequest` indirection is used for About, Stereoscopy, and
+  the Save/Open scene dialogs.
 - `DrawCreateMenuItems(UiState&)` — used only by the `--ui-sandbox` (`UiSandbox.cpp`). Still
   calls `uiState.AppendObject(...)`, which just pushes a row into the fixture `UiState::objects`
   vector and touches no ECS entity.

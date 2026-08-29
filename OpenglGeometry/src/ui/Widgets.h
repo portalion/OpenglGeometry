@@ -9,11 +9,11 @@ namespace GUI
 {
 	inline constexpr float PropertyLabelWidth = 110.f;
 
-	inline bool BeginPropertyTable(const char* id)
+	inline bool BeginPropertyTable(const char* id, float width = 0.f)
 	{
 		constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit;
 
-		if (!ImGui::BeginTable(id, 2, flags))
+		if (!ImGui::BeginTable(id, 2, flags, ImVec2(width, 0.f)))
 		{
 			return false;
 		}
@@ -78,6 +78,61 @@ namespace GUI
 		return changed;
 	}
 
+	inline bool PropertyCheckboxRow(const char* checkboxLabel, bool& value)
+	{
+		Detail::BeginPropertyValue("");
+		return ImGui::Checkbox(checkboxLabel, &value);
+	}
+
+	namespace Detail
+	{
+		inline void PairedFieldWidths(float& fieldWidth, float& spacing)
+		{
+			spacing = ImGui::GetStyle().ItemSpacing.x;
+			fieldWidth = (ImGui::GetContentRegionAvail().x - spacing) * 0.5f;
+		}
+	}
+
+	inline bool PropertyRowUV(const char* label, uint32_t& u, uint32_t& v, uint32_t min, uint32_t max)
+	{
+		Detail::BeginPropertyValue(label);
+		ImGui::PushID(label);
+
+		float fieldWidth = 0.f;
+		float spacing = 0.f;
+		Detail::PairedFieldWidths(fieldWidth, spacing);
+
+		bool changed = false;
+		ImGui::SetNextItemWidth(fieldWidth);
+		changed |= ImGui::DragScalar("##u", ImGuiDataType_U32, &u, 1.0f, &min, &max, "u  %u");
+		ImGui::SameLine(0.f, spacing);
+		ImGui::SetNextItemWidth(fieldWidth);
+		changed |= ImGui::DragScalar("##v", ImGuiDataType_U32, &v, 1.0f, &min, &max, "v  %u");
+
+		ImGui::PopID();
+		return changed;
+	}
+
+	inline bool PropertyRowUV(const char* label, float& u, float& v, float speed = 0.1f)
+	{
+		Detail::BeginPropertyValue(label);
+		ImGui::PushID(label);
+
+		float fieldWidth = 0.f;
+		float spacing = 0.f;
+		Detail::PairedFieldWidths(fieldWidth, spacing);
+
+		bool changed = false;
+		ImGui::SetNextItemWidth(fieldWidth);
+		changed |= ImGui::DragFloat("##u", &u, speed);
+		ImGui::SameLine(0.f, spacing);
+		ImGui::SetNextItemWidth(fieldWidth);
+		changed |= ImGui::DragFloat("##v", &v, speed);
+
+		ImGui::PopID();
+		return changed;
+	}
+
 	inline bool SegmentedControl(const char* id, int& index, std::span<const char* const> options)
 	{
 		bool changed = false;
@@ -116,5 +171,11 @@ namespace GUI
 		ImGui::PopID();
 
 		return changed;
+	}
+
+	inline bool PropertyRowSegmented(const char* label, int& index, std::span<const char* const> options)
+	{
+		Detail::BeginPropertyValue(label);
+		return SegmentedControl(label, index, options);
 	}
 }

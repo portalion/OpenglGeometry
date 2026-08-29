@@ -29,15 +29,15 @@ namespace GUI
 		}
 		if (ImGui::MenuItem("Open...", "Ctrl+O"))
 		{
-			ImGui::OpenPopup(OpenSceneDialogTitle);
+			RequestDialog(OpenSceneDialogTitle);
 		}
 		if (ImGui::MenuItem("Save", "Ctrl+S"))
 		{
-			ImGui::OpenPopup(SaveSceneDialogTitle);
+			RequestDialog(SaveSceneDialogTitle);
 		}
 		if (ImGui::MenuItem("Save as..."))
 		{
-			ImGui::OpenPopup(SaveSceneDialogTitle);
+			RequestDialog(SaveSceneDialogTitle);
 		}
 	}
 
@@ -71,7 +71,7 @@ namespace GUI
 		ImGui::Separator();
 		if (ImGui::MenuItem("Bezier surface..."))
 		{
-			ImGui::OpenPopup(BezierSurfaceDialogTitle);
+			RequestDialog(BezierSurfaceDialogTitle);
 		}
 
 		DisabledMenuItem("Gregory patch");
@@ -127,7 +127,7 @@ namespace GUI
 		ImGui::Separator();
 		if (ImGui::MenuItem("Bezier surface..."))
 		{
-			ImGui::OpenPopup(BezierSurfaceDialogTitle);
+			RequestDialog(BezierSurfaceDialogTitle);
 		}
 
 		DisabledMenuItem("Gregory patch");
@@ -178,7 +178,7 @@ namespace GUI
 		ImGui::MenuItem("Selection centre", nullptr, &uiState.showSelectionCentre);
 		if (ImGui::MenuItem("Stereoscopy..."))
 		{
-			ImGui::OpenPopup(StereoDialogTitle);
+			RequestDialog(StereoDialogTitle);
 		}
 		ImGui::MenuItem("Parameter space", nullptr, &showParameterSpace);
 	}
@@ -198,6 +198,7 @@ namespace GUI
 
 	inline void DrawAllDialogs(UiState& uiState)
 	{
+		FlushDialogRequest();
 		DrawBezierSurfaceDialog(uiState);
 		DrawSaveSceneDialog(uiState);
 		DrawOpenSceneDialog(uiState);
@@ -207,6 +208,7 @@ namespace GUI
 
 	inline void DrawAllDialogs(UiState& uiState, Ref<Scene> scene)
 	{
+		FlushDialogRequest();
 		DrawBezierSurfaceDialog(uiState, scene);
 		DrawSaveSceneDialog(uiState);
 		DrawOpenSceneDialog(uiState);
@@ -223,11 +225,11 @@ namespace GUI
 
 		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_O, ImGuiInputFlags_RouteGlobal))
 		{
-			ImGui::OpenPopup(OpenSceneDialogTitle);
+			RequestDialog(OpenSceneDialogTitle);
 		}
 		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal))
 		{
-			ImGui::OpenPopup(SaveSceneDialogTitle);
+			RequestDialog(SaveSceneDialogTitle);
 		}
 	}
 }

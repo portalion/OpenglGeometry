@@ -234,6 +234,9 @@ void ShapeCreation::Display()
     if (ImGui::MenuItem("Create Polyline##Creation menu"))
         GUI::CreateShape(m_Scene, ObjectType::Chain);
     // ... Bezier C0, Bezier C2, Interpolated Bezier — same shape
+
+    if (ImGui::MenuItem("Create Bezier Surface...##Creation menu"))
+        GUI::RequestDialog(GUI::BezierSurfaceDialogTitle);   // drained by DrawAllDialogs
 }
 ```
 
@@ -254,9 +257,14 @@ std::vector<Entity> GUI::GetSelectedControlPoints(Ref<Scene> scene)
 `NotificationComponent` is what marks an entity as usable as a control point.
 
 The menu-bar **Create** menu (`DrawCreateMenuItems(Ref<Scene>)` in `MenuItems.h`) goes through
-the same `GUI::CreateShape`, so it now creates real entities too. Its *Bézier surface...* item
-opens a parameter dialog (`BezierSurfaceDialog.cpp`) that calls `Archetypes::CreateBezierSurface`
-with a `BezierSurfaceCreationParameters` built from the draft (patch counts, size, cylinder flag).
+the same `GUI::CreateShape`, so it now creates real entities too. Its *Bézier surface...* item —
+like the one in the Shift + A popup and the viewport context menu — calls
+`GUI::RequestDialog(BezierSurfaceDialogTitle)`. `GUI::FlushDialogRequest()` at the top of
+`DrawAllDialogs` issues the `ImGui::OpenPopup` from the same scope as the `BeginPopupModal`, so
+the ids match (a raw `OpenPopup` from inside the menu/popup would not open the modal). The dialog
+(`BezierSurfaceDialog.cpp`) then calls `Archetypes::CreateBezierSurface` with a
+`BezierSurfaceCreationParameters` built from the draft (patch counts, size, cylinder flag, samples).
+The same indirection backs the About, Stereoscopy, and Save/Open scene dialogs.
 
 ### Viewport context menu
 

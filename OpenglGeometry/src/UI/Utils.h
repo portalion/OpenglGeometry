@@ -17,6 +17,22 @@ namespace GUI
 		std::function<void()> renameSelected;
 	};
 
+	inline const char* PendingDialogTitle = nullptr;
+
+	inline void RequestDialog(const char* title)
+	{
+		PendingDialogTitle = title;
+	}
+
+	inline void FlushDialogRequest()
+	{
+		if (PendingDialogTitle != nullptr)
+		{
+			ImGui::OpenPopup(PendingDialogTitle);
+			PendingDialogTitle = nullptr;
+		}
+	}
+
 	inline std::string GenerateLabel(Entity entity, std::string labelWithoutId)
 	{
 		std::string result = labelWithoutId;

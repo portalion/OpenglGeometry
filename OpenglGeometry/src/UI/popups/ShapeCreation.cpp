@@ -2,6 +2,8 @@
 #include <imgui/imgui.h>
 #include <archetypes/Archetypes.h>
 #include <ui/SceneActions.h>
+#include <ui/Utils.h>
+#include <ui/popups/BezierSurfaceDialog.h>
 
 std::vector<Entity> ShapeCreation::GetSelectedPoints()
 {
@@ -48,5 +50,12 @@ void ShapeCreation::Display()
 	if (ImGui::MenuItem("Create Interpolated Bezier##Creation menu"))
 	{
 		GUI::CreateShape(m_Scene, ObjectType::InterpolatedC2);
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Create Bezier Surface...##Creation menu"))
+	{
+		GUI::RequestDialog(GUI::BezierSurfaceDialogTitle);
 	}
 }
