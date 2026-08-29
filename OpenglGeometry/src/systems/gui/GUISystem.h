@@ -13,6 +13,7 @@
 #include <ui/ShapeList.h>
 #include <ui/Utils.h>
 #include <ui/ViewportPicking.h>
+#include <ui/ViewportGrab.h>
 #include <ui/model/UiState.h>
 
 class GUISystem : public ISystem
@@ -36,6 +37,7 @@ private:
 	GUI::ShapeList m_ShapeList;
 
 	GUI::ViewportPickingState m_Picking;
+	GUI::ViewportGrabState m_Grab;
 	GUI::CursorPlacementState m_CursorPlacement;
 
 	GUI::UICallbacks m_Callbacks;

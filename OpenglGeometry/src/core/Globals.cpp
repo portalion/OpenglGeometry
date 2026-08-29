@@ -6,7 +6,7 @@ const int Globals::rightInterfaceWidth = 400;
 
 const float Globals::cameraNearPlane = 0.1f;
 const float Globals::cameraFarPlane = 1000.f;
-const float Globals::cameraFieldOfView = 3.14f / 2.f;
+const float Globals::cameraFieldOfView = 3.14f / 4.f;
 
 const Algebra::Vector4 Globals::startingCameraTarget = Algebra::Vector4(0.f, 0.f, 0.f, 1.f);
 const float Globals::startingCameraDistance = 10.f;

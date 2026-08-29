@@ -333,8 +333,12 @@ void GUISystem::Process()
 		GUI::DrawParameterSpace(m_UiState);
 	}
 
-	GUI::HandleViewportPicking(m_Scene, m_Dockspace, m_Picking);
-	GUI::HandleCursorPlacement(m_Scene, m_Dockspace, m_UiState.cursor, m_CursorPlacement);
+	const bool grabbing = GUI::HandleViewportGrab(m_Scene, m_Dockspace, m_Grab);
+	if (!grabbing)
+	{
+		GUI::HandleViewportPicking(m_Scene, m_Dockspace, m_Picking);
+		GUI::HandleCursorPlacement(m_Scene, m_Dockspace, m_UiState.cursor, m_CursorPlacement);
+	}
 
 	GUI::HandleShortcuts(m_Scene, m_Callbacks);
 	GUI::HandleFileShortcuts();
