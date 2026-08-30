@@ -16,6 +16,15 @@ namespace Archetypes
 		Algebra::Vector4 startingPosition;
 	};
 
+	struct SurfaceDegree
+	{
+		unsigned int stride;
+		unsigned int seam;
+	};
+
+	inline constexpr SurfaceDegree SurfaceDegreeC0{ 3u, 1u };
+	inline constexpr SurfaceDegree SurfaceDegreeC2{ 1u, 3u };
+
 	inline Entity CreateVirtualPatch(Scene* scene, Entity parentEntity)
 	{
 		auto entity = scene->CreateEntity();
@@ -62,21 +71,27 @@ namespace Archetypes
 		return result;
 	}
 #pragma endregion
-#pragma region C0 Patches
+#pragma region Patches
+	inline std::pair<unsigned int, unsigned int>
+		CalculateNumberOfPointsForSurface(BezierSurfaceCreationParameters params, SurfaceDegree degree)
+	{
+		const unsigned int overlap = CONTROL_PONTS_PER_EDGE - degree.stride;
+		const unsigned int numberOfPointsX = degree.stride * params.numberOfXPatches + overlap;
+		const unsigned int numberOfPointsY = degree.stride * params.numberOfYPatches + overlap;
+		return { numberOfPointsX, numberOfPointsY };
+	}
+
 	inline std::pair<unsigned int, unsigned int>
 		CalculateNumberOfPointsForC0Surface(BezierSurfaceCreationParameters params)
 	{
-		const unsigned int numberOfPointsX =
-			(CONTROL_PONTS_PER_EDGE - 1) * params.numberOfXPatches + 1;
-		const unsigned int numberOfPointsY =
-			(CONTROL_PONTS_PER_EDGE - 1) * params.numberOfYPatches + 1;
-		return { numberOfPointsX, numberOfPointsY };
+		return CalculateNumberOfPointsForSurface(params, SurfaceDegreeC0);
 	}
 
 	inline void FillBezierComponent(Scene* scene, Entity surface,
 		BezierSurfaceGenerationComponent& result,
 		BezierSurfaceCreationParameters bezierParams,
-		const std::vector<std::vector<Entity>>& points)
+		const std::vector<std::vector<Entity>>& points,
+		SurfaceDegree degree = SurfaceDegreeC0)
 	{
 		result.bezierPatches =
 			std::vector<std::vector<Entity>>(bezierParams.numberOfXPatches,
@@ -90,7 +105,7 @@ namespace Archetypes
 				result.bezierPatches[i][j] = patch;
 				auto& patchComponent = patch.GetComponent<BezierPatchGenerationComponent>();
 				auto pointsForPatch = CreateLinearVectorFrom2D(
-					i * (CONTROL_PONTS_PER_EDGE - 1), j * (CONTROL_PONTS_PER_EDGE - 1), points);
+					i * degree.stride, j * degree.stride, points);
 
 				AssignPointsToPatch(patch, patchComponent, pointsForPatch);
 			}
@@ -131,18 +146,20 @@ namespace Archetypes
 	}
 
 	inline std::vector<std::vector<Entity>> GenerateCylindricalGridOfPoints(Scene* scene, Entity entity,
-		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints, bool createVirtual)
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints,
+		bool createVirtual, SurfaceDegree degree = SurfaceDegreeC0)
 	{
 		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
-		
-		const float heightPerPoint = params.sizeY / (params.numberOfYPatches * 3);
-		const float anglePerPoint = 
-			2.f * std::numbers::pi_v<float> / static_cast<float>(numberOfPointsX - 1);
+
+		const unsigned int distinctColumns = numberOfPointsX - degree.seam;
+		const float heightPerPoint = params.sizeY / static_cast<float>(numberOfPointsY - 1);
+		const float anglePerPoint =
+			2.f * std::numbers::pi_v<float> / static_cast<float>(distinctColumns);
 
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
 		Algebra::Vector4 startingPosition = params.startingPosition;
 
-		for(unsigned int i = 0; i < numberOfPointsX - 1; i++)
+		for(unsigned int i = 0; i < distinctColumns; i++)
 		{
 			for(unsigned int j = 0; j < numberOfPointsY; j++)
 			{
@@ -165,29 +182,33 @@ namespace Archetypes
 			}
 		}
 
-		for(unsigned int i = 0; i < numberOfPointsY; i++)
+		for(unsigned int t = 0; t < degree.seam; t++)
 		{
-			result[numberOfPointsX - 1][i] = result[0][i];
+			for(unsigned int j = 0; j < numberOfPointsY; j++)
+			{
+				result[distinctColumns + t][j] = result[t][j];
+			}
 		}
 
 		return result;
 	}
 
 #pragma endregion
-	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams, bool createVirtual = false)
+	inline Entity AddBezierSurfaceToEntity(Entity entity, Scene* scene, BezierSurfaceCreationParameters bezierParams,
+		SurfaceDegree degree = SurfaceDegreeC0, bool createVirtual = false)
 	{
 		entity.AddTag<IsDirtyTag>();
 		auto& bezierComponent = entity.AddComponent<BezierSurfaceGenerationComponent>();
 
-		auto numberOfPoints = CalculateNumberOfPointsForC0Surface(bezierParams);
+		auto numberOfPoints = CalculateNumberOfPointsForSurface(bezierParams, degree);
 
 		std::vector<std::vector<Entity>> points;
 		if (bezierParams.isCylinder)
-			points = GenerateCylindricalGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual);
+			points = GenerateCylindricalGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual, degree);
 		else
 			points = GenerateRectangularGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual);
 
-		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points);
+		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points, degree);
 
 		return entity;
 	}
@@ -197,8 +218,41 @@ namespace Archetypes
 		auto resultBezierSurface = scene->CreateEntity();
 
 		AddShapeToEntity(resultBezierSurface, ObjectType::BezierSurfaceC0);
-		AddBezierSurfaceToEntity(resultBezierSurface, scene, bezierParams);
+		AddBezierSurfaceToEntity(resultBezierSurface, scene, bezierParams, SurfaceDegreeC0);
 
 		return resultBezierSurface;
+	}
+
+	inline Entity CreateBezierSurfaceC2(Scene* scene, BezierSurfaceCreationParameters bezierParams)
+	{
+		auto resultBezierSurface = scene->CreateEntity();
+
+		AddShapeToEntity(resultBezierSurface, ObjectType::BezierSurfaceC2);
+		AddBezierSurfaceToEntity(resultBezierSurface, scene, bezierParams, SurfaceDegreeC2);
+
+		return resultBezierSurface;
+	}
+
+	inline Entity CreateBezierSurfaceFromControlGrid(Scene* scene,
+		const std::vector<std::vector<Entity>>& grid, int samplesU, int samplesV, bool isC2)
+	{
+		const SurfaceDegree degree = isC2 ? SurfaceDegreeC2 : SurfaceDegreeC0;
+		const unsigned int overlap = CONTROL_PONTS_PER_EDGE - degree.stride;
+
+		auto surface = scene->CreateEntity();
+		AddShapeToEntity(surface, isC2 ? ObjectType::BezierSurfaceC2 : ObjectType::BezierSurfaceC0);
+		surface.AddTag<IsDirtyTag>();
+
+		auto& bezierComponent = surface.AddComponent<BezierSurfaceGenerationComponent>();
+		bezierComponent.samplesU = samplesU;
+		bezierComponent.samplesV = samplesV;
+
+		BezierSurfaceCreationParameters params;
+		params.numberOfXPatches = (static_cast<unsigned int>(grid.size()) - overlap) / degree.stride;
+		params.numberOfYPatches = (static_cast<unsigned int>(grid[0].size()) - overlap) / degree.stride;
+
+		FillBezierComponent(scene, surface, bezierComponent, params, grid, degree);
+
+		return surface;
 	}
 }

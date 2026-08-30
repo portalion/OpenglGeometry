@@ -18,7 +18,7 @@ namespace GUI
 
 		if (ImGui::BeginMenu("File"))
 		{
-			DrawFileMenuItems(uiState);
+			DrawFileMenuItems(uiState, scene);
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 			{

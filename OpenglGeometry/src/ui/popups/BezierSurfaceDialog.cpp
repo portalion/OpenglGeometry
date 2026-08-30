@@ -23,9 +23,16 @@ namespace
 
 	std::pair<uint32_t, uint32_t> ControlPointGrid(const BezierSurfaceDraft& draft)
 	{
-		const uint32_t pointsU = draft.cylinder ? draft.patchesU * 3 : draft.patchesU * 3 + 1;
-		const uint32_t pointsV = draft.patchesV * 3 + 1;
-		return { pointsU, pointsV };
+		const bool c2 = draft.continuityIndex == 1;
+		const uint32_t stride = c2 ? 1u : 3u;
+		const uint32_t seam = c2 ? 3u : 1u;
+		const uint32_t overlap = 4u - stride;
+
+		const uint32_t gridU = stride * draft.patchesU + overlap;
+		const uint32_t gridV = stride * draft.patchesV + overlap;
+
+		const uint32_t pointsU = draft.cylinder ? gridU - seam : gridU;
+		return { pointsU, gridV };
 	}
 
 	void DrawControlNetPreview(const BezierSurfaceDraft& draft)
@@ -184,7 +191,9 @@ void GUI::DrawBezierSurfaceDialog(UiState& state, Ref<Scene> scene)
 	params.numberOfYPatches = draft.patchesV;
 	params.startingPosition = Archetypes::GetCursorPosition(raw);
 
-	Entity surface = Archetypes::CreateBezierSurface(raw, params);
+	Entity surface = draft.continuityIndex == 1
+		? Archetypes::CreateBezierSurfaceC2(raw, params)
+		: Archetypes::CreateBezierSurface(raw, params);
 
 	auto& generation = surface.GetComponent<BezierSurfaceGenerationComponent>();
 	generation.samplesU = static_cast<int>(draft.samplesU);

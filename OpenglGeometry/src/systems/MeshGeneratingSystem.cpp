@@ -1,5 +1,6 @@
 #include "MeshGeneratingSystem.h"
 #include "meshGenerators/MeshGenerators.h"
+#include "scene/ObjectType.h"
 
 std::vector<Algebra::Vector4> MeshGeneratingSystem::
 CopyValidPointsToVector(std::list<Entity>& pointEntities)
@@ -107,18 +108,32 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 		std::vector<Algebra::Vector4> vertices;
 		auto patches = entity.GetComponent<BezierSurfaceGenerationComponent>().bezierPatches;
 
+		const bool isC2 = GetObjectType(entity) == ObjectType::BezierSurfaceC2;
+
 		uint32_t indice = 0;
 		std::vector<uint32_t> indices;
 		for(auto patchRow : patches)
 			for(auto patch : patchRow)
 			{
+				MeshGenerator::BezierSurfaceC2::PatchGrid controlPositions;
 				for(int i = 0; i < 4; i++)
 					for (int j = 0; j < 4; j++)
 					{
-						vertices.push_back(
+						controlPositions[i][j] =
 							patch.GetComponent<BezierPatchGenerationComponent>()
 							.controlPoints[i][j].GetComponent<PositionComponent>()
-							.position);
+							.position;
+					}
+
+				if (isC2)
+				{
+					controlPositions = MeshGenerator::BezierSurfaceC2::DeBoorToBernstein(controlPositions);
+				}
+
+				for(int i = 0; i < 4; i++)
+					for (int j = 0; j < 4; j++)
+					{
+						vertices.push_back(controlPositions[i][j]);
 						indices.push_back(indice++);
 					}
 			}

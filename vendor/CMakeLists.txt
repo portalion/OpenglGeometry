@@ -28,3 +28,11 @@ target_include_directories(
 	entt INTERFACE
 	${PROJECT_SOURCE_DIR}
 )
+
+# nlohmann/json is a single header, so it only needs an include path.
+add_library(nlohmann_json INTERFACE)
+
+target_include_directories(
+	nlohmann_json INTERFACE
+	${PROJECT_SOURCE_DIR}/json
+)

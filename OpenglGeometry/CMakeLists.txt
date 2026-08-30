@@ -30,6 +30,8 @@ add_executable(${PROJECT_NAME}
     "src/scene/Entity.cpp"
     "src/scene/Scene.cpp"
 
+    "src/serialization/SceneSerialization.cpp"
+
     "src/systems/MeshGeneratingSystem.cpp"
     "src/systems/NotificationSystem.cpp"
     "src/systems/RemovalSystem.cpp"
@@ -81,6 +83,7 @@ target_link_libraries(${PROJECT_NAME}
 	libglew_static
 	imgui
 	entt
+	nlohmann_json
 	Algebra
 )
 
@@ -88,6 +91,9 @@ add_custom_target(copy_resources ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	${PROJECT_SOURCE_DIR}/resources
 	${PROJECT_BINARY_DIR}/resources
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_SOURCE_DIR}/scenes
+	${PROJECT_BINARY_DIR}/scenes
 	COMMENT "Copying resources into binary directory")
 
 add_dependencies(${PROJECT_NAME} copy_resources)

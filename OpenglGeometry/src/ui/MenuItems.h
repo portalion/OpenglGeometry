@@ -41,6 +41,28 @@ namespace GUI
 		}
 	}
 
+	inline void DrawFileMenuItems(UiState& uiState, Ref<Scene> scene)
+	{
+		if (ImGui::MenuItem("New scene"))
+		{
+			scene->Clear();
+			uiState.activeCurveId.reset();
+			uiState.statusMessage = "new scene";
+		}
+		if (ImGui::MenuItem("Open...", "Ctrl+O"))
+		{
+			RequestDialog(OpenSceneDialogTitle);
+		}
+		if (ImGui::MenuItem("Save", "Ctrl+S"))
+		{
+			RequestDialog(SaveSceneDialogTitle);
+		}
+		if (ImGui::MenuItem("Save as..."))
+		{
+			RequestDialog(SaveSceneDialogTitle);
+		}
+	}
+
 	inline void DrawCreateMenuItems(UiState& uiState)
 	{
 		if (ImGui::MenuItem("Point"))
@@ -210,8 +232,8 @@ namespace GUI
 	{
 		FlushDialogRequest();
 		DrawBezierSurfaceDialog(uiState, scene);
-		DrawSaveSceneDialog(uiState);
-		DrawOpenSceneDialog(uiState);
+		DrawSaveSceneDialog(uiState, scene);
+		DrawOpenSceneDialog(uiState, scene);
 		DrawStereoDialog(uiState);
 		DrawAboutDialog();
 	}

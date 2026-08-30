@@ -3,6 +3,8 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 
+#include "serialization/SceneSerialization.h"
+
 namespace
 {
 	void DrawPathField(std::string& path)
@@ -24,78 +26,69 @@ namespace
 			ImGui::SetTooltip("no file dialog is vendored yet - type the path directly");
 		}
 	}
+
+	bool DrawFileDialogBody(const char* title, std::string& path, const char* confirmLabel)
+	{
+		if (!ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			return false;
+		}
+
+		DrawPathField(path);
+
+		ImGui::TextDisabled("Gregory patches and intersection curves cannot be represented.");
+
+		ImGui::Separator();
+
+		bool confirmed = false;
+		if (ImGui::Button("Cancel"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(confirmLabel))
+		{
+			confirmed = true;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+		return confirmed;
+	}
 }
 
 void GUI::DrawSaveSceneDialog(UiState& state)
 {
-	if (!ImGui::BeginPopupModal(SaveSceneDialogTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		return;
-	}
-
-	static std::string path;
-
-	if (ImGui::IsWindowAppearing())
-	{
-		path = "scenes/untitled.json";
-	}
-
-	DrawPathField(path);
-
-	ImGui::Spacing();
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.55f, 0.2f, 1.f));
-	ImGui::TextWrapped("Gregory patches and intersection curves will be skipped.");
-	ImGui::PopStyleColor();
-	ImGui::TextDisabled("the format has no representation for them");
-
-	ImGui::Separator();
-
-	if (ImGui::Button("Cancel"))
-	{
-		ImGui::CloseCurrentPopup();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Save"))
+	static std::string path = "scenes/untitled.json";
+	if (DrawFileDialogBody(SaveSceneDialogTitle, path, "Save"))
 	{
 		state.statusMessage = "saved to " + path + " (sandbox - no writer wired up)";
-		ImGui::CloseCurrentPopup();
 	}
-
-	ImGui::EndPopup();
 }
 
 void GUI::DrawOpenSceneDialog(UiState& state)
 {
-	if (!ImGui::BeginPopupModal(OpenSceneDialogTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		return;
-	}
-
-	static std::string path;
-
-	if (ImGui::IsWindowAppearing())
-	{
-		path = "scenes/untitled.json";
-	}
-
-	DrawPathField(path);
-
-	ImGui::Separator();
-
-	if (ImGui::Button("Cancel"))
-	{
-		ImGui::CloseCurrentPopup();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Open"))
+	static std::string path = "scenes/untitled.json";
+	if (DrawFileDialogBody(OpenSceneDialogTitle, path, "Open"))
 	{
 		state.statusMessage = "would open " + path + " (sandbox - no loader wired up)";
-		ImGui::CloseCurrentPopup();
 	}
+}
 
-	ImGui::EndPopup();
+void GUI::DrawSaveSceneDialog(UiState& state, Ref<Scene> scene)
+{
+	static std::string path = "scenes/untitled.json";
+	if (DrawFileDialogBody(SaveSceneDialogTitle, path, "Save"))
+	{
+		state.statusMessage = Serialization::SaveScene(*scene, path).message;
+	}
+}
+
+void GUI::DrawOpenSceneDialog(UiState& state, Ref<Scene> scene)
+{
+	static std::string path = "scenes/untitled.json";
+	if (DrawFileDialogBody(OpenSceneDialogTitle, path, "Open"))
+	{
+		state.statusMessage = Serialization::LoadScene(*scene, path).message;
+	}
 }

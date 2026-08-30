@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Entity.h"
 
+#include <vector>
+
 #include "Components.h"
 
 void Scene::OnPositionCreated(entt::registry& registry, entt::entity entity)
@@ -58,6 +60,32 @@ Entity Scene::CreateEntity()
 void Scene::DestroyEntity(Entity entity)
 {
 	m_Registry.destroy(entity.m_EntityHandle);
+}
+
+void Scene::Clear()
+{
+	std::vector<Entity> doomed;
+
+	for (Entity entity : GetAllEntitiesWith<IdComponent>())
+	{
+		doomed.push_back(entity);
+
+		if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			for (Entity virtualEntity : entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+			{
+				doomed.push_back(virtualEntity);
+			}
+		}
+	}
+
+	for (Entity entity : doomed)
+	{
+		if (entity.IsValid())
+		{
+			DestroyEntity(entity);
+		}
+	}
 }
 
 bool Scene::HasEntityWithId(ID id) const

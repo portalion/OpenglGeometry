@@ -27,6 +27,8 @@ public:
 	Entity CreateEntity();
 	void DestroyEntity(Entity entity);
 
+	void Clear();
+
 	bool HasEntityWithId(ID id) const;
 	Entity FindEntityById(ID id);
 
