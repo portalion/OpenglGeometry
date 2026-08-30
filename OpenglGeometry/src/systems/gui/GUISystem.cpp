@@ -298,6 +298,16 @@ void GUISystem::Process()
 		m_ShowImGuiDemo, m_ShowLog, m_Callbacks);
 	GUI::SyncSelectionCentreVisibility(m_Scene, m_UiState.showSelectionCentre);
 
+	for (Entity camera : m_Scene->GetAllEntitiesWith<CameraComponent>())
+	{
+		auto& cameraComponent = camera.GetComponent<CameraComponent>();
+		cameraComponent.stereoscopic = m_UiState.stereo.enabled;
+		cameraComponent.eyeDistance = m_UiState.stereo.eyeDistance;
+		cameraComponent.convergence = m_UiState.stereo.convergence;
+		cameraComponent.leftEyeColor = m_UiState.stereo.leftEyeColor;
+		cameraComponent.rightEyeColor = m_UiState.stereo.rightEyeColor;
+	}
+
 	if (!m_Dockspace.Created())
 	{
 		GUI::Layout::Default(m_Dockspace);

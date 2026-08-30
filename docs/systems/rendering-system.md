@@ -88,6 +88,36 @@ for (Entity entity : m_Scene->GetAllEntitiesWith<MeshComponent>(Excluded<IsInvis
 - There is no sorting, no batching and no depth pre-pass — entities are drawn in registry
   order.
 
+The draw phase is factored into `RenderMono` / `RenderStereo`; `RenderEntities` takes an
+optional per-eye tint.
+
+## Stereoscopy
+
+When the active `CameraComponent` has `stereoscopic == true` (synced each frame from
+`UiState::stereo` by `GUISystem`), `RenderStereo` draws the opaque pass **twice**:
+
+```cpp
+Stereo::EyePair eyes = Stereo::Compute(baseView, aspect, near, far, fov, eyeDistance, convergence);
+
+glBlendFunc(GL_ONE, GL_ONE);                       // additive
+drawEye(eyes.left,  camera.leftEyeColor);
+glClear(GL_DEPTH_BUFFER_BIT);                      // so the second eye isn't occluded by the first
+drawEye(eyes.right, camera.rightEyeColor);
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // restore
+```
+
+- **Per-eye frusta** ([`core/Stereo.h`](../../OpenglGeometry/src/core/Stereo.h)): each eye view
+  is the base view translated by ±`eyeDistance/2` along the camera's right axis; each
+  projection is `Matrix4::ProjectionOffAxis` with `l`/`r` shifted by
+  `±(eyeDistance/2)·(near/convergence)` so both frusta coincide at the convergence plane.
+- **Colour**: `RenderEntities` replaces each object's colour with `luminance(colour) · eyeTint`
+  so the anaglyph works for any object colour; additive blending makes the overlap read as
+  both images. Eye colours are user-configurable (Stereoscopy dialog).
+- The infinite grid (the only `IsTransparentTag` mesh) is **skipped** in stereo — alpha
+  blending would fight the anaglyph blend.
+- Diagnostic (task 08): an object behind the convergence plane shows the left-eye image on the
+  left; in front, reversed.
+
 ## What the `Renderer` does with this
 
 See [renderer/README.md](../renderer/README.md) for the full picture. Briefly:

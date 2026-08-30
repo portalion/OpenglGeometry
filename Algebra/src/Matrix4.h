@@ -46,6 +46,8 @@ namespace Algebra
 		static Matrix4 RotationZDegree(float angle);
 		static Matrix4 DiagonalScaling(float x, float y, float z, float w = 1);
 		static Matrix4 Projection(float aspect, float nearPlane, float farPlane, float fov);
+		static Matrix4 ProjectionOffAxis(float left, float right, float bottom, float top,
+			float nearPlane, float farPlane);
 		static std::vector<Vector4> SolveTrilinealEquation(
 			std::vector<float> alpha, std::vector<float> beta, std::vector<Vector4> r);
 	};

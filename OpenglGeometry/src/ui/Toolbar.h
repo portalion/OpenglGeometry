@@ -89,7 +89,7 @@ namespace GUI
 			Detail::ActiveCurveChip(uiState);
 
 			ImGui::SameLine();
-			ImGui::TextDisabled("(display flags not yet wired to the scene)");
+			ImGui::TextDisabled("(grid / net flags not yet wired to the scene)");
 		}
 		ImGui::End();
 	}

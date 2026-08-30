@@ -3,6 +3,7 @@
 #include "scene/Entity.h"
 #include <managers/ShaderManager.h>
 #include <core/Globals.h>
+#include <core/Stereo.h>
 #include <core/Viewport.h>
 #include <utils/GlCall.h>
 
@@ -20,10 +21,11 @@ RenderingSystem::RenderingSystem(Ref<Scene> m_Scene, Viewport& viewport)
 
 void RenderingSystem::Process()
 {
-	SceneContext sceneContext;
-
 	const bool viewportChanged = m_Viewport.IsDirty() && m_Viewport.IsValid();
 	m_Viewport.Apply();
+
+	SceneContext baseContext;
+	const CameraComponent* activeCamera = nullptr;
 
 	for (Entity entity : m_Scene->GetAllEntitiesWith<CameraComponent>())
 	{
@@ -38,13 +40,26 @@ void RenderingSystem::Process()
 
 		cameraComponent.cameraHandling->HandleInput(cameraComponent, m_Viewport.GetData());
 
-		sceneContext.CameraPosition = cameraComponent.cameraHandling->GetPosition();
-		sceneContext.CameraTarget = cameraComponent.cameraHandling->GetTarget();
-		sceneContext.ProjectionMatrix = cameraComponent.projectionMatrix;
-		sceneContext.ViewMatrix = cameraComponent.viewMatrix;
+		baseContext.CameraPosition = cameraComponent.cameraHandling->GetPosition();
+		baseContext.CameraTarget = cameraComponent.cameraHandling->GetTarget();
+		baseContext.ProjectionMatrix = cameraComponent.projectionMatrix;
+		baseContext.ViewMatrix = cameraComponent.viewMatrix;
+		activeCamera = &cameraComponent;
 	}
 
-	m_Renderer->SetSceneContext(sceneContext);
+	if (activeCamera && activeCamera->stereoscopic)
+	{
+		RenderStereo(baseContext, *activeCamera);
+	}
+	else
+	{
+		RenderMono(baseContext);
+	}
+}
+
+void RenderingSystem::RenderMono(const SceneContext& context)
+{
+	m_Renderer->SetSceneContext(context);
 
 	RenderEntities(m_Scene->GetAllEntitiesWith<MeshComponent>(
 		Excluded<IsInvisibleTag, IsTransparentTag>()));
@@ -53,4 +68,30 @@ void RenderingSystem::Process()
 	RenderEntities(m_Scene->GetAllEntitiesWith<MeshComponent, IsTransparentTag>(
 		Excluded<IsInvisibleTag>()));
 	m_Renderer->SetDepthMode(DepthMode::Depth);
+}
+
+void RenderingSystem::RenderStereo(const SceneContext& base, const CameraComponent& camera)
+{
+	const Stereo::EyePair eyes = Stereo::Compute(base.ViewMatrix, m_Viewport.Aspect(),
+		Globals::cameraNearPlane, Globals::cameraFarPlane, Globals::cameraFieldOfView,
+		camera.eyeDistance, camera.convergence);
+
+	GLCall(glBlendFunc(GL_ONE, GL_ONE));
+
+	auto drawEye = [&](const Stereo::EyeView& eye, const Algebra::Vector4& tint)
+	{
+		SceneContext context = base;
+		context.ViewMatrix = eye.view;
+		context.ProjectionMatrix = eye.projection;
+
+		m_Renderer->SetSceneContext(context);
+		RenderEntities(m_Scene->GetAllEntitiesWith<MeshComponent>(
+			Excluded<IsInvisibleTag, IsTransparentTag>()), tint);
+	};
+
+	drawEye(eyes.left, camera.leftEyeColor);
+	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+	drawEye(eyes.right, camera.rightEyeColor);
+
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }

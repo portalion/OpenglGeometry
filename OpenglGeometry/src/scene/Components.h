@@ -64,6 +64,12 @@ struct CameraComponent
 	Algebra::Matrix4 viewMatrix;
 	Ref<ICamera> cameraHandling;
 
+	bool stereoscopic = false;
+	float eyeDistance = 0.1f;
+	float convergence = 10.f;
+	Algebra::Vector4 leftEyeColor = Algebra::Vector4(0.90f, 0.28f, 0.28f, 1.f);
+	Algebra::Vector4 rightEyeColor = Algebra::Vector4(0.17f, 0.83f, 0.83f, 1.f);
+
 	CameraComponent() = default;
 	CameraComponent(const CameraComponent& other) = default;
 };

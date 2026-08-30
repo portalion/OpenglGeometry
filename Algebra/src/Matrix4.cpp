@@ -211,6 +211,23 @@ Matrix4 Algebra::Matrix4::Projection(float aspect, float nearPlane, float farPla
 	return result;
 }
 
+Matrix4 Algebra::Matrix4::ProjectionOffAxis(float left, float right, float bottom, float top,
+	float nearPlane, float farPlane)
+{
+	auto result = Matrix4(
+		2.f * nearPlane / (right - left),
+		2.f * nearPlane / (top - bottom),
+		-(farPlane + nearPlane) / (farPlane - nearPlane),
+		0.f);
+
+	result[0][2] = (right + left) / (right - left);
+	result[1][2] = (top + bottom) / (top - bottom);
+	result[2][3] = (-2.f * farPlane * nearPlane) / (farPlane - nearPlane);
+	result[3][2] = -1.f;
+
+	return result;
+}
+
 std::vector<Vector4>Algebra::Matrix4::
 	SolveTrilinealEquation(std::vector<float> alpha, std::vector<float> beta, std::vector<Vector4> r)
 {
