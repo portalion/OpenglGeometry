@@ -17,6 +17,18 @@ namespace Serialization
 functions are **not** an `ISystem` — `SceneFileDialog.cpp`'s scene-aware overloads call them
 directly from `GUISystem::Process`, where no ECS view is being iterated.
 
+## The Save / Open dialog
+
+`SceneFileDialog.cpp` — an editable **Path** field plus an in-app file browser built on
+`std::filesystem` (no native OS dialog). The browser lists `..`, sub-directories as
+`[ name ]`, and `*.json` files under the field's current directory; clicking a folder
+navigates, clicking a file fills the path (the current file is highlighted via
+`fs::equivalent`), double-clicking a file confirms immediately. Typing a valid directory into
+the field snaps the browser to it. Paths are stored relative to the working directory when the
+target sits under it, absolute otherwise (`SceneRelativePath`). The four `Draw*SceneDialog`
+overloads each keep their own `static std::string path`; the browser state (`browseDir`) is a
+single `static` shared across them — fine because only one dialog is open at a time.
+
 ## File shape
 
 ```json

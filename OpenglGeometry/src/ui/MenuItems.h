@@ -178,6 +178,10 @@ namespace GUI
 		{
 			GUI::DeleteSelected(scene);
 		}
+		if (ImGui::MenuItem("Collapse points", nullptr, false, GUI::CanCollapseSelection(scene)))
+		{
+			GUI::CollapseSelected(scene);
+		}
 	}
 
 	inline void DrawSelectMenuItems(Ref<Scene> scene)

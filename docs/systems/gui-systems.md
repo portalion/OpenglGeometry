@@ -266,6 +266,20 @@ the ids match (a raw `OpenPopup` from inside the menu/popup would not open the m
 `BezierSurfaceCreationParameters` built from the draft (patch counts, size, cylinder flag, samples).
 The same indirection backs the About, Stereoscopy, and Save/Open scene dialogs.
 
+### Edit → Collapse points
+
+`GUI::CollapseSelected` (`ui/SceneActions.h`), enabled when `GUI::CanCollapseSelection` finds
+≥2 selected real points (`IsSelectedTag` + `ObjectTypeComponent == Point`, minus C2
+`BernsteinPointComponent`s). It creates one new point at the selection centroid, then rewrites
+**every** place a point handle can be stored to point at it —
+`LineGenerationComponent::controlPoints` (curves *and* their control polylines),
+`BezierPatchGenerationComponent::controlPoints` (surface patches),
+`SurfaceControlNetComponent::grid` — dirtying each entity it touched (patches dirty their
+surface via `VirtualEntityComponent::realEntity`). The collapsed points' notifier lists are
+merged onto the new point so moving it later rebuilds everything, then they get
+`ToBeDestroyedTag`. Slots that shared two collapsed points now alias the same handle, exactly
+like a cylinder seam — the count/topology of each curve and patch is unchanged.
+
 ### Viewport context menu
 
 `ContextMenu.h` — `GUI::DrawViewportContextMenu`, called from `GUISystem::Process`. **Shift +

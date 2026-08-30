@@ -264,6 +264,146 @@ namespace GUI
 		return !scene->GetAllEntitiesWith<IsSelectedTag>().empty();
 	}
 
+	inline std::vector<Entity> GetCollapsiblePoints(Ref<Scene> scene)
+	{
+		std::vector<Entity> points;
+
+		for (Entity entity : scene->GetAllEntitiesWith<IsSelectedTag, PositionComponent, ObjectTypeComponent>())
+		{
+			if (entity.GetComponent<ObjectTypeComponent>().type != ObjectType::Point)
+			{
+				continue;
+			}
+
+			if (entity.HasComponent<BernsteinPointComponent>())
+			{
+				continue;
+			}
+
+			points.push_back(entity);
+		}
+
+		return points;
+	}
+
+	inline bool CanCollapseSelection(Ref<Scene> scene)
+	{
+		return GetCollapsiblePoints(scene).size() >= 2;
+	}
+
+	inline void CollapseSelected(Ref<Scene> scene)
+	{
+		const std::vector<Entity> points = GetCollapsiblePoints(scene);
+		if (points.size() < 2)
+		{
+			Logger::Warning("Collapse: select at least 2 points");
+			return;
+		}
+
+		Algebra::Vector4 centre(0.f, 0.f, 0.f, 0.f);
+		for (Entity point : points)
+		{
+			const Algebra::Vector4 position = point.GetComponent<PositionComponent>().position;
+			centre = centre + Algebra::Vector4(position.x, position.y, position.z, 0.f);
+		}
+		centre = centre / static_cast<float>(points.size());
+		centre.w = 1.f;
+
+		Entity merged = Archetypes::CreatePoint(scene.get(), centre);
+
+		const auto isCollapsed = [&points](Entity candidate)
+		{
+			return std::find(points.begin(), points.end(), candidate) != points.end();
+		};
+
+		for (Entity entity : scene->GetAllEntitiesWith<LineGenerationComponent>())
+		{
+			bool changed = false;
+			for (Entity& reference : entity.GetComponent<LineGenerationComponent>().controlPoints)
+			{
+				if (isCollapsed(reference))
+				{
+					reference = merged;
+					changed = true;
+				}
+			}
+
+			if (changed)
+			{
+				entity.AddTag<IsDirtyTag>();
+			}
+		}
+
+		for (Entity patch : scene->GetAllEntitiesWith<BezierPatchGenerationComponent>())
+		{
+			bool changed = false;
+			for (auto& row : patch.GetComponent<BezierPatchGenerationComponent>().controlPoints)
+			{
+				for (Entity& reference : row)
+				{
+					if (isCollapsed(reference))
+					{
+						reference = merged;
+						changed = true;
+					}
+				}
+			}
+
+			if (changed && patch.HasComponent<VirtualEntityComponent>())
+			{
+				Entity surface = patch.GetComponent<VirtualEntityComponent>().realEntity;
+				if (surface.IsValid())
+				{
+					surface.AddTag<IsDirtyTag>();
+				}
+			}
+		}
+
+		for (Entity net : scene->GetAllEntitiesWith<SurfaceControlNetComponent>())
+		{
+			bool changed = false;
+			for (auto& column : net.GetComponent<SurfaceControlNetComponent>().grid)
+			{
+				for (Entity& reference : column)
+				{
+					if (isCollapsed(reference))
+					{
+						reference = merged;
+						changed = true;
+					}
+				}
+			}
+
+			if (changed)
+			{
+				net.AddTag<IsDirtyTag>();
+			}
+		}
+
+		auto& mergedNotify = merged.GetComponent<NotificationComponent>().entitiesToNotify;
+		for (Entity point : points)
+		{
+			if (point.HasComponent<NotificationComponent>())
+			{
+				for (Entity notified : point.GetComponent<NotificationComponent>().entitiesToNotify)
+				{
+					if (notified.IsValid()
+						&& std::find(mergedNotify.begin(), mergedNotify.end(), notified) == mergedNotify.end())
+					{
+						mergedNotify.push_back(notified);
+					}
+				}
+			}
+
+			point.AddTag<ToBeDestroyedTag>();
+		}
+
+		DeselectAll(scene);
+		merged.AddTag<IsSelectedTag>();
+
+		Logger::Info("Collapsed {} points into one", points.size());
+	}
+
 	inline Entity SingleSelected(Ref<Scene> scene)
 	{
 		Entity result;
