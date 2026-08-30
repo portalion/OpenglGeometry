@@ -219,11 +219,18 @@ namespace
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("%u x %u", surface.sizeU, surface.sizeV);
 
-			PropertyRow("Samples U", surface.samplesU, 1u, 64u);
-			PropertyRow("Samples V", surface.samplesV, 1u, 64u);
+			PropertyRow("Tessellation U", surface.samplesU, 2u, 64u);
+			PropertyRow("Tessellation V", surface.samplesV, 2u, 64u);
 			PropertyRow("Show control net", surface.showControlNet);
 			EndPropertyTable();
 		}
+
+		if (ImGui::Button("Select control points"))
+		{
+			surface.selectPointsRequested = true;
+		}
+		ImGui::SameLine();
+		ImGui::TextDisabled("%u points", surface.controlPointCount);
 	}
 
 	void DrawSelectionSummary(UiState& state)
@@ -348,6 +355,12 @@ void GUI::DrawInspector(UiState& state)
 		ImGui::Text("%zu objects selected", selectedCount);
 		DrawSelectionSummary(state);
 		ImGui::Separator();
+
+		if (state.surface)
+		{
+			DrawSurfaceSection(*state.surface);
+			ImGui::Separator();
+		}
 
 		DrawPerObjectSection(state);
 	}

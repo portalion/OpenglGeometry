@@ -145,6 +145,56 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 
 }
 
+void MeshGeneratingSystem::SurfaceControlNetGeneration()
+{
+	BufferLayout layout
+	({
+		{ ShaderDataType::Float4, "a_Position" }
+	});
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, SurfaceControlNetComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+
+		const auto& grid = entity.GetComponent<SurfaceControlNetComponent>().grid;
+
+		std::vector<Algebra::Vector4> vertices;
+		std::vector<uint32_t> indices;
+
+		const int rows = static_cast<int>(grid.size());
+		for (int i = 0; i < rows; i++)
+		{
+			const int cols = static_cast<int>(grid[i].size());
+			for (int j = 0; j < cols; j++)
+			{
+				const uint32_t current = static_cast<uint32_t>(vertices.size());
+
+				Entity point = grid[i][j];
+				Algebra::Vector4 position(0.f, 0.f, 0.f, 1.f);
+				if (point.IsValid() && point.HasComponent<PositionComponent>())
+				{
+					position = point.GetComponent<PositionComponent>().position;
+				}
+				position.w = 1.f;
+				vertices.push_back(position);
+
+				if (j + 1 < cols)
+				{
+					indices.push_back(current);
+					indices.push_back(current + 1);
+				}
+				if (i + 1 < rows)
+				{
+					indices.push_back(current);
+					indices.push_back(current + static_cast<uint32_t>(cols));
+				}
+			}
+		}
+
+		ModifyOrCreateMesh(entity, vertices, indices, layout);
+	}
+}
+
 MeshGeneratingSystem::MeshGeneratingSystem(Ref<Scene> m_Scene)
 	:m_Scene {m_Scene}
 {
@@ -154,6 +204,7 @@ void MeshGeneratingSystem::Process()
 {
 	BezierLineGeneration();
 	BezierSurfaceGeneration();
+	SurfaceControlNetGeneration();
 	LineGeneration();
 	TorusGeneration();
 }

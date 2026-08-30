@@ -165,3 +165,10 @@ struct BezierSurfaceGenerationComponent
 	BezierSurfaceGenerationComponent() = default;
 	BezierSurfaceGenerationComponent(const BezierSurfaceGenerationComponent& other) = default;
 };
+
+struct SurfaceControlNetComponent
+{
+	std::vector<std::vector<Entity>> grid;
+	SurfaceControlNetComponent() = default;
+	SurfaceControlNetComponent(const SurfaceControlNetComponent& other) = default;
+};

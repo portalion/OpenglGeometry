@@ -18,9 +18,14 @@ surface entity                                          ← the only entity with
  │    ├─ BezierPatchGenerationComponent { controlPoints[4][4] }
  │    └─ VirtualEntityComponent → surface
  │
+ ├─ control-net entity (virtual)  × 1
+ │    ├─ SurfaceControlNetComponent { grid[u][v] }   ← the full point grid
+ │    ├─ MeshComponent (GL_LINES, one segment per net edge)
+ │    └─ VirtualEntityComponent → surface
+ │
  └─ control points  (real entities by default, or virtual if createVirtual == true)
       ├─ PositionComponent, NotificationComponent, MeshComponent
-      └─ NotificationComponent lists the patches that use it
+      └─ NotificationComponent lists the patches *and the control-net entity* that use it
 ```
 
 Patches are pure data holders — they carry no mesh. The surface gathers every patch's control
@@ -240,10 +245,29 @@ for patch counts, size and samples (`GUI::PropertyRowUV`), a cylinder checkbox, 
 `CreateBezierSurface` or `CreateBezierSurfaceC2` and writes `samplesU`/`samplesV` onto the
 generation component.
 
+## Inspector
+
+With a surface selected (on its own, or alongside its control points), the `SURFACE` section of
+the inspector shows the point-grid size, drags for `samplesU`/`samplesV` (→ `u_subdivisions` /
+`v_subdivisions`, live — no mesh rebuild), a **Show control net** toggle
+(`IsInvisibleTag` on the control-net entity), and a **Select control points** button that adds
+the surface and every one of its control points to the selection. The section stays visible in
+that multi-selection so tessellation and the net can still be adjusted while the points are
+selected for editing. Wiring: `GUISystem::ReadSurface` / `WriteSurface`, driven by
+`SurfaceValues` in `ui/model/UiModel.h`; the point/net helpers live in `ui/SceneActions.h`.
+
+## Control net
+
+`Archetypes::AddSurfaceControlNet` creates one virtual child of the surface carrying a
+`SurfaceControlNetComponent { grid }` — the full `grid[u][v]` of point entities — and registers
+it in every control point's `entitiesToNotify`, so moving a point dirties it the same way it
+dirties the patches. `MeshGeneratingSystem::SurfaceControlNetGeneration` rebuilds it as a
+`GL_LINES` mesh: one vertex per grid point (row-major), one index pair per horizontal and
+vertical edge. For a cylinder the aliased seam columns/rows close the loop for free. It renders
+with the default shader in the default colour and is hidden with `IsInvisibleTag`.
+
 ## Possible extensions
 
-- **Adjustable tessellation** — add int support to `UniformContext`, then expose
-  `u_subdivisions`/`v_subdivisions` in the inspector.
 - **Patch-boundary continuity constraints for C0** — enforcing G1 would mean constraining the
   control points either side of each shared edge.
 - **B-spline basis evaluation shader** — evaluate the C2 de Boor net directly on the GPU

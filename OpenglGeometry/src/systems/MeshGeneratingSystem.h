@@ -16,6 +16,7 @@ private:
 	void LineGeneration();
 	void BezierLineGeneration();
 	void BezierSurfaceGeneration();
+	void SurfaceControlNetGeneration();
 
 	template<typename T>
 	void ModifyOrCreateMesh(Entity e, std::vector<T>& vertices, std::vector<uint32_t>& indices, const BufferLayout& layout, const RenderingMode& mode = RenderingMode::Lines, const std::initializer_list<AvailableShaders> shaderTypes = { AvailableShaders::Default });

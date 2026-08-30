@@ -21,6 +21,17 @@ struct TorusValues
 	uint32_t samplesV = 32;
 };
 
+struct SurfaceValues
+{
+	uint32_t sizeU = 0;
+	uint32_t sizeV = 0;
+	uint32_t samplesU = 4;
+	uint32_t samplesV = 4;
+	uint32_t controlPointCount = 0;
+	bool     showControlNet = true;
+	bool     selectPointsRequested = false;
+};
+
 struct ObjectRow
 {
 	uint32_t    id = 0;
@@ -31,6 +42,7 @@ struct ObjectRow
 
 	std::optional<TransformValues> transform;
 	std::optional<TorusValues>     torus;
+	std::optional<SurfaceValues>   surface;
 };
 
 struct CurveValues
@@ -39,15 +51,6 @@ struct CurveValues
 	bool showPolygon = true;
 	bool showVirtualPoints = false;
 	std::vector<ObjectRow> controlPoints;
-};
-
-struct SurfaceValues
-{
-	uint32_t sizeU = 0;
-	uint32_t sizeV = 0;
-	uint32_t samplesU = 4;
-	uint32_t samplesV = 4;
-	bool     showControlNet = true;
 };
 
 enum class PivotMode

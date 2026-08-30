@@ -101,6 +101,52 @@ namespace
 		torus.tubularSegments = values.samplesV;
 		entity.AddTag<IsDirtyTag>();
 	}
+
+	SurfaceValues ReadSurface(Entity entity)
+	{
+		const auto& surface = entity.GetComponent<BezierSurfaceGenerationComponent>();
+
+		SurfaceValues values;
+		values.samplesU = static_cast<uint32_t>(surface.samplesU);
+		values.samplesV = static_cast<uint32_t>(surface.samplesV);
+
+		const unsigned int patchesU = static_cast<unsigned int>(surface.bezierPatches.size());
+		const unsigned int patchesV = patchesU > 0
+			? static_cast<unsigned int>(surface.bezierPatches[0].size()) : 0u;
+		const bool isC2 = entity.GetComponent<ObjectTypeComponent>().type == ObjectType::BezierSurfaceC2;
+		const unsigned int overlap = isC2 ? 3u : 1u;
+		const unsigned int stride = isC2 ? 1u : 3u;
+
+		values.sizeU = patchesU > 0 ? stride * patchesU + overlap : 0u;
+		values.sizeV = patchesV > 0 ? stride * patchesV + overlap : 0u;
+
+		values.controlPointCount = static_cast<uint32_t>(GUI::GetSurfaceControlPoints(entity).size());
+		values.showControlNet = GUI::SurfaceControlNetVisible(entity);
+
+		return values;
+	}
+
+	void WriteSurface(Ref<Scene> scene, Entity entity, const SurfaceValues& values)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<BezierSurfaceGenerationComponent>())
+		{
+			return;
+		}
+
+		auto& surface = entity.GetComponent<BezierSurfaceGenerationComponent>();
+		surface.samplesU = static_cast<int>(values.samplesU);
+		surface.samplesV = static_cast<int>(values.samplesV);
+
+		if (values.showControlNet != GUI::SurfaceControlNetVisible(entity))
+		{
+			GUI::SetSurfaceControlNetVisible(entity, values.showControlNet);
+		}
+
+		if (values.selectPointsRequested)
+		{
+			GUI::SelectSurfaceControlPoints(scene, entity);
+		}
+	}
 }
 
 GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
@@ -157,6 +203,10 @@ void GUISystem::SyncInspectorState()
 			{
 				row.torus = ReadTorus(entity);
 			}
+			if (entity.HasComponent<BezierSurfaceGenerationComponent>())
+			{
+				row.surface = ReadSurface(entity);
+			}
 		}
 
 		m_UiState.objects.push_back(row);
@@ -176,13 +226,21 @@ void GUISystem::SyncInspectorState()
 	m_UiState.surface.reset();
 
 	const ObjectRow* onlySelected = nullptr;
+	const ObjectRow* onlySurface = nullptr;
 	int selectedCount = 0;
+	int surfaceCount = 0;
 	for (const ObjectRow& row : m_UiState.objects)
 	{
 		if (row.selected)
 		{
 			selectedCount++;
 			onlySelected = &row;
+
+			if (row.surface)
+			{
+				surfaceCount++;
+				onlySurface = &row;
+			}
 		}
 	}
 
@@ -191,12 +249,19 @@ void GUISystem::SyncInspectorState()
 		m_UiState.transform = onlySelected->transform;
 		m_UiState.torus = onlySelected->torus;
 	}
+
+	if (surfaceCount == 1 && onlySurface)
+	{
+		m_UiState.surface = onlySurface->surface;
+	}
 }
 
 void GUISystem::WriteBackInspectorState()
 {
 	const ObjectRow* onlySelected = nullptr;
+	const ObjectRow* onlySurface = nullptr;
 	int selectedCount = 0;
+	int surfaceCount = 0;
 
 	for (const ObjectRow& row : m_UiState.objects)
 	{
@@ -207,6 +272,12 @@ void GUISystem::WriteBackInspectorState()
 
 		selectedCount++;
 		onlySelected = &row;
+
+		if (row.surface)
+		{
+			surfaceCount++;
+			onlySurface = &row;
+		}
 
 		Entity entity = FindEntityById(m_Scene, row.id);
 		if (!entity.IsValid())
@@ -242,6 +313,11 @@ void GUISystem::WriteBackInspectorState()
 		{
 			WriteTorus(entity, *m_UiState.torus);
 		}
+	}
+
+	if (surfaceCount == 1 && onlySurface && m_UiState.surface)
+	{
+		WriteSurface(m_Scene, FindEntityById(m_Scene, onlySurface->id), *m_UiState.surface);
 	}
 }
 

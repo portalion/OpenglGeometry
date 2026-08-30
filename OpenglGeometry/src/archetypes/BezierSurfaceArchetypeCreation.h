@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleArchetypeCreation.h"
+#include <algorithm>
 #include <cmath>
 #include <numbers>
 
@@ -34,6 +35,34 @@ namespace Archetypes
 		AddVirtualToEntity(entity, parentEntity);
 
 		return entity;
+	}
+
+	inline Entity AddSurfaceControlNet(Scene* scene, Entity surface,
+		const std::vector<std::vector<Entity>>& grid)
+	{
+		auto net = scene->CreateEntity();
+		AddVirtualToEntity(net, surface);
+		net.AddComponent<SurfaceControlNetComponent>().grid = grid;
+		net.AddTag<IsDirtyTag>();
+
+		for (const auto& column : grid)
+		{
+			for (Entity point : column)
+			{
+				if (!point.IsValid() || !point.HasComponent<NotificationComponent>())
+				{
+					continue;
+				}
+
+				auto& notify = point.GetComponent<NotificationComponent>().entitiesToNotify;
+				if (std::find(notify.begin(), notify.end(), net) == notify.end())
+				{
+					notify.push_back(net);
+				}
+			}
+		}
+
+		return net;
 	}
 
 #pragma region Utils
@@ -224,6 +253,7 @@ namespace Archetypes
 			points = GenerateRectangularGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual, degree);
 
 		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points, degree);
+		AddSurfaceControlNet(scene, entity, points);
 
 		return entity;
 	}
@@ -267,6 +297,7 @@ namespace Archetypes
 		params.numberOfYPatches = (static_cast<unsigned int>(grid[0].size()) - overlap) / degree.stride;
 
 		FillBezierComponent(scene, surface, bezierComponent, params, grid, degree);
+		AddSurfaceControlNet(scene, surface, grid);
 
 		return surface;
 	}

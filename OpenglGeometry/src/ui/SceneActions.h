@@ -56,6 +56,103 @@ namespace GUI
 		return false;
 	}
 
+	inline std::vector<Entity> GetSurfaceControlPoints(Entity surface)
+	{
+		std::vector<Entity> points;
+
+		if (!surface.IsValid() || !surface.HasComponent<BezierSurfaceGenerationComponent>())
+		{
+			return points;
+		}
+
+		for (const auto& patchRow : surface.GetComponent<BezierSurfaceGenerationComponent>().bezierPatches)
+		{
+			for (Entity patch : patchRow)
+			{
+				if (!patch.IsValid() || !patch.HasComponent<BezierPatchGenerationComponent>())
+				{
+					continue;
+				}
+
+				for (const auto& row : patch.GetComponent<BezierPatchGenerationComponent>().controlPoints)
+				{
+					for (Entity point : row)
+					{
+						if (point.IsValid() && std::find(points.begin(), points.end(), point) == points.end())
+						{
+							points.push_back(point);
+						}
+					}
+				}
+			}
+		}
+
+		return points;
+	}
+
+	inline Entity GetSurfaceControlNet(Entity surface)
+	{
+		if (!surface.IsValid() || !surface.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			return Entity{};
+		}
+
+		for (Entity virtualEntity : surface.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+		{
+			if (virtualEntity.IsValid() && virtualEntity.HasComponent<SurfaceControlNetComponent>())
+			{
+				return virtualEntity;
+			}
+		}
+
+		return Entity{};
+	}
+
+	inline bool SurfaceControlNetVisible(Entity surface)
+	{
+		Entity net = GetSurfaceControlNet(surface);
+		return net.IsValid() && !net.HasComponent<IsInvisibleTag>();
+	}
+
+	inline void SetSurfaceControlNetVisible(Entity surface, bool visible)
+	{
+		Entity net = GetSurfaceControlNet(surface);
+		if (!net.IsValid())
+		{
+			return;
+		}
+
+		if (visible)
+		{
+			net.RemoveTag<IsInvisibleTag>();
+		}
+		else
+		{
+			net.AddTag<IsInvisibleTag>();
+		}
+	}
+
+	inline void SelectSurfaceControlPoints(Ref<Scene> scene, Entity surface)
+	{
+		const std::vector<Entity> points = GetSurfaceControlPoints(surface);
+		if (points.empty())
+		{
+			return;
+		}
+
+		DeselectAll(scene);
+
+		if (surface.IsValid())
+		{
+			surface.AddTag<IsSelectedTag>();
+		}
+
+		for (Entity point : points)
+		{
+			point.AddTag<IsSelectedTag>();
+		}
+	}
+
 	inline void DeleteSelected(Ref<Scene> scene)
 	{
 		int count = 0;
