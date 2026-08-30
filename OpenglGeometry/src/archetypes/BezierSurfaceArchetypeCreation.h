@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleArchetypeCreation.h"
+#include <cmath>
 #include <numbers>
 
 namespace Archetypes
@@ -113,14 +114,19 @@ namespace Archetypes
 	}
 
 	inline std::vector<std::vector<Entity>>GenerateRectangularGridOfPoints(Scene* scene, Entity entity,
-		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints, bool createVirtual)
+		BezierSurfaceCreationParameters params, std::pair<unsigned int, unsigned int> numberOfPoints,
+		bool createVirtual, SurfaceDegree degree = SurfaceDegreeC0)
 	{
 		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
 
-		const float sizeXPerPoint = params.sizeX / (numberOfPointsX - 1);
-		const float sizeYPerPoint = params.sizeY / (numberOfPointsY - 1);
+		const bool insetSurface = degree.stride == 1;
+		const float spanX = static_cast<float>(insetSurface ? params.numberOfXPatches : numberOfPointsX - 1);
+		const float spanY = static_cast<float>(insetSurface ? params.numberOfYPatches : numberOfPointsY - 1);
+		const float sizeXPerPoint = params.sizeX / spanX;
+		const float sizeYPerPoint = params.sizeY / spanY;
+		const int indexOffset = insetSurface ? 1 : 0;
 
 		const auto startingPosition = params.startingPosition;
 
@@ -128,7 +134,9 @@ namespace Archetypes
 		{
 			for (unsigned int j = 0; j < numberOfPointsY; j++)
 			{
-				Algebra::Vector4 offset = Algebra::Vector4(i * sizeXPerPoint, 0.f, j * sizeYPerPoint);
+				Algebra::Vector4 offset = Algebra::Vector4(
+					(static_cast<int>(i) - indexOffset) * sizeXPerPoint, 0.f,
+					(static_cast<int>(j) - indexOffset) * sizeYPerPoint);
 				Entity point;
 				if (!createVirtual)
 					point = CreatePoint(scene, startingPosition + offset);
@@ -152,9 +160,16 @@ namespace Archetypes
 		auto [numberOfPointsX, numberOfPointsY] = numberOfPoints;
 
 		const unsigned int distinctColumns = numberOfPointsX - degree.seam;
-		const float heightPerPoint = params.sizeY / static_cast<float>(numberOfPointsY - 1);
 		const float anglePerPoint =
 			2.f * std::numbers::pi_v<float> / static_cast<float>(distinctColumns);
+
+		const bool insetSurface = degree.stride == 1;
+		const float radius = insetSurface
+			? params.sizeX * 3.f / (2.f + std::cos(anglePerPoint))
+			: params.sizeX;
+		const float spanY = static_cast<float>(insetSurface ? params.numberOfYPatches : numberOfPointsY - 1);
+		const float heightPerPoint = params.sizeY / spanY;
+		const int heightIndexOffset = insetSurface ? 1 : 0;
 
 		std::vector<std::vector<Entity>> result(numberOfPointsX, std::vector<Entity>(numberOfPointsY));
 		Algebra::Vector4 startingPosition = params.startingPosition;
@@ -164,10 +179,10 @@ namespace Archetypes
 			for(unsigned int j = 0; j < numberOfPointsY; j++)
 			{
 				Algebra::Vector4 heightOffset =
-					Algebra::Vector4(0.f, j * heightPerPoint, 0.f);
+					Algebra::Vector4(0.f, (static_cast<int>(j) - heightIndexOffset) * heightPerPoint, 0.f);
 				Algebra::Vector4 radiusOffset =
 					Algebra::Matrix4::RotationY(anglePerPoint * i) *
-					Algebra::Vector4(params.sizeX, 0.f, 0.f);
+					Algebra::Vector4(radius, 0.f, 0.f);
 
 				Entity point;
 				if(!createVirtual)
@@ -206,7 +221,7 @@ namespace Archetypes
 		if (bezierParams.isCylinder)
 			points = GenerateCylindricalGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual, degree);
 		else
-			points = GenerateRectangularGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual);
+			points = GenerateRectangularGridOfPoints(scene, entity, bezierParams, numberOfPoints, createVirtual, degree);
 
 		FillBezierComponent(scene, entity, bezierComponent, bezierParams, points, degree);
 

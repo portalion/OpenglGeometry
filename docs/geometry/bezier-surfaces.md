@@ -67,34 +67,39 @@ For C0, sharing an edge (`3n + 1`, not `4n`) is what makes the surface C0-contin
 the control points are a **de Boor net**: adjacent patches overlap by three, `n + 3` points per
 axis, and the surface is C2 across every boundary.
 
+## `sizeX` / `sizeY` are the *surface's* extent
+
+For C0 the Bézier surface interpolates its corner control points, so the net and the surface
+have the same extent — spacing is `sizeX / (numberOfPointsX - 1)` and the net starts at the
+cursor. For C2 the B-spline surface lies **inside** its de Boor net, so the net is placed larger
+and shifted by one spacing (`indexOffset = 1`) so the *evaluated* surface spans exactly
+`sizeX × sizeY` starting at the cursor:
+
+```cpp
+const bool insetSurface = degree.stride == 1;                       // C2
+const float spanX = insetSurface ? numberOfXPatches : numberOfPointsX - 1;
+const float sizeXPerPoint = params.sizeX / spanX;
+offset.x = (i - (insetSurface ? 1 : 0)) * sizeXPerPoint;
+```
+
 ## Two grid topologies
 
 ### Rectangular — `GenerateRectangularGridOfPoints`
 
-A flat grid in the XY plane, evenly spaced:
-
-```cpp
-const float sizeXPerPoint = params.sizeX / (numberOfPointsX - 1);
-const float sizeYPerPoint = params.sizeY / (numberOfPointsY - 1);
-
-Algebra::Vector4 offset(i * sizeXPerPoint, j * sizeYPerPoint, 0.f);
-```
+A flat grid in the XZ plane at `params.startingPosition`.
 
 ### Cylindrical — `GenerateCylindricalGridOfPoints`
 
-Points are placed on a circle in XZ (`RotationY`) and stacked along Y:
+Points are placed on a circle in XZ (`RotationY`) and stacked along Y. `sizeX` is the
+**radius**, `sizeY` the total height (again the *surface's*, not the net's). For C2 the height
+uses the same `insetSurface` shift, and the de Boor ring is scaled up so a closed uniform cubic
+B-spline through it evaluates to radius `sizeX` at the knot points:
 
 ```cpp
-const unsigned int distinctColumns = numberOfPointsX - degree.seam;
-const float heightPerPoint = params.sizeY / (numberOfPointsY - 1);
-const float anglePerPoint  = 2π / distinctColumns;
-
-Algebra::Vector4 heightOffset(0.f, j * heightPerPoint, 0.f);
-Algebra::Vector4 radiusOffset = Algebra::Matrix4::RotationY(anglePerPoint * i) *
-                                Algebra::Vector4(params.sizeX, 0.f, 0.f);
+const float radius = insetSurface
+    ? params.sizeX * 3.f / (2.f + std::cos(anglePerPoint))   // r(2 + cos a)/3 == sizeX
+    : params.sizeX;
 ```
-
-Here `sizeX` means **radius**, not width, and `sizeY` is the total height.
 
 The seam is closed by aliasing rather than by creating duplicate points — the last
 `degree.seam` columns hold the *same entity handles* as the first `degree.seam` (one column for
