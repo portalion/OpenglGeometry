@@ -17,6 +17,8 @@ namespace Archetypes
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
 		bezierComponent.generationFunction = MeshGenerator::BezierCurveC0::GenerateVertices;
+
+		entity.AddComponent<CurveHelpersComponent>().controlPolyline = virtualPolyline;
 		return entity;
 	}
 
@@ -45,6 +47,8 @@ namespace Archetypes
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
 		bezierComponent.generationFunction = MeshGenerator::BezierCurveC2::GenerateVertices;
+
+		entity.AddComponent<CurveHelpersComponent>().controlPolyline = virtualPolyline;
 		return entity;
 	}
 

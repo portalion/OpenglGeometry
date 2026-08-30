@@ -147,6 +147,42 @@ namespace
 			GUI::SelectSurfaceControlPoints(scene, entity);
 		}
 	}
+
+	CurveValues ReadCurve(Entity entity)
+	{
+		CurveValues values;
+		values.isC2 = entity.HasComponent<ObjectTypeComponent>()
+			&& entity.GetComponent<ObjectTypeComponent>().type == ObjectType::BezierC2;
+		values.controlPointCount = static_cast<uint32_t>(GUI::GetCurveControlPoints(entity).size());
+		values.showControlPolygon = GUI::CurveControlPolygonVisible(entity);
+
+		if (entity.HasComponent<CurveHelpersComponent>())
+		{
+			values.showBernsteinPoints = entity.GetComponent<CurveHelpersComponent>().showBernstein;
+		}
+
+		return values;
+	}
+
+	void WriteCurve(Ref<Scene> scene, Entity entity, const CurveValues& values)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<CurveHelpersComponent>())
+		{
+			return;
+		}
+
+		if (values.showControlPolygon != GUI::CurveControlPolygonVisible(entity))
+		{
+			GUI::SetCurveControlPolygonVisible(entity, values.showControlPolygon);
+		}
+
+		entity.GetComponent<CurveHelpersComponent>().showBernstein = values.showBernsteinPoints;
+
+		if (values.selectPointsRequested)
+		{
+			GUI::SelectCurveControlPoints(scene, entity);
+		}
+	}
 }
 
 GUISystem::GUISystem(Ref<Scene> scene, Viewport& viewport)
@@ -207,6 +243,10 @@ void GUISystem::SyncInspectorState()
 			{
 				row.surface = ReadSurface(entity);
 			}
+			if (entity.HasComponent<CurveHelpersComponent>())
+			{
+				row.curve = ReadCurve(entity);
+			}
 		}
 
 		m_UiState.objects.push_back(row);
@@ -227,8 +267,10 @@ void GUISystem::SyncInspectorState()
 
 	const ObjectRow* onlySelected = nullptr;
 	const ObjectRow* onlySurface = nullptr;
+	const ObjectRow* onlyCurve = nullptr;
 	int selectedCount = 0;
 	int surfaceCount = 0;
+	int curveCount = 0;
 	for (const ObjectRow& row : m_UiState.objects)
 	{
 		if (row.selected)
@@ -240,6 +282,11 @@ void GUISystem::SyncInspectorState()
 			{
 				surfaceCount++;
 				onlySurface = &row;
+			}
+			if (row.curve)
+			{
+				curveCount++;
+				onlyCurve = &row;
 			}
 		}
 	}
@@ -254,14 +301,21 @@ void GUISystem::SyncInspectorState()
 	{
 		m_UiState.surface = onlySurface->surface;
 	}
+
+	if (curveCount == 1 && onlyCurve)
+	{
+		m_UiState.curve = onlyCurve->curve;
+	}
 }
 
 void GUISystem::WriteBackInspectorState()
 {
 	const ObjectRow* onlySelected = nullptr;
 	const ObjectRow* onlySurface = nullptr;
+	const ObjectRow* onlyCurve = nullptr;
 	int selectedCount = 0;
 	int surfaceCount = 0;
+	int curveCount = 0;
 
 	for (const ObjectRow& row : m_UiState.objects)
 	{
@@ -277,6 +331,11 @@ void GUISystem::WriteBackInspectorState()
 		{
 			surfaceCount++;
 			onlySurface = &row;
+		}
+		if (row.curve)
+		{
+			curveCount++;
+			onlyCurve = &row;
 		}
 
 		Entity entity = FindEntityById(m_Scene, row.id);
@@ -318,6 +377,11 @@ void GUISystem::WriteBackInspectorState()
 	if (surfaceCount == 1 && onlySurface && m_UiState.surface)
 	{
 		WriteSurface(m_Scene, FindEntityById(m_Scene, onlySurface->id), *m_UiState.surface);
+	}
+
+	if (curveCount == 1 && onlyCurve && m_UiState.curve)
+	{
+		WriteCurve(m_Scene, FindEntityById(m_Scene, onlyCurve->id), *m_UiState.curve);
 	}
 }
 

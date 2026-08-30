@@ -22,5 +22,6 @@ struct Globals
 
 	static const Algebra::Vector4 defaultPointsColor;
 	static const Algebra::Vector4 selectionColor;
+	static const Algebra::Vector4 bernsteinPointColor;
 };
 

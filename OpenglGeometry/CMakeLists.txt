@@ -32,6 +32,7 @@ add_executable(${PROJECT_NAME}
 
     "src/serialization/SceneSerialization.cpp"
 
+    "src/systems/CurveBernsteinSystem.cpp"
     "src/systems/MeshGeneratingSystem.cpp"
     "src/systems/NotificationSystem.cpp"
     "src/systems/RemovalSystem.cpp"

@@ -7,7 +7,7 @@ only in the `std::function` stored in `BezierLineGenerationComponent::generation
 | --- | --- | --- | --- |
 | **Bézier C0** | `MeshGenerator::BezierCurveC0::GenerateVertices` | Only the segment joints | yes (virtual) |
 | **Bézier C2** | `MeshGenerator::BezierCurveC2::GenerateVertices` | no (B-spline hull) | yes (virtual) |
-| **Interpolated** | `MeshGenerator::InterpolatedBezierCurve::GenerateVertices` | yes, all of them | no |
+| **Interpolated** | `MeshGenerator::InterpolatedBezierCurve::GenerateVertices` | yes, all of them | yes (virtual) |
 
 All three return the same thing: a flat `std::vector<Algebra::Vector4>` of Bézier control
 points in groups of four, which the tessellation shader evaluates as consecutive cubic
@@ -164,7 +164,8 @@ The solver itself lives in the Algebra library — see [algebra.md](../algebra.m
 
 [`BezierCurveArchetypeCreation.h`](../../OpenglGeometry/src/archetypes/BezierCurveArchetypeCreation.h)
 
-C0 and C2 both create a **virtual control polyline** so you can see the control hull:
+All three types create a **virtual control polyline** so you can see the control hull, and
+store its handle on a `CurveHelpersComponent`:
 
 ```cpp
 entity.AddTag<IsDirtyTag>();
@@ -176,12 +177,46 @@ AddPolylineToEntity(virtualPolyline, pointsBegin, pointsEnd);
 AddLineToEntity(entity, pointsBegin, pointsEnd);       // the curve's own control points
 auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
 bezierComponent.generationFunction = MeshGenerator::BezierCurveC0::GenerateVertices;
+
+entity.AddComponent<CurveHelpersComponent>().controlPolyline = virtualPolyline;
 ```
 
-The polyline can be hidden with the checkbox `ShapeInspectorSystem::VirtualInspect` renders.
+---
 
-[`InterpolatedBezierCurveArchetypeCreation.h`](../../OpenglGeometry/src/archetypes/InterpolatedBezierCurveArchetypeCreation.h)
-omits the virtual polyline — the curve already visits every point, so a hull adds nothing.
+## Inspector
+
+With a curve selected (on its own or alongside its control points) the `CURVE` section shows
+the control-point count, a **Show control polygon** toggle (`IsInvisibleTag` on
+`CurveHelpersComponent::controlPolyline`), a **Select control points** button (adds the curve
+and every control point to the selection), and — for C2 only — a **Show Bezier points**
+toggle. Wiring: `GUISystem::ReadCurve` / `WriteCurve`, `CurveValues` in `ui/model/UiModel.h`,
+helpers in `ui/SceneActions.h`. The section stays visible in the curve + control-points
+multi-selection.
+
+## Bézier points of a C2 curve
+
+`CurveBernsteinSystem` keeps the piecewise-Bézier control points of every C2 curve in step
+with its de Boor net. `MeshGenerator::BezierCurveC2::ToBernsteinPoints` gives the
+`3(n − 3) + 1` distinct points (`GenerateVertices` minus the duplicated joints); the system
+materialises them as **virtual point entities** on `CurveHelpersComponent::bernsteinPoints`
+plus a virtual polyline through them, tinted `Globals::bernsteinPointColor`. They have no
+`IdComponent`, so they are absent from the object list and from every saved file, and they
+are recomputed each frame from the current de Boor positions (written past the `Observable`
+so they never re-dirty the curve). `showBernstein` on the component — set from the inspector
+toggle — adds/removes `IsInvisibleTag` on the whole set.
+
+### Selecting and dragging them
+
+Each carries a `BernsteinPointComponent { curve, deBoorIndex, lastComputed }`.
+`ViewportPicking` projects them alongside real points (click and box select both), and
+`SceneActions::GetSelectedTransformables` never keyed on an id, so a selected Bernstein point
+is moved by grab / the cursor-panel transform like anything else. Before the per-frame
+recompute, `CurveBernsteinSystem::PushDraggedPointsBack` compares each point's position to its
+`lastComputed`: any difference is a user drag, so it moves the point's **dominant de Boor
+point** (`DeBoorIndexOf` — the one weighted 2/3) by `3/2` of the drag, through the
+`Observable`. The recompute then places every Bernstein point on the new net — the dragged one
+lands under the cursor and its neighbours shift with it, which is what C2 continuity means.
+`DeleteSelected` skips them (they would only respawn).
 
 ---
 

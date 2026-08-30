@@ -16,5 +16,11 @@ namespace MeshGenerator
 		std::vector<Algebra::Vector4> GenerateVertices(
 			const std::vector<Algebra::Vector4>& bSplineControlPoints
 		);
+
+		std::vector<Algebra::Vector4> ToBernsteinPoints(
+			const std::vector<Algebra::Vector4>& deBoorPoints
+		);
+
+		size_t DeBoorIndexOf(size_t bernsteinIndex, size_t deBoorCount);
 	}
 }

@@ -153,12 +153,92 @@ namespace GUI
 		}
 	}
 
+	inline std::vector<Entity> GetCurveControlPoints(Entity curve)
+	{
+		std::vector<Entity> points;
+
+		if (!curve.IsValid() || !curve.HasComponent<LineGenerationComponent>())
+		{
+			return points;
+		}
+
+		for (Entity point : curve.GetComponent<LineGenerationComponent>().controlPoints)
+		{
+			if (point.IsValid() && std::find(points.begin(), points.end(), point) == points.end())
+			{
+				points.push_back(point);
+			}
+		}
+
+		return points;
+	}
+
+	inline void SelectCurveControlPoints(Ref<Scene> scene, Entity curve)
+	{
+		const std::vector<Entity> points = GetCurveControlPoints(curve);
+		if (points.empty())
+		{
+			return;
+		}
+
+		DeselectAll(scene);
+
+		if (curve.IsValid())
+		{
+			curve.AddTag<IsSelectedTag>();
+		}
+
+		for (Entity point : points)
+		{
+			point.AddTag<IsSelectedTag>();
+		}
+	}
+
+	inline bool CurveControlPolygonVisible(Entity curve)
+	{
+		if (!curve.IsValid() || !curve.HasComponent<CurveHelpersComponent>())
+		{
+			return false;
+		}
+
+		Entity polyline = curve.GetComponent<CurveHelpersComponent>().controlPolyline;
+		return polyline.IsValid() && !polyline.HasComponent<IsInvisibleTag>();
+	}
+
+	inline void SetCurveControlPolygonVisible(Entity curve, bool visible)
+	{
+		if (!curve.IsValid() || !curve.HasComponent<CurveHelpersComponent>())
+		{
+			return;
+		}
+
+		Entity polyline = curve.GetComponent<CurveHelpersComponent>().controlPolyline;
+		if (!polyline.IsValid())
+		{
+			return;
+		}
+
+		if (visible)
+		{
+			polyline.RemoveTag<IsInvisibleTag>();
+		}
+		else
+		{
+			polyline.AddTag<IsInvisibleTag>();
+		}
+	}
+
 	inline void DeleteSelected(Ref<Scene> scene)
 	{
 		int count = 0;
 		int locked = 0;
 		for (Entity entity : scene->GetAllEntitiesWith<IsSelectedTag>())
 		{
+			if (entity.HasComponent<BernsteinPointComponent>())
+			{
+				continue;
+			}
+
 			if (IsSurfaceControlPoint(entity))
 			{
 				locked++;

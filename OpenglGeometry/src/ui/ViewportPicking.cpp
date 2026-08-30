@@ -59,16 +59,11 @@ namespace
 
 		std::vector<ScreenPoint> result;
 
-		for (Entity entity : scene->GetAllEntitiesWith<ObjectTypeComponent, PositionComponent>())
+		const auto project = [&](Entity entity)
 		{
-			if (entity.GetComponent<ObjectTypeComponent>().type != ObjectType::Point)
-			{
-				continue;
-			}
-
 			if (entity.HasComponent<IsInvisibleTag>())
 			{
-				continue;
+				return;
 			}
 
 			const Algebra::Vector4 position = entity.GetComponent<PositionComponent>().position;
@@ -77,7 +72,7 @@ namespace
 
 			if (clip.w <= 1e-4f)
 			{
-				continue;
+				return;
 			}
 
 			const float ndcX = clip.x / clip.w;
@@ -88,6 +83,19 @@ namespace
 				ImVec2(rectMin.x + (ndcX * 0.5f + 0.5f) * width,
 					   rectMin.y + (0.5f - ndcY * 0.5f) * height),
 				clip.w });
+		};
+
+		for (Entity entity : scene->GetAllEntitiesWith<ObjectTypeComponent, PositionComponent>())
+		{
+			if (entity.GetComponent<ObjectTypeComponent>().type == ObjectType::Point)
+			{
+				project(entity);
+			}
+		}
+
+		for (Entity entity : scene->GetAllEntitiesWith<BernsteinPointComponent, PositionComponent>())
+		{
+			project(entity);
 		}
 
 		return result;

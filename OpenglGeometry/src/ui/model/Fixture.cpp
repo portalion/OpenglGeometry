@@ -73,15 +73,8 @@ UiState GUI::MakeFixture()
 	state.torus = torus;
 
 	CurveValues curve;
-	curve.controlPoints =
-	{
-		MakeRow(21, "Point 21", ObjectType::Point),
-		MakeRow(22, "Point 22", ObjectType::Point),
-		MakeRow(23, "Tip anchor", ObjectType::Point),
-		MakeRow(24, "Point 24", ObjectType::Point),
-		MakeRow(25, "Point 25", ObjectType::Point),
-		MakeRow(26, "Point 26", ObjectType::Point),
-	};
+	curve.isC2 = true;
+	curve.controlPointCount = 6;
 	state.curve = curve;
 
 	SurfaceValues surface;

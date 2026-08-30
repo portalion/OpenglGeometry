@@ -94,112 +94,37 @@ namespace
 		}
 	}
 
-	void DrawCurveSection(UiState& state, CurveValues& curve)
+	void DrawCurveSection(CurveValues& curve)
 	{
 		if (!SectionHeader("CURVE"))
 		{
 			return;
 		}
 
-		static constexpr std::array<const char*, 2> basisOptions = { "de Boor", "Bernstein" };
-		int basisIndex = curve.bernsteinBasis ? 1 : 0;
-
-		ImGui::TextUnformatted("Basis");
-		ImGui::SameLine();
-		if (SegmentedControl("##Basis", basisIndex, basisOptions))
+		if (BeginPropertyTable("##Curve"))
 		{
-			curve.bernsteinBasis = (basisIndex == 1);
-		}
-
-		ImGui::Spacing();
-		ImGui::Text("Control points (%zu)", curve.controlPoints.size());
-
-		int moveUp = -1;
-		int moveDown = -1;
-		int removeIndex = -1;
-
-		for (int i = 0; i < static_cast<int>(curve.controlPoints.size()); i++)
-		{
-			ObjectRow& point = curve.controlPoints[static_cast<std::size_t>(i)];
-
-			ImGui::PushID(static_cast<int>(point.id));
-
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(point.name.c_str());
+			ImGui::TextUnformatted("Control points");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("%u", curve.controlPointCount);
 
-			ImGui::SameLine(180.f);
-			ImGui::TextDisabled("id %u", point.id);
-
-			ImGui::SameLine(260.f);
-			ImGui::BeginDisabled(i == 0);
-			if (ImGui::SmallButton("^"))
+			PropertyRow("Show control polygon", curve.showControlPolygon);
+			if (curve.isC2)
 			{
-				moveUp = i;
+				PropertyRow("Show Bezier points", curve.showBernsteinPoints);
 			}
-			ImGui::EndDisabled();
-
-			ImGui::SameLine();
-			ImGui::BeginDisabled(i + 1 == static_cast<int>(curve.controlPoints.size()));
-			if (ImGui::SmallButton("v"))
-			{
-				moveDown = i;
-			}
-			ImGui::EndDisabled();
-
-			ImGui::SameLine();
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.30f, 0.30f, 1.f));
-			if (ImGui::SmallButton("x"))
-			{
-				removeIndex = i;
-			}
-			ImGui::PopStyleColor();
-
-			ImGui::PopID();
+			EndPropertyTable();
 		}
 
-		if (moveUp > 0)
+		if (ImGui::Button("Select control points"))
 		{
-			std::swap(curve.controlPoints[static_cast<std::size_t>(moveUp)],
-				curve.controlPoints[static_cast<std::size_t>(moveUp - 1)]);
+			curve.selectPointsRequested = true;
 		}
-
-		if (moveDown >= 0 && moveDown + 1 < static_cast<int>(curve.controlPoints.size()))
-		{
-			std::swap(curve.controlPoints[static_cast<std::size_t>(moveDown)],
-				curve.controlPoints[static_cast<std::size_t>(moveDown + 1)]);
-		}
-
-		if (removeIndex >= 0)
-		{
-			curve.controlPoints.erase(curve.controlPoints.begin() + removeIndex);
-		}
-
-		const std::size_t selectedCount = state.SelectedCount();
-
-		ImGui::BeginDisabled(selectedCount == 0);
-		if (ImGui::Button("Add selected points"))
-		{
-			for (const ObjectRow* selected : state.Selected())
-			{
-				if (selected->type != ObjectType::Point)
-				{
-					continue;
-				}
-
-				const bool alreadyIn = std::ranges::any_of(curve.controlPoints,
-					[selected](const ObjectRow& point) { return point.id == selected->id; });
-
-				if (!alreadyIn)
-				{
-					curve.controlPoints.push_back(*selected);
-				}
-			}
-		}
-		ImGui::EndDisabled();
-
-		ImGui::Checkbox("Show polygon", &curve.showPolygon);
 		ImGui::SameLine();
-		ImGui::Checkbox("Show virtual points", &curve.showVirtualPoints);
+		ImGui::TextDisabled("%u points", curve.controlPointCount);
 	}
 
 	void DrawSurfaceSection(SurfaceValues& surface)
@@ -345,7 +270,7 @@ void GUI::DrawInspector(UiState& state)
 
 		if (state.transform) DrawTransformSection(*state.transform);
 		if (state.torus)     DrawTorusSection(*state.torus);
-		if (state.curve)     DrawCurveSection(state, *state.curve);
+		if (state.curve)     DrawCurveSection(*state.curve);
 		if (state.surface)   DrawSurfaceSection(*state.surface);
 
 		ImGui::PopID();
@@ -355,6 +280,12 @@ void GUI::DrawInspector(UiState& state)
 		ImGui::Text("%zu objects selected", selectedCount);
 		DrawSelectionSummary(state);
 		ImGui::Separator();
+
+		if (state.curve)
+		{
+			DrawCurveSection(*state.curve);
+			ImGui::Separator();
+		}
 
 		if (state.surface)
 		{

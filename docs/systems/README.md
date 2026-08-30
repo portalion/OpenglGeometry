@@ -29,6 +29,7 @@ SystemPipeline::SystemPipeline(Ref<Scene> scene, Viewport& viewport)
         CreateRef<GUISystem>(scene, viewport),   // draws panels + shape-list/inspector, viewport picking, cursor
         CreateRef<PopupSystem>(scene),
 
+        CreateRef<CurveBernsteinSystem>(scene),  // C2 curves: keep the virtual Bézier points in step
         CreateRef<MeshGeneratingSystem>(scene),
         CreateRef<SelectionMarkerSystem>(scene),
         CreateRef<RenderingSystem>(scene, viewport)
@@ -53,6 +54,7 @@ Owned by `App` as a `Unique<SystemPipeline>`, rebuilt if the scene is replaced.
 | 3 | `GUISystem` | `NameComponent`, `CameraComponent`, `ObjectTypeComponent`/`PositionComponent` (viewport picking) | `IsSelectedTag`, `ToBeDestroyedTag` | [→](gui-systems.md) |
 | 4 | `ShapeInspectorSystem` | `IsSelectedTag` + every bound component | component values, `IsDirtyTag`, `IsInvisibleTag` | [→](gui-systems.md) |
 | 5 | `PopupSystem` | keyboard, `IsSelectedTag` | creates entities | [→](gui-systems.md) |
+| — | `CurveBernsteinSystem` | `CurveHelpersComponent` + `LineGenerationComponent` (C2 curves) | virtual Bézier-point entities + positions (past the `Observable`); converts a dragged Bézier point back into a de Boor move; `IsInvisibleTag`, `IsDirtyTag` | [→](../geometry/bezier-curves.md#bézier-points-of-a-c2-curve) |
 | 6 | `MeshGeneratingSystem` | `IsDirtyTag` + generation components | `MeshComponent`, GPU buffers; clears `IsDirtyTag` | [→](mesh-generating-system.md) |
 | 7 | `SelectionMarkerSystem` | `IsSelectedTag` + `PositionComponent` | the selection-centre marker's `PositionComponent` / `IsInvisibleTag` | [→](selection-marker-system.md) |
 | 8 | `RenderingSystem` | `CameraComponent`, `MeshComponent` | GL draw calls | [→](rendering-system.md) |

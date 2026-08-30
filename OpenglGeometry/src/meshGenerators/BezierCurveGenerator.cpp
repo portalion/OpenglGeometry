@@ -1,5 +1,7 @@
 #include "BezierCurveGenerator.h"
 
+#include <algorithm>
+
 void MeshGenerator::BezierCurveC0::FixVertices(std::vector<Algebra::Vector4>& vertices)
 {
 	int fix = vertices.size() % 4;
@@ -82,4 +84,44 @@ std::vector<Algebra::Vector4> MeshGenerator::BezierCurveC2::GenerateVertices(con
 	}
 
 	return result;
+}
+
+std::vector<Algebra::Vector4> MeshGenerator::BezierCurveC2::ToBernsteinPoints(
+	const std::vector<Algebra::Vector4>& deBoorPoints)
+{
+	std::vector<Algebra::Vector4> result;
+
+	if (deBoorPoints.size() < 4)
+	{
+		return result;
+	}
+
+	for (size_t i = 0; i + 3 < deBoorPoints.size(); i++)
+	{
+		const Algebra::Vector4& P0 = deBoorPoints[i];
+		const Algebra::Vector4& P1 = deBoorPoints[i + 1];
+		const Algebra::Vector4& P2 = deBoorPoints[i + 2];
+		const Algebra::Vector4& P3 = deBoorPoints[i + 3];
+
+		result.push_back((P0 + 4.0f * P1 + P2) / 6.0f);
+		result.push_back((4.0f * P1 + 2.0f * P2) / 6.0f);
+		result.push_back((2.0f * P1 + 4.0f * P2) / 6.0f);
+
+		if (i + 4 >= deBoorPoints.size())
+		{
+			result.push_back((P1 + 4.0f * P2 + P3) / 6.0f);
+		}
+	}
+
+	return result;
+}
+
+size_t MeshGenerator::BezierCurveC2::DeBoorIndexOf(size_t bernsteinIndex, size_t deBoorCount)
+{
+	const size_t segment = bernsteinIndex / 3;
+	const size_t withinSegment = bernsteinIndex % 3;
+
+	const size_t index = withinSegment == 2 ? segment + 2 : segment + 1;
+
+	return deBoorCount == 0 ? 0 : std::min(index, deBoorCount - 1);
 }

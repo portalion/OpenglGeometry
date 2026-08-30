@@ -150,6 +150,25 @@ struct BezierLineGenerationComponent
 	BezierLineGenerationComponent(const BezierLineGenerationComponent& other) = default;
 };
 
+struct CurveHelpersComponent
+{
+	Entity controlPolyline;
+	std::vector<Entity> bernsteinPoints;
+	Entity bernsteinPolyline;
+	bool showBernstein = false;
+	CurveHelpersComponent() = default;
+	CurveHelpersComponent(const CurveHelpersComponent& other) = default;
+};
+
+struct BernsteinPointComponent
+{
+	Entity curve;
+	std::size_t deBoorIndex = 0;
+	Algebra::Vector4 lastComputed;
+	BernsteinPointComponent() = default;
+	BernsteinPointComponent(const BernsteinPointComponent& other) = default;
+};
+
 struct BezierPatchGenerationComponent
 {
 	std::array<std::array<Entity, 4>, 4> controlPoints;

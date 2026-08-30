@@ -10,9 +10,15 @@ namespace Archetypes
 	{
 		entity.AddTag<IsDirtyTag>();
 
+		auto virtualPolyline = scene->CreateEntity();
+		AddVirtualToEntity(virtualPolyline, entity);
+		AddPolylineToEntity(virtualPolyline, pointsBegin, pointsEnd);
+
 		AddLineToEntity(entity, pointsBegin, pointsEnd);
 		auto& bezierComponent = entity.AddComponent<BezierLineGenerationComponent>();
 		bezierComponent.generationFunction = MeshGenerator::InterpolatedBezierCurve::GenerateVertices;
+
+		entity.AddComponent<CurveHelpersComponent>().controlPolyline = virtualPolyline;
 
 		return entity;
 	}

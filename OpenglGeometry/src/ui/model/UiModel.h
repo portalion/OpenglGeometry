@@ -32,6 +32,15 @@ struct SurfaceValues
 	bool     selectPointsRequested = false;
 };
 
+struct CurveValues
+{
+	bool     isC2 = false;
+	uint32_t controlPointCount = 0;
+	bool     showControlPolygon = true;
+	bool     showBernsteinPoints = false;
+	bool     selectPointsRequested = false;
+};
+
 struct ObjectRow
 {
 	uint32_t    id = 0;
@@ -43,14 +52,7 @@ struct ObjectRow
 	std::optional<TransformValues> transform;
 	std::optional<TorusValues>     torus;
 	std::optional<SurfaceValues>   surface;
-};
-
-struct CurveValues
-{
-	bool bernsteinBasis = false;
-	bool showPolygon = true;
-	bool showVirtualPoints = false;
-	std::vector<ObjectRow> controlPoints;
+	std::optional<CurveValues>     curve;
 };
 
 enum class PivotMode
