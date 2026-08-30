@@ -354,9 +354,14 @@ void GUI::ShapeList::DrawRowContextMenu(Entity entity)
 	}
 
 	ImGui::Separator();
-	if (ImGui::MenuItem("Delete", "Del"))
+	const bool lockedPoint = IsSurfaceControlPoint(entity);
+	if (ImGui::MenuItem("Delete", "Del", false, !lockedPoint))
 	{
 		entity.AddTag<ToBeDestroyedTag>();
+	}
+	if (lockedPoint && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("a surface's control points cannot be deleted");
 	}
 
 	ImGui::EndPopup();

@@ -38,11 +38,36 @@ namespace GUI
 		}
 	}
 
+	inline bool IsSurfaceControlPoint(Entity entity)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<NotificationComponent>())
+		{
+			return false;
+		}
+
+		for (Entity notified : entity.GetComponent<NotificationComponent>().entitiesToNotify)
+		{
+			if (notified.IsValid() && notified.HasComponent<BezierPatchGenerationComponent>())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	inline void DeleteSelected(Ref<Scene> scene)
 	{
 		int count = 0;
+		int locked = 0;
 		for (Entity entity : scene->GetAllEntitiesWith<IsSelectedTag>())
 		{
+			if (IsSurfaceControlPoint(entity))
+			{
+				locked++;
+				continue;
+			}
+
 			entity.AddTag<ToBeDestroyedTag>();
 			count++;
 		}
@@ -50,6 +75,10 @@ namespace GUI
 		if (count > 0)
 		{
 			Logger::Info("Deleted {} selected object(s)", count);
+		}
+		if (locked > 0)
+		{
+			Logger::Warning("Kept {} surface control point(s) - a surface's points cannot be deleted", locked);
 		}
 	}
 
