@@ -13,6 +13,7 @@ enum class ObjectType
 	InterpolatedC2,
 	BezierSurfaceC0,
 	BezierSurfaceC2,
+	GregoryPatch,
 };
 
 inline constexpr std::array AllObjectTypes =
@@ -25,6 +26,7 @@ inline constexpr std::array AllObjectTypes =
 	ObjectType::InterpolatedC2,
 	ObjectType::BezierSurfaceC0,
 	ObjectType::BezierSurfaceC2,
+	ObjectType::GregoryPatch,
 };
 
 inline constexpr std::size_t ObjectTypeCount = AllObjectTypes.size();
@@ -41,6 +43,7 @@ inline constexpr const char* ToFormatString(ObjectType type)
 	case ObjectType::InterpolatedC2:  return "interpolatedC2";
 	case ObjectType::BezierSurfaceC0: return "bezierSurfaceC0";
 	case ObjectType::BezierSurfaceC2: return "bezierSurfaceC2";
+	case ObjectType::GregoryPatch:    return "gregoryPatch";
 	}
 
 	return "point";
@@ -71,6 +74,7 @@ inline constexpr const char* ToDisplayString(ObjectType type)
 	case ObjectType::InterpolatedC2:  return "Interpolated Bezier";
 	case ObjectType::BezierSurfaceC0: return "Bezier Surface C0";
 	case ObjectType::BezierSurfaceC2: return "Bezier Surface C2";
+	case ObjectType::GregoryPatch:    return "Gregory Patch";
 	}
 
 	return "Object";
@@ -88,6 +92,7 @@ inline constexpr const char* ToDisplayPluralString(ObjectType type)
 	case ObjectType::InterpolatedC2:  return "Interpolated Bezier curves";
 	case ObjectType::BezierSurfaceC0: return "Bezier C0 surfaces";
 	case ObjectType::BezierSurfaceC2: return "Bezier C2 surfaces";
+	case ObjectType::GregoryPatch:    return "Gregory patches";
 	}
 
 	return "Objects";

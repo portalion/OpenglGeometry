@@ -3,6 +3,7 @@
 #include "core/Base.h"
 #include "scene/Scene.h"
 #include "SceneActions.h"
+#include "HoleFilling.h"
 #include "Utils.h"
 #include "model/UiState.h"
 #include "popups/AboutDialog.h"
@@ -152,10 +153,9 @@ namespace GUI
 			RequestDialog(BezierSurfaceDialogTitle);
 		}
 
-		DisabledMenuItem("Gregory patch");
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		if (ImGui::MenuItem("Gregory patch", nullptr, false))
 		{
-			ImGui::SetTooltip("needs a closed loop of 3 curve edges");
+			GUI::FillHoles(scene);
 		}
 
 		DisabledMenuItem("Intersection curve");
@@ -181,6 +181,22 @@ namespace GUI
 		if (ImGui::MenuItem("Collapse points", nullptr, false, GUI::CanCollapseSelection(scene)))
 		{
 			GUI::CollapseSelected(scene);
+		}
+	}
+
+	inline void DrawToolsMenuItems(Ref<Scene> scene)
+	{
+		if (ImGui::MenuItem("Find holes"))
+		{
+			GUI::FindHoles(scene);
+		}
+		if (ImGui::MenuItem("Fill holes (Gregory)", nullptr, false))
+		{
+			GUI::FillHoles(scene);
+		}
+		if (ImGui::MenuItem("Clear debug visuals"))
+		{
+			GUI::ClearDebugVisuals(scene);
 		}
 	}
 

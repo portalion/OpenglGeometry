@@ -32,6 +32,13 @@ struct SurfaceValues
 	bool     selectPointsRequested = false;
 };
 
+struct GregoryValues
+{
+	uint32_t samplesU = 32;
+	uint32_t samplesV = 32;
+	bool     showTangents = false;
+};
+
 struct CurveValues
 {
 	bool     isC2 = false;
@@ -53,6 +60,7 @@ struct ObjectRow
 	std::optional<TorusValues>     torus;
 	std::optional<SurfaceValues>   surface;
 	std::optional<CurveValues>     curve;
+	std::optional<GregoryValues>   gregory;
 };
 
 enum class PivotMode

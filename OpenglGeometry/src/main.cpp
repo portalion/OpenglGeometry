@@ -15,15 +15,25 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    std::string startupScene;
     for (int i = 1; i < argc; i++)
     {
-        if (std::string_view(argv[i]) == "--ui-sandbox")
+        const std::string_view arg(argv[i]);
+        if (arg == "--ui-sandbox")
         {
             return UiSandbox::Run();
+        }
+        if (arg == "--scene" && i + 1 < argc)
+        {
+            startupScene = argv[++i];
         }
     }
 
     App& app = App::GetInstance();
+    if (!startupScene.empty())
+    {
+        app.LoadScene(startupScene);
+    }
     app.Run();
 
     return 0;

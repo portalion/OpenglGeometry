@@ -102,6 +102,76 @@ namespace
 		entity.AddTag<IsDirtyTag>();
 	}
 
+	bool GregoryTangentsVisible(Entity entity)
+	{
+		if (!entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			return false;
+		}
+
+		for (Entity child : entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+		{
+			if (child.IsValid() && child.HasComponent<GregoryTangentComponent>()
+				&& !child.HasComponent<IsInvisibleTag>())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void SetGregoryTangentsVisible(Entity entity, bool visible)
+	{
+		if (!entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			return;
+		}
+
+		for (Entity child : entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+		{
+			if (!child.IsValid() || !child.HasComponent<GregoryTangentComponent>())
+			{
+				continue;
+			}
+
+			if (visible)
+			{
+				child.RemoveTag<IsInvisibleTag>();
+			}
+			else
+			{
+				child.AddTag<IsInvisibleTag>();
+			}
+		}
+	}
+
+	GregoryValues ReadGregory(Entity entity)
+	{
+		const auto& gregory = entity.GetComponent<GregoryPatchGenerationComponent>();
+		GregoryValues values;
+		values.samplesU = static_cast<uint32_t>(gregory.samplesU);
+		values.samplesV = static_cast<uint32_t>(gregory.samplesV);
+		values.showTangents = GregoryTangentsVisible(entity);
+		return values;
+	}
+
+	void WriteGregory(Entity entity, const GregoryValues& values)
+	{
+		if (!entity.IsValid() || !entity.HasComponent<GregoryPatchGenerationComponent>())
+		{
+			return;
+		}
+
+		auto& gregory = entity.GetComponent<GregoryPatchGenerationComponent>();
+		gregory.samplesU = static_cast<int>(values.samplesU);
+		gregory.samplesV = static_cast<int>(values.samplesV);
+
+		if (values.showTangents != GregoryTangentsVisible(entity))
+		{
+			SetGregoryTangentsVisible(entity, values.showTangents);
+		}
+	}
+
 	SurfaceValues ReadSurface(Entity entity)
 	{
 		const auto& surface = entity.GetComponent<BezierSurfaceGenerationComponent>();
@@ -243,6 +313,10 @@ void GUISystem::SyncInspectorState()
 			{
 				row.surface = ReadSurface(entity);
 			}
+			if (entity.HasComponent<GregoryPatchGenerationComponent>())
+			{
+				row.gregory = ReadGregory(entity);
+			}
 			if (entity.HasComponent<CurveHelpersComponent>())
 			{
 				row.curve = ReadCurve(entity);
@@ -264,6 +338,7 @@ void GUISystem::SyncInspectorState()
 	m_UiState.torus.reset();
 	m_UiState.curve.reset();
 	m_UiState.surface.reset();
+	m_UiState.gregory.reset();
 
 	const ObjectRow* onlySelected = nullptr;
 	const ObjectRow* onlySurface = nullptr;
@@ -295,6 +370,7 @@ void GUISystem::SyncInspectorState()
 	{
 		m_UiState.transform = onlySelected->transform;
 		m_UiState.torus = onlySelected->torus;
+		m_UiState.gregory = onlySelected->gregory;
 	}
 
 	if (surfaceCount == 1 && onlySurface)
@@ -371,6 +447,10 @@ void GUISystem::WriteBackInspectorState()
 		if (m_UiState.torus)
 		{
 			WriteTorus(entity, *m_UiState.torus);
+		}
+		if (m_UiState.gregory)
+		{
+			WriteGregory(entity, *m_UiState.gregory);
 		}
 	}
 

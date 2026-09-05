@@ -17,3 +17,5 @@ struct CursorTag { };
 struct SelectionCentreTag { };
 
 struct SelectionCentreHiddenTag { };
+
+struct DebugTag { };

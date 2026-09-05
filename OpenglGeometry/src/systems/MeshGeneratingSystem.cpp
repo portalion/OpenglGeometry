@@ -145,6 +145,159 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 
 }
 
+namespace
+{
+	bool IsGregoryValid(const GregoryPatchGenerationComponent& gregory)
+	{
+		for (const auto& side : gregory.holeSides)
+		{
+			for (Entity point : side.curve)
+			{
+				if (!point.IsValid() || !point.HasComponent<PositionComponent>()) return false;
+			}
+			for (Entity point : side.inner)
+			{
+				if (!point.IsValid() || !point.HasComponent<PositionComponent>()) return false;
+			}
+		}
+		return true;
+	}
+
+	void RebuildGregorySubPatches(GregoryPatchGenerationComponent& gregory)
+	{
+		if (!IsGregoryValid(gregory))
+		{
+			return;
+		}
+
+		std::array<MeshGenerator::GregoryFill::HoleBoundarySide, 3> sides{};
+		for (int k = 0; k < 3; k++)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				Algebra::Vector4 curve =
+					gregory.holeSides[k].curve[i].GetComponent<PositionComponent>().position;
+				Algebra::Vector4 inner =
+					gregory.holeSides[k].inner[i].GetComponent<PositionComponent>().position;
+				curve.w = 1.f;
+				inner.w = 1.f;
+				sides[k].curve[i] = curve;
+				sides[k].inner[i] = inner;
+			}
+		}
+
+		gregory.subPatches = MeshGenerator::GregoryFill::BuildTriangular(sides);
+	}
+
+	Algebra::Vector4 CubicPoint(const std::array<Algebra::Vector4, 4>& c, float t)
+	{
+		const float s = 1.f - t;
+		return s * s * s * c[0] + 3.f * s * s * t * c[1] + 3.f * s * t * t * c[2] + t * t * t * c[3];
+	}
+
+	std::vector<Algebra::Vector4> GregoryTangentSegments(
+		const GregoryPatchGenerationComponent& gregory)
+	{
+		std::vector<Algebra::Vector4> segments;
+
+		constexpr std::array<float, 5> samples{
+			0.1f, 0.3f, 0.5f, 0.7f, 0.9f
+		};
+
+		for (int k = 0; k < 3; ++k)
+		{
+			std::array<Algebra::Vector4, 4> boundary{};
+			std::array<Algebra::Vector4, 4> inner{};
+
+			for (int i = 0; i < 4; ++i)
+			{
+				auto temp = gregory.holeSides[k].curve[i];
+				boundary[i] = temp.GetComponent<PositionComponent>().position;
+				auto temp2 = gregory.holeSides[k].inner[i];
+
+				inner[i] = temp2.GetComponent<PositionComponent>().position;
+					
+			}
+
+			for (float t : samples)
+			{
+				const Algebra::Vector4 base =
+					CubicPoint(boundary, t);
+
+				const Algebra::Vector4 innerPoint =
+					CubicPoint(inner, t);
+
+				Algebra::Vector4 direction =
+					3.f * (base - innerPoint);
+
+				direction.w = 0.f;
+
+				if (direction.Length() > 0.f)
+				{
+					Algebra::Vector4 tip =
+						base + 0.5f * direction.Normalize();
+
+					tip.w = 1.f;
+
+					segments.push_back(base);
+					segments.push_back(tip);
+				}
+			}
+		}
+
+		return segments;
+	}
+}
+
+void MeshGeneratingSystem::GregoryPatchGeneration()
+{
+	BufferLayout layout
+	({
+		{ ShaderDataType::Float4, "a_Position" }
+	});
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, GregoryPatchGenerationComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+
+		auto& gregory = entity.GetComponent<GregoryPatchGenerationComponent>();
+		RebuildGregorySubPatches(gregory);
+
+		std::vector<Algebra::Vector4> vertices;
+		std::vector<uint32_t> indices;
+		for (const auto& subPatch : gregory.subPatches)
+		{
+			for (const Algebra::Vector4& point : subPatch)
+			{
+				indices.push_back(static_cast<uint32_t>(vertices.size()));
+				vertices.push_back(point);
+			}
+		}
+
+		ModifyOrCreateMesh(entity, vertices, indices,
+			layout, RenderingMode::Patches,
+			{ AvailableShaders::GregoryPatchHorizontal, AvailableShaders::GregoryPatchVertical });
+
+		if (entity.HasComponent<IsParentOfVirtualEntitiesComponent>())
+		{
+			for (Entity child : entity.GetComponent<IsParentOfVirtualEntitiesComponent>().virtualEntities)
+			{
+				if (!child.IsValid() || !child.HasComponent<GregoryTangentComponent>())
+				{
+					continue;
+				}
+
+				std::vector<Algebra::Vector4> tangentVertices =
+					GregoryTangentSegments(gregory);
+				std::vector<uint32_t> tangentIndices = GenerateLineIndices(
+					static_cast<unsigned int>(tangentVertices.size()));
+
+				ModifyOrCreateMesh(child, tangentVertices, tangentIndices, layout, RenderingMode::Lines);
+			}
+		}
+	}
+}
+
 void MeshGeneratingSystem::SurfaceControlNetGeneration()
 {
 	BufferLayout layout
@@ -204,6 +357,7 @@ void MeshGeneratingSystem::Process()
 {
 	BezierLineGeneration();
 	BezierSurfaceGeneration();
+	GregoryPatchGeneration();
 	SurfaceControlNetGeneration();
 	LineGeneration();
 	TorusGeneration();

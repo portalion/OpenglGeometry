@@ -191,3 +191,26 @@ struct SurfaceControlNetComponent
 	SurfaceControlNetComponent() = default;
 	SurfaceControlNetComponent(const SurfaceControlNetComponent& other) = default;
 };
+
+struct GregoryHoleSide
+{
+	std::array<Entity, 4> curve;
+	std::array<Entity, 4> inner;
+};
+
+struct GregoryPatchGenerationComponent
+{
+	std::array<std::array<Algebra::Vector4, 20>, 3> subPatches;
+	std::array<GregoryHoleSide, 3> holeSides;
+	int samplesU = 32;
+	int samplesV = 32;
+	GregoryPatchGenerationComponent() = default;
+	GregoryPatchGenerationComponent(const GregoryPatchGenerationComponent& other) = default;
+};
+
+struct GregoryTangentComponent
+{
+	bool fillSide = false;
+	GregoryTangentComponent() = default;
+	GregoryTangentComponent(const GregoryTangentComponent& other) = default;
+};

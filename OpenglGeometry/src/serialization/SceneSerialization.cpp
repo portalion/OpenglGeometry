@@ -266,6 +266,12 @@ namespace
 				continue;
 			}
 
+			if (type == ObjectType::GregoryPatch)
+			{
+				Logger::Warning("Serialization: skipping Gregory patch id {} (no scene-format representation)", id);
+				continue;
+			}
+
 			json geometry;
 			if (type == ObjectType::Torus)
 			{
@@ -342,6 +348,12 @@ namespace
 				if (!type || *type == ObjectType::Point)
 				{
 					Logger::Warning("Load: skipping unknown objectType \"{}\"", typeStr);
+					dto.skipped++;
+					continue;
+				}
+				if (*type == ObjectType::GregoryPatch)
+				{
+					Logger::Warning("Load: skipping Gregory patch (not supported by the scene format)");
 					dto.skipped++;
 					continue;
 				}

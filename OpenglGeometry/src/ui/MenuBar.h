@@ -45,6 +45,12 @@ namespace GUI
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Tools"))
+		{
+			DrawToolsMenuItems(scene);
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::BeginMenu("View"))
 		{
 			DrawViewMenuItems(uiState, showParameterSpace, showImGuiDemo, showLog, callbacks);

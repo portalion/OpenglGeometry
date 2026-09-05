@@ -17,6 +17,7 @@ public:
 	static App& GetInstance();
 
 	void Run();
+	void LoadScene(const std::string& path);
 private:
 	App();
 	Window m_Window;

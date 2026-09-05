@@ -158,6 +158,22 @@ namespace
 		ImGui::TextDisabled("%u points", surface.controlPointCount);
 	}
 
+	void DrawGregorySection(GregoryValues& gregory)
+	{
+		if (!SectionHeader("GREGORY PATCH"))
+		{
+			return;
+		}
+
+		if (BeginPropertyTable("##Gregory"))
+		{
+			PropertyRow("Tessellation U", gregory.samplesU, 2u, 64u);
+			PropertyRow("Tessellation V", gregory.samplesV, 2u, 64u);
+			PropertyRow("Show continuity vectors", gregory.showTangents);
+			EndPropertyTable();
+		}
+	}
+
 	void DrawSelectionSummary(UiState& state)
 	{
 		std::array<int, ObjectTypeCount> counts{};
@@ -272,6 +288,7 @@ void GUI::DrawInspector(UiState& state)
 		if (state.torus)     DrawTorusSection(*state.torus);
 		if (state.curve)     DrawCurveSection(*state.curve);
 		if (state.surface)   DrawSurfaceSection(*state.surface);
+		if (state.gregory)   DrawGregorySection(*state.gregory);
 
 		ImGui::PopID();
 	}

@@ -24,6 +24,7 @@ struct UiState
 	std::optional<TorusValues>     torus;
 	std::optional<CurveValues>     curve;
 	std::optional<SurfaceValues>   surface;
+	std::optional<GregoryValues>   gregory;
 
 	std::size_t SelectedCount() const;
 	std::vector<const ObjectRow*> Selected() const;

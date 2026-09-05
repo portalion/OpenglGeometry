@@ -35,6 +35,18 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::TesselationEvaluation, "defaultVertical")
 		.AddShader(ShaderType::Fragment, "default")
 		.ChangePatchSize(16));
+	AssignShader(AvailableShaders::GregoryPatchHorizontal, ShaderBuilder("resources/shaders/gregoryPatch/")
+		.AddShader(ShaderType::Vertex, "gregory")
+		.AddShader(ShaderType::TesselationControl, "gregoryHorizontal")
+		.AddShader(ShaderType::TesselationEvaluation, "gregoryHorizontal")
+		.AddShader(ShaderType::Fragment, "gregory")
+		.ChangePatchSize(20));
+	AssignShader(AvailableShaders::GregoryPatchVertical, ShaderBuilder("resources/shaders/gregoryPatch/")
+		.AddShader(ShaderType::Vertex, "gregory")
+		.AddShader(ShaderType::TesselationControl, "gregoryVertical")
+		.AddShader(ShaderType::TesselationEvaluation, "gregoryVertical")
+		.AddShader(ShaderType::Fragment, "gregory")
+		.ChangePatchSize(20));
 	Logger::Info("Loaded shaders");
 }
 

@@ -11,7 +11,9 @@ enum class AvailableShaders
 	BezierSurfaceHorizontal = 3,
 	BezierSurfaceVertical = 4,
 	Point = 5,
-	Cursor = 6
+	Cursor = 6,
+	GregoryPatchHorizontal = 7,
+	GregoryPatchVertical = 8
 };
 
 class ShaderBuilder;

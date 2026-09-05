@@ -32,6 +32,13 @@ void UniformApplier::SamplesApplier(Entity entity, EntityContext& context)
 	context.SamplesV = surface.samplesV;
 }
 
+void UniformApplier::GregorySamplesApplier(Entity entity, EntityContext& context)
+{
+	const auto& gregory = entity.GetComponent<GregoryPatchGenerationComponent>();
+	context.SamplesU = gregory.samplesU;
+	context.SamplesV = gregory.samplesV;
+}
+
 UniformApplier::UniformApplier()
 {
 	Bind<PositionComponent>(&UniformApplier::PositionApplier);
@@ -39,4 +46,5 @@ UniformApplier::UniformApplier()
 	Bind<ScaleComponent>(&UniformApplier::ScaleApplier);
 	Bind<ColorComponent>(&UniformApplier::ColorApplier);
 	Bind<BezierSurfaceGenerationComponent>(&UniformApplier::SamplesApplier);
+	Bind<GregoryPatchGenerationComponent>(&UniformApplier::GregorySamplesApplier);
 }

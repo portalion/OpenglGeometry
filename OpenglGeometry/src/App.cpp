@@ -5,6 +5,7 @@
 #include "core/Globals.h"
 #include "core/Log.h"
 #include <scene/BaseScene.h>
+#include <serialization/SceneSerialization.h>
 #include <ui/Style.h>
 
 App::App()
@@ -35,6 +36,15 @@ App& App::GetInstance()
     return instance;
 }
 
+
+void App::LoadScene(const std::string& path)
+{
+    const Serialization::Result result = Serialization::LoadScene(*m_CurrentScene, path);
+    if (!result.ok)
+    {
+        Logger::Error("Startup scene load failed: {}", result.message);
+    }
+}
 
 void App::Run()
 {
