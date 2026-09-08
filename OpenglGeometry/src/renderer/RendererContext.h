@@ -1,7 +1,10 @@
 #pragma once
 #include <Algebra.h>
 #include <unordered_map>
+#include "core/Base.h"
 #include "core/Globals.h"
+
+class Texture2D;
 
 struct SceneContext
 {
@@ -19,6 +22,10 @@ struct EntityContext
 	Algebra::Vector4 Color = Globals::defaultPointsColor;
 	int SamplesU = 32;
 	int SamplesV = 32;
+
+	bool ShouldTrim = false;
+	bool KeepFilled = true;
+	Ref<Texture2D> TrimTexture;
 };
 
 struct UniformContext

@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     "src/renderer/Renderer.cpp"
     "src/renderer/Shader.cpp"
     "src/renderer/ShaderBuilder.cpp"
+    "src/renderer/Texture2D.cpp"
     "src/renderer/VertexArray.cpp"
     "src/renderer/VertexBuffer.cpp"
 

@@ -1,5 +1,6 @@
 #include "UniformApplier.h"
 #include <scene/Components.h>
+#include "renderer/Texture2D.h"
 
 void UniformApplier::PositionApplier(Entity entity, EntityContext& context)
 {
@@ -39,6 +40,14 @@ void UniformApplier::GregorySamplesApplier(Entity entity, EntityContext& context
 	context.SamplesV = gregory.samplesV;
 }
 
+void UniformApplier::TrimApplier(Entity entity, EntityContext& context)
+{
+	const auto& trimming = entity.GetComponent<TrimmingComponent>();
+	context.ShouldTrim = trimming.enabled && trimming.mask != nullptr;
+	context.KeepFilled = trimming.side == 0;
+	context.TrimTexture = trimming.mask;
+}
+
 UniformApplier::UniformApplier()
 {
 	Bind<PositionComponent>(&UniformApplier::PositionApplier);
@@ -47,4 +56,5 @@ UniformApplier::UniformApplier()
 	Bind<ColorComponent>(&UniformApplier::ColorApplier);
 	Bind<BezierSurfaceGenerationComponent>(&UniformApplier::SamplesApplier);
 	Bind<GregoryPatchGenerationComponent>(&UniformApplier::GregorySamplesApplier);
+	Bind<TrimmingComponent>(&UniformApplier::TrimApplier);
 }

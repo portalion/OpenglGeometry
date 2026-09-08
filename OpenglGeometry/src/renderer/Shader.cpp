@@ -172,6 +172,8 @@ void Shader::ApplyContext(UniformContext context)
             }
             break;
         case GL_INT:
+        case GL_BOOL:
+        case GL_SAMPLER_2D:
             if (context.IntUniforms.contains(uniform.name))
             {
                 auto& value = context.IntUniforms[uniform.name];
@@ -183,8 +185,6 @@ void Shader::ApplyContext(UniformContext context)
             }
             break;
         default:
-            // The next unsupported uniform type should be loud rather than silent - a
-            // uniform nobody writes keeps whatever GLSL defaulted it to, forever.
             WarnOnce(uniform.name, "UniformContext cannot carry the type of uniform");
             break;
         }

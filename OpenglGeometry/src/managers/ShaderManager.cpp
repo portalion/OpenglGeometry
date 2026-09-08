@@ -17,6 +17,9 @@ ShaderManager::ShaderManager()
 	AssignShader(AvailableShaders::Cursor, ShaderBuilder("resources/shaders/")
 		.AddShader(ShaderType::Vertex, "cursor")
 		.AddShader(ShaderType::Fragment, "cursor"));
+	AssignShader(AvailableShaders::TorusSurface, ShaderBuilder("resources/shaders/torusSurface/")
+		.AddShader(ShaderType::Vertex, "default")
+		.AddShader(ShaderType::Fragment, "default"));
 	AssignShader(AvailableShaders::BezierCurveC0, ShaderBuilder("resources/shaders/bezierLine/")
 		.AddShader(ShaderType::Vertex, "default")
 		.AddShader(ShaderType::TesselationControl, "default")

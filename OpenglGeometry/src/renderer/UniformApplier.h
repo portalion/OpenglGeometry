@@ -12,6 +12,7 @@ private:
 	void ColorApplier(Entity entity, EntityContext& context);
 	void SamplesApplier(Entity entity, EntityContext& context);
 	void GregorySamplesApplier(Entity entity, EntityContext& context);
+	void TrimApplier(Entity entity, EntityContext& context);
 public:
 	UniformApplier();
 };

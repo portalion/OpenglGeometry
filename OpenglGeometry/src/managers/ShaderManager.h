@@ -13,7 +13,8 @@ enum class AvailableShaders
 	Point = 5,
 	Cursor = 6,
 	GregoryPatchHorizontal = 7,
-	GregoryPatchVertical = 8
+	GregoryPatchVertical = 8,
+	TorusSurface = 9
 };
 
 class ShaderBuilder;

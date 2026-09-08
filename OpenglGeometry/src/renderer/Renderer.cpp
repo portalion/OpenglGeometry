@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <GL/glew.h>
 #include <utils/GlCall.h>
+#include "Texture2D.h"
 
 void Renderer::SetShader(AvailableShaders shaderType)
 {
@@ -38,6 +39,15 @@ void Renderer::Render(RenderingMode mode, const EntityContext& context)
 	uniformContext.Vector4Uniforms["u_color"] = context.Color;
 	uniformContext.IntUniforms["u_subdivisions"] = context.SamplesU;
 	uniformContext.IntUniforms["v_subdivisions"] = context.SamplesV;
+
+	const bool trimming = context.ShouldTrim && context.TrimTexture != nullptr;
+	uniformContext.IntUniforms["u_shouldTrim"] = trimming ? 1 : 0;
+	uniformContext.IntUniforms["u_keepFilled"] = context.KeepFilled ? 1 : 0;
+	uniformContext.IntUniforms["u_trimTex"] = 0;
+	if (trimming)
+	{
+		context.TrimTexture->Bind(0);
+	}
 
 	m_ActualShader->ApplyContext(uniformContext);
 
