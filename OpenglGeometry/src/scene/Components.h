@@ -214,3 +214,45 @@ struct GregoryTangentComponent
 	GregoryTangentComponent() = default;
 	GregoryTangentComponent(const GregoryTangentComponent& other) = default;
 };
+
+class Texture2D;
+
+struct TrimmingComponent
+{
+	std::vector<Entity> curves; 
+	Entity activeCurve;           
+	bool enabled = false;
+	int side = 0;                 
+	bool maskDirty = false;
+	Ref<Texture2D> mask;
+
+	TrimmingComponent() = default;
+	TrimmingComponent(const TrimmingComponent& other) = default;
+};
+
+struct IntersectionCurveComponent
+{
+	Entity surfaceP;
+	Entity surfaceQ;
+	bool selfIntersection = false;
+
+	std::vector<Algebra::Vector4> points;
+	std::vector<Algebra::Vector4> paramsP;
+	std::vector<Algebra::Vector4> paramsQ;
+	std::vector<uint32_t> componentEnds;
+	bool closed = false;
+
+	bool wrappedPU = false, wrappedPV = false;
+	bool wrappedQU = false, wrappedQV = false;
+
+	float stepLength = 0.05f;
+	float precision = 1e-4f;
+	bool useCursor = false;
+	Algebra::Vector4 cursorPosition;
+
+	bool retraceRequested = false;
+	bool convertRequested = false;
+
+	IntersectionCurveComponent() = default;
+	IntersectionCurveComponent(const IntersectionCurveComponent& other) = default;
+};

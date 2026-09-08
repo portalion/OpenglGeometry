@@ -272,6 +272,12 @@ namespace
 				continue;
 			}
 
+			if (type == ObjectType::IntersectionCurve)
+			{
+				Logger::Warning("Serialization: skipping intersection curve id {} (no scene-format representation)", id);
+				continue;
+			}
+
 			json geometry;
 			if (type == ObjectType::Torus)
 			{
@@ -354,6 +360,12 @@ namespace
 				if (*type == ObjectType::GregoryPatch)
 				{
 					Logger::Warning("Load: skipping Gregory patch (not supported by the scene format)");
+					dto.skipped++;
+					continue;
+				}
+				if (*type == ObjectType::IntersectionCurve)
+				{
+					Logger::Warning("Load: skipping intersection curve (not supported by the scene format)");
 					dto.skipped++;
 					continue;
 				}

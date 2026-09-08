@@ -1,6 +1,11 @@
 #include "MeshGeneratingSystem.h"
 #include "meshGenerators/MeshGenerators.h"
 #include "scene/ObjectType.h"
+#include "geometry/ParametricSurfaceFactory.h"
+#include "geometry/IntersectionFinder.h"
+#include "geometry/TrimMask.h"
+#include "renderer/Texture2D.h"
+#include "core/Globals.h"
 
 std::vector<Algebra::Vector4> MeshGeneratingSystem::
 CopyValidPointsToVector(std::list<Entity>& pointEntities)
@@ -38,6 +43,13 @@ std::vector<uint32_t> MeshGeneratingSystem::GenerateLineIndices(unsigned int ver
 
 void MeshGeneratingSystem::TorusGeneration()
 {
+	// position + (u, v) per vertex, so the torus fragment shader can sample a trim mask.
+	BufferLayout torusLayout
+	({
+		{ ShaderDataType::Float4, "a_Position" },
+		{ ShaderDataType::Float4, "a_uv" }
+	});
+
 	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, TorusGenerationComponent>())
 	{
 		entity.RemoveTag<IsDirtyTag>();
@@ -47,8 +59,21 @@ void MeshGeneratingSystem::TorusGeneration()
 		auto generatedMesh = MeshGenerator::Torus::GenerateMesh(
 			tgc.radius, tgc.tubeRadius, tgc.radialSegments, tgc.tubularSegments);
 
-		ModifyOrCreateMesh(entity, generatedMesh.vertices, generatedMesh.indices, 
-			generatedMesh.layout);
+		std::vector<Algebra::Vector4> vertices;
+		vertices.reserve(generatedMesh.vertices.size() * 2);
+		for (std::size_t k = 0; k < generatedMesh.vertices.size(); k++)
+		{
+			const unsigned int i = static_cast<unsigned int>(k) / tgc.tubularSegments;
+			const unsigned int j = static_cast<unsigned int>(k) % tgc.tubularSegments;
+			vertices.push_back(generatedMesh.vertices[k]);
+			vertices.push_back(Algebra::Vector4(
+				static_cast<float>(i) / static_cast<float>(tgc.radialSegments),
+				static_cast<float>(j) / static_cast<float>(tgc.tubularSegments),
+				0.f, 0.f));
+		}
+
+		ModifyOrCreateMesh(entity, vertices, generatedMesh.indices,
+			torusLayout, RenderingMode::Lines, { AvailableShaders::TorusSurface });
 	}
 }
 
@@ -97,9 +122,13 @@ void MeshGeneratingSystem::BezierLineGeneration()
 
 void MeshGeneratingSystem::BezierSurfaceGeneration()
 {
+	// Each vertex carries its control point plus (patchCol, patchRow, patchCols, patchRows)
+	// so the tessellation shaders can turn a per-patch coordinate into a global (u, v) for
+	// the trim mask.
 	BufferLayout bezierShaderLayout
 	({
-		{ ShaderDataType::Float4, "a_Position" }
+		{ ShaderDataType::Float4, "a_Position" },
+		{ ShaderDataType::Float4, "a_patchInfo" }
 	});
 
 	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, BezierSurfaceGenerationComponent>())
@@ -109,12 +138,16 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 		auto patches = entity.GetComponent<BezierSurfaceGenerationComponent>().bezierPatches;
 
 		const bool isC2 = GetObjectType(entity) == ObjectType::BezierSurfaceC2;
+		const int patchRows = static_cast<int>(patches.size());
+		const int patchCols = patchRows > 0 ? static_cast<int>(patches[0].size()) : 0;
 
 		uint32_t indice = 0;
 		std::vector<uint32_t> indices;
-		for(auto patchRow : patches)
-			for(auto patch : patchRow)
+		for (int pi = 0; pi < patchRows; pi++)
+			for (int pj = 0; pj < patchCols; pj++)
 			{
+				Entity patch = patches[pi][pj];
+
 				MeshGenerator::BezierSurfaceC2::PatchGrid controlPositions;
 				for(int i = 0; i < 4; i++)
 					for (int j = 0; j < 4; j++)
@@ -130,16 +163,21 @@ void MeshGeneratingSystem::BezierSurfaceGeneration()
 					controlPositions = MeshGenerator::BezierSurfaceC2::DeBoorToBernstein(controlPositions);
 				}
 
+				const Algebra::Vector4 patchInfo(
+					static_cast<float>(pj), static_cast<float>(pi),
+					static_cast<float>(patchCols), static_cast<float>(patchRows));
+
 				for(int i = 0; i < 4; i++)
 					for (int j = 0; j < 4; j++)
 					{
 						vertices.push_back(controlPositions[i][j]);
+						vertices.push_back(patchInfo);
 						indices.push_back(indice++);
 					}
 			}
 
 		ModifyOrCreateMesh(entity, vertices, indices,
-			bezierShaderLayout, RenderingMode::Patches, 
+			bezierShaderLayout, RenderingMode::Patches,
 			{ AvailableShaders::BezierSurfaceHorizontal, AvailableShaders::BezierSurfaceVertical });
 	}
 
@@ -298,6 +336,136 @@ void MeshGeneratingSystem::GregoryPatchGeneration()
 	}
 }
 
+void MeshGeneratingSystem::IntersectionCurveGeneration()
+{
+	BufferLayout layout
+	({
+		{ ShaderDataType::Float4, "a_Position" }
+	});
+
+	for (Entity entity : m_Scene->GetAllEntitiesWith<IsDirtyTag, IntersectionCurveComponent>())
+	{
+		entity.RemoveTag<IsDirtyTag>();
+
+		auto& data = entity.GetComponent<IntersectionCurveComponent>();
+
+		const bool surfacesAlive = data.surfaceP.IsValid()
+			&& (data.selfIntersection || data.surfaceQ.IsValid());
+
+		if (surfacesAlive && data.retraceRequested)
+		{
+			data.retraceRequested = false;
+
+			Geometry::IntersectionSettings settings;
+			settings.stepLength = data.stepLength;
+			settings.precision = data.precision;
+			settings.useCursor = data.useCursor;
+			settings.cursorPosition = data.cursorPosition;
+
+			const Geometry::IntersectionData found = Geometry::FindIntersections(
+				data.surfaceP, data.selfIntersection ? Entity{} : data.surfaceQ, settings);
+
+			if (!found.points.empty())
+			{
+				data.points = found.points;
+				data.paramsP = found.paramsP;
+				data.paramsQ = found.paramsQ;
+				data.componentEnds = found.componentEnds;
+				data.closed = found.closed;
+
+				for (Entity surface : { data.surfaceP, data.surfaceQ })
+				{
+					if (surface.IsValid() && surface.HasComponent<TrimmingComponent>())
+					{
+						surface.GetComponent<TrimmingComponent>().maskDirty = true;
+					}
+				}
+			}
+		}
+
+		if (data.points.size() < 2)
+		{
+			continue;
+		}
+
+		// One GL_LINES list, but no segment bridging two traced components.
+		std::vector<uint32_t> segmentStops = data.componentEnds;
+		if (segmentStops.empty())
+		{
+			segmentStops.push_back(static_cast<uint32_t>(data.points.size()));
+		}
+
+		std::vector<uint32_t> indices;
+		uint32_t start = 0;
+		for (uint32_t stop : segmentStops)
+		{
+			for (uint32_t i = start; i + 1 < stop; i++)
+			{
+				indices.push_back(i);
+				indices.push_back(i + 1);
+			}
+			start = stop;
+		}
+
+		ModifyOrCreateMesh(entity, data.points, indices, layout);
+	}
+}
+
+void MeshGeneratingSystem::TrimMaskGeneration()
+{
+	for (Entity surface : m_Scene->GetAllEntitiesWith<TrimmingComponent>())
+	{
+		auto& trimming = surface.GetComponent<TrimmingComponent>();
+
+		std::erase_if(trimming.curves, [](Entity c)
+			{ return !c.IsValid() || !c.HasComponent<IntersectionCurveComponent>(); });
+
+		const bool activeAlive = trimming.activeCurve.IsValid()
+			&& trimming.activeCurve.HasComponent<IntersectionCurveComponent>();
+		if (!activeAlive)
+		{
+			trimming.activeCurve = trimming.curves.empty() ? Entity{} : trimming.curves.front();
+			trimming.maskDirty = true;
+		}
+
+		if (!trimming.maskDirty)
+		{
+			continue;
+		}
+		trimming.maskDirty = false;
+
+		if (!trimming.activeCurve.IsValid())
+		{
+			trimming.mask = nullptr;
+			trimming.enabled = false;
+			continue;
+		}
+
+		const auto& curve = trimming.activeCurve.GetComponent<IntersectionCurveComponent>();
+		const bool asP = curve.surfaceP == surface;
+		const std::vector<Algebra::Vector4>& params = asP ? curve.paramsP : curve.paramsQ;
+		const bool wrapU = asP ? curve.wrappedPU : curve.wrappedQU;
+		const bool wrapV = asP ? curve.wrappedPV : curve.wrappedQV;
+
+		if (params.size() < 3)
+		{
+			trimming.mask = nullptr;
+			continue;
+		}
+
+		Geometry::TrimMaskData mask = Geometry::BuildTrimMask(
+			params, wrapU, wrapV, Globals::trimMaskResolution, curve.componentEnds);
+
+		if (!trimming.mask
+			|| trimming.mask->Width() != mask.width
+			|| trimming.mask->Height() != mask.height)
+		{
+			trimming.mask = CreateRef<Texture2D>(mask.width, mask.height);
+		}
+		trimming.mask->Upload(mask.pixels);
+	}
+}
+
 void MeshGeneratingSystem::SurfaceControlNetGeneration()
 {
 	BufferLayout layout
@@ -358,6 +526,8 @@ void MeshGeneratingSystem::Process()
 	BezierLineGeneration();
 	BezierSurfaceGeneration();
 	GregoryPatchGeneration();
+	IntersectionCurveGeneration();
+	TrimMaskGeneration();
 	SurfaceControlNetGeneration();
 	LineGeneration();
 	TorusGeneration();
