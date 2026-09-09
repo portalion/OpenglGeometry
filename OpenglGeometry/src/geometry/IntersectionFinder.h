@@ -91,19 +91,36 @@ namespace Geometry
 		return x;
 	}
 
-	inline SurfaceParam MinimizeGapCG(const IParametricSurface& p, const IParametricSurface& q,
-		SurfaceParam x, int maxIterations = 100)
+	inline SurfaceParam MinimizeCG(const IParametricSurface& p, const IParametricSurface& q,
+		SurfaceParam x, float precision, int maxIterations = 100)
 	{
 		x = ClampParam(p, q, x);
 
 		SurfaceParam direction{};
 		SurfaceParam previousGradient{};
 
+		const auto HessianVec = [&](const SurfaceParam& d) -> SurfaceParam
+			{
+				const Algebra::Vector4 pu = p.DerivativeU(x.uP, x.vP);
+				const Algebra::Vector4 pv = p.DerivativeV(x.uP, x.vP);
+				const Algebra::Vector4 qu = q.DerivativeU(x.uQ, x.vQ);
+				const Algebra::Vector4 qv = q.DerivativeV(x.uQ, x.vQ);
+
+				const Algebra::Vector4 Jd = pu * d.uP + pv * d.vP - qu * d.uQ - qv * d.vQ;
+
+				return SurfaceParam{
+					2.f * Dot3(Jd, pu),
+					2.f * Dot3(Jd, pv),
+					-2.f * Dot3(Jd, qu),
+					-2.f * Dot3(Jd, qv),
+				};
+			};
+
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
 			const SurfaceParam gradient = GapGradient(p, q, x);
 			const float gradientNormSq = Dot(gradient, gradient);
-			if (gradientNormSq < 1e-16f)
+			if (gradientNormSq < precision)
 			{
 				break;
 			}
@@ -115,7 +132,7 @@ namespace Geometry
 			else
 			{
 				const float beta = gradientNormSq
-					/ std::max(1e-20f, Dot(previousGradient, previousGradient));
+					/ std::max(precision, Dot(previousGradient, previousGradient));
 				direction = gradient * -1.f + direction * beta;
 				if (Dot(direction, gradient) > 0.f)
 				{
@@ -124,25 +141,16 @@ namespace Geometry
 			}
 			previousGradient = gradient;
 
-			const float f0 = GapSquared(p, q, x);
-			const float slope = Dot(gradient, direction);
-			float step = 1.f;
-			bool improved = false;
-			for (int backtrack = 0; backtrack < 40; backtrack++)
-			{
-				const SurfaceParam trial = ClampParam(p, q, x + direction * step);
-				if (GapSquared(p, q, trial) <= f0 + 1e-4f * step * slope)
-				{
-					x = trial;
-					improved = true;
-					break;
-				}
-				step *= 0.5f;
-			}
-			if (!improved)
+			const SurfaceParam Hd = HessianVec(direction);
+			const float denom = Dot(direction, Hd);
+
+			if (denom <= precision)
 			{
 				break;
 			}
+
+			const float alpha = -Dot(gradient, direction) / denom;
+			x = ClampParam(p, q, x + direction * alpha);
 		}
 
 		return x;
@@ -152,7 +160,7 @@ namespace Geometry
 		std::array<float, 4>& x);
 	inline Algebra::Vector4 IntersectionTangent(const IParametricSurface& p,
 		const IParametricSurface& q, const SurfaceParam& x);
-	inline bool NewtonCorrect(const IParametricSurface& p, const IParametricSurface& q,
+	inline bool NewtonStep(const IParametricSurface& p, const IParametricSurface& q,
 		SurfaceParam& x, const Algebra::Vector4& anchor, const Algebra::Vector4& tangent,
 		float arcStep);
 
@@ -164,7 +172,7 @@ namespace Geometry
 		const Algebra::Vector4 tangent = IntersectionTangent(p, p, x);
 
 		SurfaceParam work = x;
-		if (NewtonCorrect(p, p, work, anchor, tangent, 0.f))
+		if (NewtonStep(p, p, work, anchor, tangent, 0.f))
 		{
 			return work;
 		}
@@ -251,7 +259,7 @@ namespace Geometry
 		return x;
 	}
 
-	inline std::vector<SurfaceParam> CollectSeeds(const IParametricSurface& p,
+	inline std::vector<SurfaceParam> CoarseGridSearch(const IParametricSurface& p,
 		const IParametricSurface& q, bool self, int grid,
 		float tolerance)
 	{
@@ -312,7 +320,7 @@ namespace Geometry
 
 			const SurfaceParam s = self
 				? PolishSelfSeed(p, candidate.second)
-				: PolishSeed(p, q, MinimizeGapCG(p, q, candidate.second));
+				: PolishSeed(p, q, MinimizeCG(p, q, candidate.second, tolerance));
 
 			if (GapSquared(p, q, s) > tolerance)
 			{
@@ -401,7 +409,7 @@ namespace Geometry
 		return tangent / length;
 	}
 
-	inline bool NewtonCorrect(const IParametricSurface& p, const IParametricSurface& q,
+	inline bool NewtonStep(const IParametricSurface& p, const IParametricSurface& q,
 		SurfaceParam& x, const Algebra::Vector4& anchor, const Algebra::Vector4& tangent, float arcStep)
 	{
 		for (int iteration = 0; iteration < 20; iteration++)
@@ -460,7 +468,7 @@ namespace Geometry
 		return false;
 	}
 
-	inline void MarchIntersection(const IParametricSurface& p, const IParametricSurface& q,
+	inline void Newton(const IParametricSurface& p, const IParametricSurface& q,
 		const SurfaceParam& seed, float arcStep, float gapTolerance, int maxSamples,
 		std::vector<Algebra::Vector4>& points, std::vector<Algebra::Vector4>& paramsP,
 		std::vector<Algebra::Vector4>& paramsQ, bool& closed)
@@ -483,7 +491,7 @@ namespace Geometry
 			}
 
 			SurfaceParam attempt = params;
-			bool ok = NewtonCorrect(p, q, attempt, anchor, tangent, arcStep);
+			bool ok = NewtonStep(p, q, attempt, anchor, tangent, arcStep);
 			Algebra::Vector4 pointP = p.Evaluate(attempt.uP, attempt.vP);
 			Algebra::Vector4 pointQ = q.Evaluate(attempt.uQ, attempt.vQ);
 			Algebra::Vector4 candidate = (pointP + pointQ) * 0.5f;
@@ -499,7 +507,7 @@ namespace Geometry
 			{
 				attempt = previous;
 				const float shorter = arcStep * std::pow(0.5f, static_cast<float>(retry + 1));
-				ok = NewtonCorrect(p, q, attempt, anchor, tangent, shorter);
+				ok = NewtonStep(p, q, attempt, anchor, tangent, shorter);
 				pointP = p.Evaluate(attempt.uP, attempt.vP);
 				pointQ = q.Evaluate(attempt.uQ, attempt.vQ);
 				candidate = (pointP + pointQ) * 0.5f;
@@ -544,11 +552,11 @@ namespace Geometry
 		const SurfaceParam& seed, float step, float gapTolerance, IntersectionData& out)
 	{
 		const int maxSamples = std::clamp(
-			static_cast<int>(64.f / std::max(step, 1e-3f)) + 512, 512, 40000);
+			static_cast<int>(64.f / step) + 512, 512, 40000);
 
 		std::vector<Algebra::Vector4> forwardPoints, forwardP, forwardQ;
 		bool forwardClosed = false;
-		MarchIntersection(p, q, seed, step, gapTolerance, maxSamples,
+		Newton(p, q, seed, step, gapTolerance, maxSamples,
 			forwardPoints, forwardP, forwardQ, forwardClosed);
 
 		const Algebra::Vector4 seedPoint =
@@ -570,7 +578,7 @@ namespace Geometry
 
 		std::vector<Algebra::Vector4> backwardPoints, backwardP, backwardQ;
 		bool backwardClosed = false;
-		MarchIntersection(p, q, seed, -step, gapTolerance, maxSamples,
+		Newton(p, q, seed, -step, gapTolerance, maxSamples,
 			backwardPoints, backwardP, backwardQ, backwardClosed);
 
 		for (std::size_t i = backwardPoints.size(); i-- > 0; )
@@ -680,34 +688,34 @@ namespace Geometry
 		IntersectionData result;
 
 		const float step = std::clamp(settings.stepLength, 1e-3f, 0.5f);
-		const float gapTolerance = std::max(settings.precision, 1e-7f);
+		const float gapTolerance = settings.precision;
 
-		std::vector<SurfaceParam> seeds;
+		std::vector<SurfaceParam> startingPoints;
 
 		if (settings.useCursor && !self)
 		{
 			const PointParametricSurface cursor(settings.cursorPosition);
-			const SurfaceParam nearP = MinimizeGapCG(surfaceP, cursor, { 0.5f, 0.5f, 0.f, 0.f });
-			const SurfaceParam nearQ = MinimizeGapCG(surfaceQ, cursor, { 0.5f, 0.5f, 0.f, 0.f });
+			const SurfaceParam nearP = MinimizeCG(surfaceP, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
+			const SurfaceParam nearQ = MinimizeCG(surfaceQ, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
 			const SurfaceParam s = PolishSeed(surfaceP, surfaceQ,
-				MinimizeGapCG(surfaceP, surfaceQ, { nearP.uP, nearP.vP, nearQ.uP, nearQ.vP }));
+				MinimizeCG(surfaceP, surfaceQ, { nearP.uP, nearP.vP, nearQ.uP, nearQ.vP }, gapTolerance));
 			if (GapSquared(surfaceP, surfaceQ, s) <= gapTolerance)
 			{
-				seeds.push_back(s);
+				startingPoints.push_back(s);
 			}
 		}
 		else
 		{
-			seeds = CollectSeeds(surfaceP, surfaceQ, self, 24, settings.precision);
+			startingPoints = CoarseGridSearch(surfaceP, surfaceQ, self, 24, gapTolerance);
 		}
 
 		const float mergeRadiusSq = 4.f * step * step;
 		bool allClosed = true;
 
-		for (const SurfaceParam& seed : seeds)
+		for (const SurfaceParam& startingPoint : startingPoints)
 		{
 			IntersectionData one;
-			TraceIntersection(surfaceP, surfaceQ, seed, step, gapTolerance, one);
+			TraceIntersection(surfaceP, surfaceQ, startingPoint, step, gapTolerance, one);
 			if (one.points.size() < 2)
 			{
 				continue;
