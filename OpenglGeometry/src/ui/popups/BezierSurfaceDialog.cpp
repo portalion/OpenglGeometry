@@ -116,6 +116,11 @@ namespace
 			GUI::PropertyCheckboxRow("Wrap into a cylinder", draft.cylinder);
 			GUI::PropertyRowUV("Samples", draft.samplesU, draft.samplesV, 1u, 64u);
 			GUI::EndPropertyTable();
+
+			// A C2 cylinder wraps by repeating three de Boor columns, so it needs
+			// at least three distinct columns around the loop to avoid folding flat.
+			const uint32_t minPatchesU = (draft.cylinder && draft.continuityIndex == 1) ? 3u : 1u;
+			draft.patchesU = draft.patchesU < minPatchesU ? minPatchesU : draft.patchesU;
 		}
 		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + formWidth);
 		ImGui::TextDisabled("Samples default to 4 and can be changed later in the inspector.");

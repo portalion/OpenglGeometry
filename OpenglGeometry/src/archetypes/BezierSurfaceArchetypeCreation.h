@@ -244,6 +244,15 @@ namespace Archetypes
 		entity.AddTag<IsDirtyTag>();
 		auto& bezierComponent = entity.AddComponent<BezierSurfaceGenerationComponent>();
 
+		// A wrapped surface closes onto itself by aliasing its last `degree.seam`
+		// columns back to the first. That needs at least `degree.seam` distinct
+		// columns around the loop (3 for C2, 1 for C0) or the ring folds flat.
+		if (bezierParams.isCylinder)
+		{
+			bezierParams.numberOfXPatches =
+				std::max(bezierParams.numberOfXPatches, degree.seam);
+		}
+
 		auto numberOfPoints = CalculateNumberOfPointsForSurface(bezierParams, degree);
 
 		std::vector<std::vector<Entity>> points;
