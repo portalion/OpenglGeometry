@@ -17,7 +17,14 @@ read, change and reason about.
 | `InterpolatedBezierCurveGenerator.*` | `MeshGenerator::InterpolatedBezierCurve` | Bézier control points |
 | `MeshGenerators.h` | — | Convenience header including all of the above |
 
-Sub-pages: [Bézier curves](bezier-curves.md) · [Bézier surfaces](bezier-surfaces.md)
+Sub-pages: [Bézier curves](bezier-curves.md) · [Bézier surfaces](bezier-surfaces.md) · [Surface intersections](surface-intersections.md)
+
+## CPU surface evaluation
+
+[`src/geometry/`](../../OpenglGeometry/src/geometry/) is the one place surfaces are evaluated
+on the CPU rather than in a tessellation shader — `IParametricSurface` plus the boilerplate
+`FindIntersections` stub and the trim-mask flood fill. Header-only, links only `Algebra`.
+See [Surface intersections](surface-intersections.md).
 
 ---
 

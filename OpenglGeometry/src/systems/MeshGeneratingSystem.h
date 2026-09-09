@@ -17,6 +17,8 @@ private:
 	void BezierLineGeneration();
 	void BezierSurfaceGeneration();
 	void GregoryPatchGeneration();
+	void IntersectionCurveGeneration();
+	void TrimMaskGeneration();
 	void SurfaceControlNetGeneration();
 
 	template<typename T>

@@ -4,10 +4,12 @@
 #include "scene/Scene.h"
 #include "SceneActions.h"
 #include "HoleFilling.h"
+#include "Intersections.h"
 #include "Utils.h"
 #include "model/UiState.h"
 #include "popups/AboutDialog.h"
 #include "popups/BezierSurfaceDialog.h"
+#include "popups/IntersectionDialog.h"
 #include "popups/SceneFileDialog.h"
 #include "popups/StereoDialog.h"
 
@@ -158,10 +160,18 @@ namespace GUI
 			GUI::FillHoles(scene);
 		}
 
-		DisabledMenuItem("Intersection curve");
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		const bool canIntersect = GUI::CanCreateIntersection(scene);
+		if (ImGui::MenuItem("Intersection curve", nullptr, false, canIntersect))
 		{
-			ImGui::SetTooltip("needs 2 selected surfaces");
+			GUI::CreateIntersection(scene);
+		}
+		if (!canIntersect && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetTooltip("select one surface (self-intersection) or two");
+		}
+		if (ImGui::MenuItem("Intersection curve..."))
+		{
+			RequestDialog(IntersectionDialogTitle);
 		}
 
 		ImGui::Separator();
@@ -252,6 +262,7 @@ namespace GUI
 	{
 		FlushDialogRequest();
 		DrawBezierSurfaceDialog(uiState, scene);
+		DrawIntersectionDialog(uiState, scene);
 		DrawSaveSceneDialog(uiState, scene);
 		DrawOpenSceneDialog(uiState, scene);
 		DrawStereoDialog(uiState);

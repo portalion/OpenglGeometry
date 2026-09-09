@@ -62,6 +62,7 @@ add_executable(${PROJECT_NAME}
     "src/UI/popups/ShapeCreation.cpp"
     "src/ui/popups/AboutDialog.cpp"
     "src/ui/popups/BezierSurfaceDialog.cpp"
+    "src/ui/popups/IntersectionDialog.cpp"
     "src/ui/popups/SceneFileDialog.cpp"
     "src/ui/popups/StereoDialog.cpp"
 

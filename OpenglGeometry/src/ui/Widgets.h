@@ -60,6 +60,16 @@ namespace GUI
 		return changed;
 	}
 
+	inline bool PropertyRow(const char* label, float& value, float speed, float min, float max,
+		const char* format)
+	{
+		Detail::BeginPropertyValue(label);
+		ImGui::PushID(label);
+		const bool changed = ImGui::DragFloat("##Value", &value, speed, min, max, format);
+		ImGui::PopID();
+		return changed;
+	}
+
 	inline bool PropertyRow(const char* label, uint32_t& value, uint32_t min, uint32_t max)
 	{
 		Detail::BeginPropertyValue(label);

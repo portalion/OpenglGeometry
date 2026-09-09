@@ -1,0 +1,27 @@
+{
+  "points": [],
+  "geometry": [
+    {
+      "objectType": "torus",
+      "id": 1,
+      "name": "TorusA",
+      "position": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+      "scale": { "x": 1.0, "y": 1.0, "z": 1.0 },
+      "samples": { "u": 28, "v": 18 },
+      "largeRadius": 1.0,
+      "smallRadius": 0.4
+    },
+    {
+      "objectType": "torus",
+      "id": 2,
+      "name": "TorusB",
+      "position": { "x": 2.4, "y": 0.0, "z": 0.0 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+      "scale": { "x": 1.0, "y": 1.0, "z": 1.0 },
+      "samples": { "u": 28, "v": 18 },
+      "largeRadius": 1.0,
+      "smallRadius": 0.4
+    }
+  ]
+}

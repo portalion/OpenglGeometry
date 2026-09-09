@@ -560,7 +560,7 @@ void GUISystem::Process()
 
 	if (m_ShowParameterSpace)
 	{
-		GUI::DrawParameterSpace(m_UiState);
+		GUI::DrawParameterSpace(m_Scene, m_UiState);
 	}
 
 	const bool grabbing = GUI::HandleViewportGrab(m_Scene, m_Dockspace, m_Grab);

@@ -8,3 +8,4 @@
 #include "InterpolatedBezierCurveArchetypeCreation.h"
 #include "BezierSurfaceArchetypeCreation.h"
 #include "GregoryPatchArchetypeCreation.h"
+#include "IntersectionArchetypeCreation.h"

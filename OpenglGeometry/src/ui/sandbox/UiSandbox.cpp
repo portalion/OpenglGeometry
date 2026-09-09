@@ -222,7 +222,7 @@ int UiSandbox::Run()
 
 		if (showParameterSpace)
 		{
-			GUI::DrawParameterSpace(state);
+			GUI::DrawParameterSpace(nullptr, state);
 		}
 
 		if (showImGuiDemo)

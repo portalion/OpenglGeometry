@@ -6,7 +6,7 @@ uniform mat4 u_modelMatrix = mat4(1.0);
 uniform mat4 g_viewMatrix;
 uniform mat4 g_projectionMatrix;
 
-const float c_screenScale = 0.2;
+const float c_screenScale = 0.1;
 
 void main()
 {
