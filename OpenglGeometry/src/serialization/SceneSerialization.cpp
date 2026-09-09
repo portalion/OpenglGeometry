@@ -322,6 +322,10 @@ namespace
 	std::vector<uint32_t> ReadControlPoints(const json& j)
 	{
 		std::vector<uint32_t> result;
+		if (!j.contains("controlPoints"))
+		{
+			return result;
+		}
 		for (const json& ref : j.at("controlPoints"))
 		{
 			result.push_back(ref.at("id").get<uint32_t>());
@@ -468,10 +472,8 @@ namespace
 						+ " is not a whole number of patches";
 				}
 			}
-			else if (geometry.controlPoints.empty())
-			{
-				return "curve " + std::to_string(geometry.id) + " has no control points";
-			}
+			// A curve with no control points is a valid state - it round-trips
+			// as an empty shape and the user can add points to it after loading.
 		}
 
 		return std::nullopt;
