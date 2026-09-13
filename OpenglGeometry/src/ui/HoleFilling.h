@@ -1,6 +1,9 @@
 #pragma once
+#include <algorithm>
 #include <array>
 #include <optional>
+#include <set>
+#include <unordered_map>
 #include <vector>
 #include "core/Base.h"
 #include "core/Log.h"
@@ -101,22 +104,6 @@ namespace GUI
 		debugLine.AddComponent<ColorComponent>().color = color;
 	}
 
-	inline std::optional<Algebra::Vector4> SharedCorner(const Edge& a, const Edge& b)
-	{
-		const std::vector<Algebra::Vector4> aPoints = GetControlPointPositions(a.PointEntities);
-		const std::vector<Algebra::Vector4> bPoints = GetControlPointPositions(b.PointEntities);
-
-		if (aPoints.front() == bPoints.front() || aPoints.front() == bPoints.back())
-		{
-			return aPoints.front();
-		}
-		if (aPoints.back() == bPoints.front() || aPoints.back() == bPoints.back())
-		{
-			return aPoints.back();
-		}
-		return std::nullopt;
-	}
-
 	struct EdgeCycle
 	{
 		Edge First;
@@ -124,28 +111,88 @@ namespace GUI
 		Edge Third;
 	};
 
+	namespace Detail
+	{
+		struct VectorHash
+		{
+			std::size_t operator()(const Algebra::Vector4& v) const noexcept
+			{
+				std::size_t seed = std::hash<float>{}(v.x);
+				for (float f : { v.y, v.z, v.w })
+				{
+					seed ^= std::hash<float>{}(f) + 0x9e3779b9u + (seed << 6) + (seed >> 2);
+				}
+				return seed;
+			}
+		};
+
+		struct VectorEqual
+		{
+			bool operator()(const Algebra::Vector4& a, const Algebra::Vector4& b) const noexcept
+			{
+				return a == b;
+			}
+		};
+	}
+
 	inline std::vector<EdgeCycle> FindEdgeCycles(const std::vector<Edge>& edges)
 	{
-		std::vector<EdgeCycle> cycles;
+		const std::size_t n = edges.size();
 
-		for (size_t i = 0; i < edges.size(); i++)
+		std::vector<Algebra::Vector4> frontCorner(n), backCorner(n);
+		for (std::size_t i = 0; i < n; i++)
 		{
-			for (size_t j = i + 1; j < edges.size(); j++)
+			const std::vector<Algebra::Vector4> points = GetControlPointPositions(edges[i].PointEntities);
+			frontCorner[i] = points.front();
+			backCorner[i] = points.back();
+		}
+
+		std::unordered_map<Algebra::Vector4, std::vector<std::size_t>, Detail::VectorHash, Detail::VectorEqual>
+			edgesAtCorner;
+		edgesAtCorner.reserve(n * 2);
+		for (std::size_t i = 0; i < n; i++)
+		{
+			edgesAtCorner[frontCorner[i]].push_back(i);
+			edgesAtCorner[backCorner[i]].push_back(i);
+		}
+
+		const auto otherCorner = [&](std::size_t edgeIndex, const Algebra::Vector4& corner) -> const Algebra::Vector4&
+		{
+			return frontCorner[edgeIndex] == corner ? backCorner[edgeIndex] : frontCorner[edgeIndex];
+		};
+
+		std::vector<EdgeCycle> cycles;
+		std::set<std::array<std::size_t, 3>> seen;
+
+		for (const auto& [corner, incident] : edgesAtCorner)
+		{
+			for (std::size_t a = 0; a < incident.size(); a++)
 			{
-				std::optional<Algebra::Vector4> cornerIJ = SharedCorner(edges[i], edges[j]);
-				if (!cornerIJ) continue;
+				const std::size_t ei = incident[a];
+				const Algebra::Vector4& otherI = otherCorner(ei, corner);
+				if (otherI == corner) continue;
 
-				for (size_t k = j + 1; k < edges.size(); k++)
+				for (std::size_t b = a + 1; b < incident.size(); b++)
 				{
-					std::optional<Algebra::Vector4> cornerJK = SharedCorner(edges[j], edges[k]);
-					if (!cornerJK) continue;
+					const std::size_t ej = incident[b];
+					const Algebra::Vector4& otherJ = otherCorner(ej, corner);
+					if (otherJ == corner || otherJ == otherI) continue;
 
-					std::optional<Algebra::Vector4> cornerKI = SharedCorner(edges[k], edges[i]);
-					if (!cornerKI) continue;
+					const auto it = edgesAtCorner.find(otherI);
+					if (it == edgesAtCorner.end()) continue;
 
-					if (*cornerIJ == *cornerJK || *cornerJK == *cornerKI || *cornerKI == *cornerIJ) continue;
+					for (std::size_t ek : it->second)
+					{
+						if (ek == ei || ek == ej) continue;
+						if (!(otherCorner(ek, otherI) == otherJ)) continue;
 
-					cycles.push_back({ edges[i], edges[j], edges[k] });
+						std::array<std::size_t, 3> key{ ei, ej, ek };
+						std::sort(key.begin(), key.end());
+						if (seen.insert(key).second)
+						{
+							cycles.push_back({ edges[ei], edges[ej], edges[ek] });
+						}
+					}
 				}
 			}
 		}
