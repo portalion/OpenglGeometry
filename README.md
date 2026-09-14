@@ -1,10 +1,12 @@
 # OpenglGeometry
 
-![obraz](https://github.com/user-attachments/assets/a0dc21de-451f-4d91-8aaa-e024db9b6531)
+![A torus intersecting a trimmed Bézier surface, with the intersection curve highlighted in green](docs/images/screenshot.png)
 
 An interactive OpenGL 4.6 editor for parametric geometry — points, tori, polylines, Bézier
-curves (C0, C2, interpolated) and Bézier surfaces — built on an EnTT entity-component-system
-core with Dear ImGui for the interface.
+curves (C0, C2, interpolated), Bézier surfaces (flat and cylindrical, with Gregory patch hole
+filling), surface-surface intersections, and texture trimming — built on an EnTT
+entity-component-system core with Dear ImGui for the interface. Supports loading/saving scenes
+and stereoscopic (red-cyan) viewing.
 
 **📖 [Full documentation →](docs/README.md)**
 

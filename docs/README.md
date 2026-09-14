@@ -24,9 +24,9 @@ buffers, and curves/surfaces are evaluated on the GPU with tessellation shaders.
 | Area | Docs |
 | --- | --- |
 | **ECS core** | [Overview](ecs/README.md) · [Components](ecs/components.md) · [Tags](ecs/tags.md) · [Change propagation](ecs/change-propagation.md) · [ComponentFunctionRegistry](ecs/component-function-registry.md) |
-| **Systems** | [Overview & pipeline](systems/README.md) · [NotificationSystem](systems/notification-system.md) · [RemovalSystem](systems/removal-system.md) · [MeshGeneratingSystem](systems/mesh-generating-system.md) · [RenderingSystem](systems/rendering-system.md) · [GUI systems](systems/gui-systems.md) |
+| **Systems** | [Overview & pipeline](systems/README.md) · [NotificationSystem](systems/notification-system.md) · [RemovalSystem](systems/removal-system.md) · [MeshGeneratingSystem](systems/mesh-generating-system.md) · [SelectionMarkerSystem](systems/selection-marker-system.md) · [RenderingSystem](systems/rendering-system.md) · [GUI systems](systems/gui-systems.md) |
 | **Rendering** | [Overview](renderer/README.md) · [Buffers & vertex arrays](renderer/buffers.md) · [Shader pipeline](renderer/shaders.md) · [Shader reference](renderer/shader-reference.md) |
-| **Geometry** | [Overview](geometry/README.md) · [Bézier curves](geometry/bezier-curves.md) · [Bézier surfaces](geometry/bezier-surfaces.md) |
+| **Geometry** | [Overview](geometry/README.md) · [Bézier curves](geometry/bezier-curves.md) · [Bézier surfaces](geometry/bezier-surfaces.md) · [Surface intersections](geometry/surface-intersections.md) |
 | **Building blocks** | [Archetypes](archetypes.md) · [Managers](managers.md) · [Core](core.md) · [UI](ui.md) · [Serialization](serialization.md) · [Algebra library](algebra.md) |
 
 ## Task recipes
