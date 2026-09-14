@@ -26,8 +26,6 @@ namespace Geometry
 		std::vector<Algebra::Vector4> paramsP;
 		std::vector<Algebra::Vector4> paramsQ;
 		bool closed = false;
-
-		std::vector<uint32_t> componentEnds;
 	};
 
 	struct SurfaceParam
@@ -169,6 +167,7 @@ namespace Geometry
 		x = ClampParam(p, p, x);
 		const Algebra::Vector4 anchor =
 			(p.Evaluate(x.uP, x.vP) + p.Evaluate(x.uQ, x.vQ)) * 0.5f;
+	// seed guess onto the surfaces before the Newton polish below takes over.
 		const Algebra::Vector4 tangent = IntersectionTangent(p, p, x);
 
 		SurfaceParam work = x;
@@ -259,9 +258,9 @@ namespace Geometry
 		return x;
 	}
 
-	inline std::vector<SurfaceParam> CoarseGridSearch(const IParametricSurface& p,
-		const IParametricSurface& q, bool self, int grid,
-		float tolerance)
+	inline bool FindSeed(const IParametricSurface& p, const IParametricSurface& q, bool self,
+		int grid, float tolerance, SurfaceParam& outSeed,
+		const Algebra::Vector4* preferNear = nullptr)
 	{
 		const float minSeparation = self ? 0.08f : 0.f;
 
@@ -300,7 +299,8 @@ namespace Geometry
 				}
 				if (localGap < std::numeric_limits<float>::max())
 				{
-					candidates.emplace_back(localGap, localBest);
+					const float key = preferNear ? LengthSq3(pointP - *preferNear) : localGap;
+					candidates.emplace_back(key, localBest);
 				}
 			}
 		}
@@ -308,44 +308,28 @@ namespace Geometry
 		std::sort(candidates.begin(), candidates.end(),
 			[](const auto& l, const auto& r) { return l.first < r.first; });
 
-		std::vector<SurfaceParam> seeds;
-		int refined = 0;
 		for (const auto& candidate : candidates)
 		{
-			if (refined >= 120 || seeds.size() >= 24)
-			{
-				break;
-			}
-			refined++;
-
-			const SurfaceParam s = self
+			const SurfaceParam refined = self
 				? PolishSelfSeed(p, candidate.second)
 				: PolishSeed(p, q, MinimizeCG(p, q, candidate.second, tolerance));
 
-			if (GapSquared(p, q, s) > tolerance)
+			if (GapSquared(p, q, refined) > tolerance)
 			{
 				continue;
 			}
-			if (self && IsSelfIntersectionTheSamePoint(p, q, s) < minSeparation)
+			if (self && IsSelfIntersectionTheSamePoint(p, q, refined) < minSeparation)
 			{
 				continue;
 			}
 
-			const Algebra::Vector4 world = p.Evaluate(s.uP, s.vP);
-			const bool haveIt = std::any_of(seeds.begin(), seeds.end(),
-				[&](const SurfaceParam& t)
-				{
-					return LengthSq3(p.Evaluate(t.uP, t.vP) - world) < 1e-4f;
-				});
-			if (!haveIt)
-			{
-				seeds.push_back(s);
-			}
+			outSeed = refined;
+			return true;
 		}
 
-		return seeds;
+		return false;
 	}
-	
+
 	inline bool SolveLinear4(std::array<std::array<float, 4>, 4> a, std::array<float, 4> b,
 		std::array<float, 4>& x)
 	{
@@ -596,183 +580,6 @@ namespace Geometry
 		out.closed = backwardClosed;
 	}
 
-	inline Algebra::Vector4 ProjectOntoSurface(const IParametricSurface& surface,
-		const Algebra::Vector4& target, float guessU, float guessV, bool haveGuess)
-	{
-		float u = guessU;
-		float v = guessV;
-
-		if (!haveGuess)
-		{
-			constexpr int grid = 24;
-			float best = std::numeric_limits<float>::max();
-			for (int a = 0; a <= grid; a++)
-			{
-				for (int b = 0; b <= grid; b++)
-				{
-					const float su = static_cast<float>(a) / grid;
-					const float sv = static_cast<float>(b) / grid;
-					const float d = LengthSq3(surface.Evaluate(su, sv) - target);
-					if (d < best)
-					{
-						best = d;
-						u = su;
-						v = sv;
-					}
-				}
-			}
-		}
-
-		for (int iteration = 0; iteration < 40; iteration++)
-		{
-			const Algebra::Vector4 diff = surface.Evaluate(u, v) - target;
-			const Algebra::Vector4 du = surface.DerivativeU(u, v);
-			const Algebra::Vector4 dv = surface.DerivativeV(u, v);
-
-			const float a = Dot3(du, du);
-			const float b = Dot3(du, dv);
-			const float d = Dot3(dv, dv);
-			const float e = -Dot3(diff, du);
-			const float f = -Dot3(diff, dv);
-
-			const float det = a * d - b * b;
-			if (std::fabs(det) < 1e-20f)
-			{
-				break;
-			}
-
-			const float deltaU = (e * d - b * f) / det;
-			const float deltaV = (a * f - e * b) / det;
-
-			u += deltaU;
-			v += deltaV;
-			surface.Clamp(u, v);
-
-			if (deltaU * deltaU + deltaV * deltaV < 1e-14f)
-			{
-				break;
-			}
-		}
-
-		return Algebra::Vector4(u, v, 0.f, 0.f);
-	}
-
-	inline void FillParametersFromPoints(IntersectionData& data,
-		const IParametricSurface& surfaceP, const IParametricSurface& surfaceQ)
-	{
-		data.paramsP.clear();
-		data.paramsQ.clear();
-		data.paramsP.reserve(data.points.size());
-		data.paramsQ.reserve(data.points.size());
-
-		float pu = 0.5f, pv = 0.5f, qu = 0.5f, qv = 0.5f;
-		bool have = false;
-
-		for (const Algebra::Vector4& point : data.points)
-		{
-			const Algebra::Vector4 onP = ProjectOntoSurface(surfaceP, point, pu, pv, have);
-			const Algebra::Vector4 onQ = ProjectOntoSurface(surfaceQ, point, qu, qv, have);
-
-			pu = onP.x; pv = onP.y;
-			qu = onQ.x; qv = onQ.y;
-			have = true;
-
-			data.paramsP.push_back(onP);
-			data.paramsQ.push_back(onQ);
-		}
-	}
-
-	inline IntersectionData FindIntersectionComponents(const IParametricSurface& surfaceP,
-		const IParametricSurface& surfaceQ, bool self, const IntersectionSettings& settings)
-	{
-		IntersectionData result;
-
-		const float step = std::clamp(settings.stepLength, 1e-3f, 0.5f);
-		const float gapTolerance = settings.precision;
-
-		std::vector<SurfaceParam> startingPoints;
-
-		if (settings.useCursor && !self)
-		{
-			const PointParametricSurface cursor(settings.cursorPosition);
-			const SurfaceParam nearP = MinimizeCG(surfaceP, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
-			const SurfaceParam nearQ = MinimizeCG(surfaceQ, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
-			const SurfaceParam s = PolishSeed(surfaceP, surfaceQ,
-				MinimizeCG(surfaceP, surfaceQ, { nearP.uP, nearP.vP, nearQ.uP, nearQ.vP }, gapTolerance));
-			if (GapSquared(surfaceP, surfaceQ, s) <= gapTolerance)
-			{
-				startingPoints.push_back(s);
-			}
-		}
-		else
-		{
-			startingPoints = CoarseGridSearch(surfaceP, surfaceQ, self, 24, gapTolerance);
-		}
-
-		const float mergeRadiusSq = 4.f * step * step;
-		bool allClosed = true;
-
-		for (const SurfaceParam& startingPoint : startingPoints)
-		{
-			IntersectionData one;
-			TraceIntersection(surfaceP, surfaceQ, startingPoint, step, gapTolerance, one);
-			if (one.points.size() < 2)
-			{
-				continue;
-			}
-
-			Algebra::Vector4 lo = one.points.front();
-			Algebra::Vector4 hi = one.points.front();
-			float length = 0.f;
-			for (std::size_t i = 0; i < one.points.size(); i++)
-			{
-				lo.x = std::min(lo.x, one.points[i].x); hi.x = std::max(hi.x, one.points[i].x);
-				lo.y = std::min(lo.y, one.points[i].y); hi.y = std::max(hi.y, one.points[i].y);
-				lo.z = std::min(lo.z, one.points[i].z); hi.z = std::max(hi.z, one.points[i].z);
-				if (i > 0)
-				{
-					length += (one.points[i] - one.points[i - 1]).Length();
-				}
-			}
-			const float extent = (hi - lo).Length();
-			if (extent > 1e-5f && length > 16.f * extent)
-			{
-				continue;
-			}
-
-			int matched = 0;
-			for (const Algebra::Vector4& a : one.points)
-			{
-				for (const Algebra::Vector4& b : result.points)
-				{
-					if (LengthSq3(a - b) < mergeRadiusSq)
-					{
-						matched++;
-						break;
-					}
-				}
-			}
-			if (!result.points.empty()
-				&& matched * 10 >= static_cast<int>(one.points.size()) * 4)
-			{
-				continue;
-			}
-
-			result.points.insert(result.points.end(), one.points.begin(), one.points.end());
-			result.paramsP.insert(result.paramsP.end(), one.paramsP.begin(), one.paramsP.end());
-			result.paramsQ.insert(result.paramsQ.end(), one.paramsQ.begin(), one.paramsQ.end());
-			result.componentEnds.push_back(static_cast<uint32_t>(result.points.size()));
-			allClosed = allClosed && one.closed;
-		}
-
-		if (result.points.size() < 2)
-		{
-			return IntersectionData{};
-		}
-		result.closed = allClosed && !result.componentEnds.empty();
-		return result;
-	}
-
 	inline IntersectionData FindIntersections(Entity entityP, Entity entityQ,
 		const IntersectionSettings& settings)
 	{
@@ -786,6 +593,49 @@ namespace Geometry
 			return IntersectionData{};
 		}
 
-		return FindIntersectionComponents(*surfaceP, *surfaceQ, self, settings);
+		const IParametricSurface& p = *surfaceP;
+		const IParametricSurface& q = *surfaceQ;
+
+		const float step = std::clamp(settings.stepLength, 1e-3f, 0.5f);
+		const float gapTolerance = settings.precision;
+
+		SurfaceParam seed{};
+		bool haveSeed = false;
+
+		if (settings.useCursor && !self)
+		{
+			const PointParametricSurface cursor(settings.cursorPosition);
+			const SurfaceParam nearP = MinimizeCG(p, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
+			const SurfaceParam nearQ = MinimizeCG(q, cursor, { 0.5f, 0.5f, 0.f, 0.f }, gapTolerance);
+			const SurfaceParam s = PolishSeed(p, q,
+				MinimizeCG(p, q, { nearP.uP, nearP.vP, nearQ.uP, nearQ.vP }, gapTolerance));
+			if (GapSquared(p, q, s) <= gapTolerance)
+			{
+				seed = s;
+				haveSeed = true;
+			}
+		}
+		else if (settings.useCursor)
+		{
+			haveSeed = FindSeed(p, q, self, 24, gapTolerance, seed, &settings.cursorPosition);
+		}
+		else
+		{
+			haveSeed = FindSeed(p, q, self, 24, gapTolerance, seed);
+		}
+
+		if (!haveSeed)
+		{
+			return IntersectionData{};
+		}
+
+		IntersectionData result;
+		TraceIntersection(p, q, seed, step, gapTolerance, result);
+
+		if (result.points.size() < 2)
+		{
+			return IntersectionData{};
+		}
+		return result;
 	}
 }

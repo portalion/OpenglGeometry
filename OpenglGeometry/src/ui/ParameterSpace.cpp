@@ -35,8 +35,7 @@ namespace
 	}
 
 	void DrawParamCurve(const char* id, const char* label,
-		const std::vector<Algebra::Vector4>& params, bool wrappedU, bool wrappedV,
-		const std::vector<uint32_t>& componentEnds)
+		const std::vector<Algebra::Vector4>& params, bool wrappedU, bool wrappedV)
 	{
 		ImGui::BeginGroup();
 		ImGui::TextUnformatted(label);
@@ -63,26 +62,9 @@ namespace
 			drawList->AddLine(toPixel(0.f, t), toPixel(1.f, t), IM_COL32(30, 34, 40, 255));
 		}
 
-		const auto isBoundary = [&](std::size_t i)
-		{
-			for (uint32_t end : componentEnds)
-			{
-				if (i == end)
-				{
-					return true;
-				}
-			}
-			return false;
-		};
-
 		const ImU32 lineColor = IM_COL32(38, 240, 140, 235);
 		for (std::size_t i = 1; i < params.size(); i++)
 		{
-			if (isBoundary(i))
-			{
-				continue;
-			}
-
 			const Algebra::Vector4& a = params[i - 1];
 			const Algebra::Vector4& b = params[i];
 
@@ -155,13 +137,11 @@ void GUI::DrawParameterSpace(Ref<Scene> scene, UiState&)
 
 	auto& data = curve.GetComponent<IntersectionCurveComponent>();
 	
-	DrawParamCurve("##SquareP", data.surfaceP.GetComponent<NameComponent>().name.c_str(), data.paramsP, data.wrappedPU, data.wrappedPV,
-		data.componentEnds);
+	DrawParamCurve("##SquareP", data.surfaceP.GetComponent<NameComponent>().name.c_str(), data.paramsP, data.wrappedPU, data.wrappedPV);
 	if (data.surfaceQ.IsValid())
 	{
 		ImGui::SameLine();
-		DrawParamCurve("##SquareQ", data.surfaceQ.GetComponent<NameComponent>().name.c_str(), data.paramsQ, data.wrappedQU, data.wrappedQV,
-			data.componentEnds);
+		DrawParamCurve("##SquareQ", data.surfaceQ.GetComponent<NameComponent>().name.c_str(), data.paramsQ, data.wrappedQU, data.wrappedQV);
 	}
 
 	ImGui::SameLine();

@@ -239,7 +239,6 @@ struct IntersectionCurveComponent
 	std::vector<Algebra::Vector4> points;
 	std::vector<Algebra::Vector4> paramsP;
 	std::vector<Algebra::Vector4> paramsQ;
-	std::vector<uint32_t> componentEnds;
 	bool closed = false;
 
 	bool wrappedPU = false, wrappedPV = false;
@@ -252,8 +251,6 @@ struct IntersectionCurveComponent
 
 	bool retraceRequested = false;
 	bool convertRequested = false;
-
-	bool splitPiece = false;
 
 	IntersectionCurveComponent() = default;
 	IntersectionCurveComponent(const IntersectionCurveComponent& other) = default;

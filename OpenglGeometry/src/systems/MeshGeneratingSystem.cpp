@@ -3,7 +3,6 @@
 #include "scene/ObjectType.h"
 #include "geometry/ParametricSurfaceFactory.h"
 #include "geometry/IntersectionFinder.h"
-#include "geometry/IntersectionSplit.h"
 #include "geometry/TrimMask.h"
 #include "renderer/Texture2D.h"
 #include "core/Globals.h"
@@ -364,32 +363,10 @@ void MeshGeneratingSystem::IntersectionCurveGeneration()
 
 			if (!found.points.empty())
 			{
-				const Geometry::IntersectionData* use = &found;
-
-				std::vector<Geometry::IntersectionData> pieces;
-				if (data.splitPiece)
-				{
-					pieces = Geometry::SplitSelfCrossings(found);
-					const auto centroid = [](const std::vector<Algebra::Vector4>& p)
-					{
-						Algebra::Vector4 c(0.f, 0.f, 0.f, 0.f);
-						for (const auto& v : p) c = c + v;
-						return p.empty() ? c : c * (1.f / static_cast<float>(p.size()));
-					};
-					const Algebra::Vector4 mine = centroid(data.points);
-					float bestDist = std::numeric_limits<float>::max();
-					for (const auto& piece : pieces)
-					{
-						const float d = (centroid(piece.points) - mine).Length();
-						if (d < bestDist) { bestDist = d; use = &piece; }
-					}
-				}
-
-				data.points = use->points;
-				data.paramsP = use->paramsP;
-				data.paramsQ = use->paramsQ;
-				data.componentEnds = use->componentEnds;
-				data.closed = use->closed;
+				data.points = found.points;
+				data.paramsP = found.paramsP;
+				data.paramsQ = found.paramsQ;
+				data.closed = found.closed;
 
 				for (Entity surface : { data.surfaceP, data.surfaceQ })
 				{
@@ -406,22 +383,11 @@ void MeshGeneratingSystem::IntersectionCurveGeneration()
 			continue;
 		}
 
-		std::vector<uint32_t> segmentStops = data.componentEnds;
-		if (segmentStops.empty())
-		{
-			segmentStops.push_back(static_cast<uint32_t>(data.points.size()));
-		}
-
 		std::vector<uint32_t> indices;
-		uint32_t start = 0;
-		for (uint32_t stop : segmentStops)
+		for (uint32_t i = 0; i + 1 < data.points.size(); i++)
 		{
-			for (uint32_t i = start; i + 1 < stop; i++)
-			{
-				indices.push_back(i);
-				indices.push_back(i + 1);
-			}
-			start = stop;
+			indices.push_back(i);
+			indices.push_back(i + 1);
 		}
 
 		ModifyOrCreateMesh(entity, data.points, indices, layout);
@@ -471,7 +437,7 @@ void MeshGeneratingSystem::TrimMaskGeneration()
 		}
 
 		Geometry::TrimMaskData mask = Geometry::FloodFill(
-			params, wrapU, wrapV, Globals::trimMaskResolution, curve.componentEnds);
+			params, wrapU, wrapV, Globals::trimMaskResolution);
 
 		if (!trimming.mask
 			|| trimming.mask->Width() != mask.width

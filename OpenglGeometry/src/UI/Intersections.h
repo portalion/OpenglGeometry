@@ -11,7 +11,6 @@
 #include "archetypes/Archetypes.h"
 #include "geometry/ParametricSurfaceFactory.h"
 #include "geometry/IntersectionFinder.h"
-#include "geometry/IntersectionSplit.h"
 
 namespace GUI
 {
@@ -137,50 +136,32 @@ namespace GUI
 			return;
 		}
 
-		const std::vector<Geometry::IntersectionData> pieces =
-			Geometry::SplitSelfCrossings(found);
+		IntersectionCurveComponent data;
+		data.surfaceP = entityP;
+		data.surfaceQ = self ? entityP : entityQ;
+		data.selfIntersection = self;
+		data.wrappedPU = surfaceP->WrappedU();
+		data.wrappedPV = surfaceP->WrappedV();
+		data.wrappedQU = surfaceQ->WrappedU();
+		data.wrappedQV = surfaceQ->WrappedV();
+		data.stepLength = settings.stepLength;
+		data.precision = settings.precision;
+		data.useCursor = settings.useCursor;
+		data.cursorPosition = settings.cursorPosition;
+		data.points = found.points;
+		data.paramsP = found.paramsP;
+		data.paramsQ = found.paramsQ;
+		data.closed = found.closed;
 
-		IntersectionCurveComponent base;
-		base.surfaceP = entityP;
-		base.surfaceQ = self ? entityP : entityQ;
-		base.selfIntersection = self;
-		base.wrappedPU = surfaceP->WrappedU();
-		base.wrappedPV = surfaceP->WrappedV();
-		base.wrappedQU = surfaceQ->WrappedU();
-		base.wrappedQV = surfaceQ->WrappedV();
-		base.stepLength = settings.stepLength;
-		base.precision = settings.precision;
-		base.useCursor = settings.useCursor;
-		base.cursorPosition = settings.cursorPosition;
-		base.splitPiece = pieces.size() > 1;
-
-		for (const Geometry::IntersectionData& piece : pieces)
+		Entity curve = Archetypes::CreateIntersectionCurve(scene.get(), data);
+		RegisterCurveNotifications(curve, entityP);
+		RegisterCurveForTrimming(curve, entityP);
+		if (!self)
 		{
-			IntersectionCurveComponent data = base;
-			data.points = piece.points;
-			data.paramsP = piece.paramsP;
-			data.paramsQ = piece.paramsQ;
-			data.componentEnds = piece.componentEnds;
-			data.closed = piece.closed;
-
-			Entity curve = Archetypes::CreateIntersectionCurve(scene.get(), data);
-			RegisterCurveNotifications(curve, entityP);
-			RegisterCurveForTrimming(curve, entityP);
-			if (!self)
-			{
-				RegisterCurveNotifications(curve, entityQ);
-				RegisterCurveForTrimming(curve, entityQ);
-			}
+			RegisterCurveNotifications(curve, entityQ);
+			RegisterCurveForTrimming(curve, entityQ);
 		}
 
-		if (pieces.size() > 1)
-		{
-			Logger::Info("Intersection: self-crossing curve split into {} loops ({} points)",
-				pieces.size(), found.points.size());
-		}
-		else
-		{
-			Logger::Info("Intersection: curve added ({} points)", found.points.size());
-		}
+		Logger::Info("Intersection: curve added ({} points)", found.points.size());
 	}
 }

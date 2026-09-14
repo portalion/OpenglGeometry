@@ -42,21 +42,10 @@ namespace Geometry
 		}
 	}
 
-	inline void FillLine(const std::vector<Algebra::Vector4>& params, bool wrapU, bool wrapV, int res, std::vector<uint8_t>& line, const std::vector<uint32_t>& componentEnds = {})
+	inline void FillLine(const std::vector<Algebra::Vector4>& params, bool wrapU, bool wrapV, int res, std::vector<uint8_t>& line)
 	{
-		const auto isBoundary = [&](std::size_t i)
-			{
-				for (uint32_t end : componentEnds)
-				{
-					if (i == end) return true;
-				}
-				return false;
-			};
-
 		for (std::size_t i = 1; i < params.size(); i++)
 		{
-			if (isBoundary(i)) continue;
-
 			float u0 = params[i - 1].x, v0 = params[i - 1].y;
 			float u1 = params[i].x, v1 = params[i].y;
 
@@ -74,14 +63,13 @@ namespace Geometry
 	}
 
 	inline TrimMaskData FloodFill(const std::vector<Algebra::Vector4>& params,
-		bool wrapU, bool wrapV, int res,
-		const std::vector<uint32_t>& componentEnds = {})
+		bool wrapU, bool wrapV, int res)
 	{
 		res = std::max(16, res);
 		const std::size_t cells = static_cast<std::size_t>(res) * res;
 		std::vector<uint8_t> wall(cells, 0);
 
-		FillLine(params, wrapU, wrapV, res, wall, componentEnds);
+		FillLine(params, wrapU, wrapV, res, wall);
 
 		const float baseU = params[0].x, baseV = params[0].y;
 		float sumU = 0.f, sumV = 0.f;
