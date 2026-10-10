@@ -9,8 +9,8 @@
 class PopupSystem : public ISystem
 {
 private:
-	Ref<IPopup> m_OpenedPopup;
-	std::vector<Ref<IPopup>> m_RegisteredPopups;
+	IPopup* m_OpenedPopup = nullptr;
+	std::vector<Unique<IPopup>> m_RegisteredPopups;
 public:
 	PopupSystem(Ref<Scene> scene);
 

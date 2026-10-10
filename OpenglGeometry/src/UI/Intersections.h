@@ -112,9 +112,10 @@ namespace GUI
 		Entity entityP = surfaces.front();
 		Entity entityQ = self ? Entity{} : surfaces.back();
 
-		Ref<Geometry::IParametricSurface> surfaceP = Geometry::MakeParametricSurface(entityP);
-		Ref<Geometry::IParametricSurface> surfaceQ = self
-			? surfaceP : Geometry::MakeParametricSurface(entityQ);
+		Unique<Geometry::IParametricSurface> surfaceP = Geometry::MakeParametricSurface(entityP);
+		Unique<Geometry::IParametricSurface> ownedQ = self
+			? nullptr : Geometry::MakeParametricSurface(entityQ);
+		const Geometry::IParametricSurface* surfaceQ = self ? surfaceP.get() : ownedQ.get();
 
 		if (!surfaceP || !surfaceQ)
 		{

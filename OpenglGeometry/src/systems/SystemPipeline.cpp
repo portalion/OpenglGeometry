@@ -17,19 +17,16 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 {
 	this->m_Scene = m_Scene;
 
-	m_Systems =
-	{
-		CreateRef<NotificationSystem>(m_Scene),
-		CreateRef<RemovalSystem>(m_Scene),
-		
-		CreateRef<GUISystem>(m_Scene, viewport),
-		CreateRef<PopupSystem>(m_Scene),
+	m_Systems.push_back(CreateUnique<NotificationSystem>(m_Scene));
+	m_Systems.push_back(CreateUnique<RemovalSystem>(m_Scene));
 
-		CreateRef<CurveBernsteinSystem>(m_Scene),
-		CreateRef<MeshGeneratingSystem>(m_Scene),
-		CreateRef<SelectionMarkerSystem>(m_Scene),
-		CreateRef<RenderingSystem>(m_Scene, viewport)
-	};
+	m_Systems.push_back(CreateUnique<GUISystem>(m_Scene, viewport));
+	m_Systems.push_back(CreateUnique<PopupSystem>(m_Scene));
+
+	m_Systems.push_back(CreateUnique<CurveBernsteinSystem>(m_Scene));
+	m_Systems.push_back(CreateUnique<MeshGeneratingSystem>(m_Scene));
+	m_Systems.push_back(CreateUnique<SelectionMarkerSystem>(m_Scene));
+	m_Systems.push_back(CreateUnique<RenderingSystem>(m_Scene, viewport));
 }
 
 SystemPipeline::~SystemPipeline()

@@ -9,7 +9,7 @@ class Viewport;
 class SystemPipeline
 {
 private:
-	std::vector<Ref<ISystem>> m_Systems;
+	std::vector<Unique<ISystem>> m_Systems;
 
 	Ref<Scene> m_Scene;
 public:

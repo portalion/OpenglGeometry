@@ -70,20 +70,17 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene)
 {
     this->m_Scene = m_Scene;
 
-    m_Systems =
-    {
-        CreateRef<NotificationSystem>(m_Scene),
-        CreateRef<RemovalSystem>(m_Scene),
+    m_Systems.push_back(CreateUnique<NotificationSystem>(m_Scene));
+    m_Systems.push_back(CreateUnique<RemovalSystem>(m_Scene));
 
-        CreateRef<GUISystem>(m_Scene),
-        CreateRef<ShapeInspectorSystem>(m_Scene),
-        CreateRef<PopupSystem>(m_Scene),
+    m_Systems.push_back(CreateUnique<GUISystem>(m_Scene));
+    m_Systems.push_back(CreateUnique<ShapeInspectorSystem>(m_Scene));
+    m_Systems.push_back(CreateUnique<PopupSystem>(m_Scene));
 
-        CreateRef<MySystem>(m_Scene),           // ← position matters, see below
+    m_Systems.push_back(CreateUnique<MySystem>(m_Scene)); // ← position matters, see below
 
-        CreateRef<MeshGeneratingSystem>(m_Scene),
-        CreateRef<RenderingSystem>(m_Scene)
-    };
+    m_Systems.push_back(CreateUnique<MeshGeneratingSystem>(m_Scene));
+    m_Systems.push_back(CreateUnique<RenderingSystem>(m_Scene));
 }
 ```
 

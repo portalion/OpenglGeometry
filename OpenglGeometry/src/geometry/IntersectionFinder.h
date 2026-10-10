@@ -585,8 +585,9 @@ namespace Geometry
 	{
 		const bool self = !entityQ.IsValid();
 
-		Ref<IParametricSurface> surfaceP = MakeParametricSurface(entityP);
-		Ref<IParametricSurface> surfaceQ = self ? surfaceP : MakeParametricSurface(entityQ);
+		Unique<IParametricSurface> surfaceP = MakeParametricSurface(entityP);
+		Unique<IParametricSurface> ownedQ = self ? nullptr : MakeParametricSurface(entityQ);
+		const IParametricSurface* surfaceQ = self ? surfaceP.get() : ownedQ.get();
 
 		if (!surfaceP || !surfaceQ)
 		{

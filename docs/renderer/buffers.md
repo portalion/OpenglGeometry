@@ -132,11 +132,11 @@ public:
     void Bind() const;
     void Unbind() const;
 
-    void AddVertexBuffer(const Ref<VertexBuffer>&);
-    void SetIndexBuffer(const Ref<IndexBuffer>&);
+    void AddVertexBuffer(Unique<VertexBuffer>);
+    void SetIndexBuffer(Unique<IndexBuffer>);
 
-    const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const;
-    const Ref<IndexBuffer>& GetIndexBuffer() const;
+    const std::vector<Unique<VertexBuffer>>& GetVertexBuffers() const;
+    const Unique<IndexBuffer>& GetIndexBuffer() const;
 
     template <typename T>
     static Ref<VertexArray> CreateWithBuffers(std::vector<T>& vertices,
@@ -145,8 +145,8 @@ public:
 private:
     uint32_t m_RendererID;
     uint32_t m_VertexBufferIndex = 0;     // running attribute location counter
-    std::vector<Ref<VertexBuffer>> m_VertexBuffers;
-    Ref<IndexBuffer> m_IndexBuffer;
+    std::vector<Unique<VertexBuffer>> m_VertexBuffers;
+    Unique<IndexBuffer> m_IndexBuffer;
 };
 ```
 
@@ -187,13 +187,13 @@ static Ref<VertexArray> CreateWithBuffers(std::vector<T>& vertices,
 {
     auto result = CreateRef<VertexArray>();
 
-    auto VBO = CreateRef<VertexBuffer>();
+    auto VBO = CreateUnique<VertexBuffer>();
     VBO->SetData(vertices.data(), vertices.size() * sizeof(T));
     VBO->SetLayout(layout);
-    result->AddVertexBuffer(VBO);
+    result->AddVertexBuffer(std::move(VBO));
 
-    auto IBO = CreateRef<IndexBuffer>(indices.data(), indices.size());
-    result->SetIndexBuffer(IBO);
+    auto IBO = CreateUnique<IndexBuffer>(indices.data(), indices.size());
+    result->SetIndexBuffer(std::move(IBO));
 
     return result;
 }
@@ -225,8 +225,8 @@ built through `CreateWithBuffers`.
 ```
 MeshComponent (Ref<VertexArray>)
    └─ VertexArray            glGenVertexArrays  / glDeleteVertexArrays
-        ├─ Ref<VertexBuffer> glCreateBuffers    / glDeleteBuffers
-        └─ Ref<IndexBuffer>  glCreateBuffers    / glDeleteBuffers
+        ├─ Unique<VertexBuffer> glCreateBuffers    / glDeleteBuffers
+        └─ Unique<IndexBuffer>  glCreateBuffers    / glDeleteBuffers
 ```
 
 Destruction is automatic when the last `Ref` drops, which normally happens when

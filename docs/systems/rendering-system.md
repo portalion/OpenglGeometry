@@ -11,7 +11,7 @@ Updates the active camera, gathers uniforms, and issues one draw call per
 class RenderingSystem : public ISystem
 {
     Ref<Scene>     m_Scene;
-    Ref<Renderer>  m_Renderer;
+    Unique<Renderer> m_Renderer;
     UniformApplier m_UniformApplier;
 public:
     RenderingSystem(Ref<Scene>);

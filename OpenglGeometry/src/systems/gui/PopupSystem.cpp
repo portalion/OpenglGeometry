@@ -4,7 +4,7 @@
 
 PopupSystem::PopupSystem(Ref<Scene> scene)
 {
-	m_RegisteredPopups.push_back(CreateRef<ShapeCreation>(scene));
+	m_RegisteredPopups.push_back(CreateUnique<ShapeCreation>(scene));
 }
 
 void PopupSystem::Process()
@@ -14,7 +14,7 @@ void PopupSystem::Process()
 		if (popup->ShouldOpen())
 		{
 			ImGui::OpenPopup(popup->Name());
-			m_OpenedPopup = popup;
+			m_OpenedPopup = popup.get();
 			break;
 		}
 	}

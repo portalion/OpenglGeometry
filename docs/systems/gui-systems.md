@@ -192,7 +192,7 @@ void PopupSystem::Process()
         if (popup->ShouldOpen())
         {
             ImGui::OpenPopup(popup->Name());
-            m_OpenedPopup = popup;
+            m_OpenedPopup = popup.get();
             break;                       // at most one popup opens per frame
         }
 
@@ -213,7 +213,7 @@ Popups are registered in the constructor:
 ```cpp
 PopupSystem::PopupSystem(Ref<Scene> scene)
 {
-    m_RegisteredPopups.push_back(CreateRef<ShapeCreation>(scene));
+    m_RegisteredPopups.push_back(CreateUnique<ShapeCreation>(scene));
 }
 ```
 

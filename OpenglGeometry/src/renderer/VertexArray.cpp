@@ -42,7 +42,7 @@ void VertexArray::Unbind() const
 	glBindVertexArray(0);
 }
 
-void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
+void VertexArray::AddVertexBuffer(Unique<VertexBuffer> vertexBuffer)
 {
 	glBindVertexArray(m_RendererID);
 	vertexBuffer->Bind();
@@ -54,12 +54,12 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 		glVertexAttribPointer(m_VertexBufferIndex, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type), element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.Offset);
 		m_VertexBufferIndex++;
 	}
-	m_VertexBuffers.push_back(vertexBuffer);
+	m_VertexBuffers.push_back(std::move(vertexBuffer));
 }
 
-void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
+void VertexArray::SetIndexBuffer(Unique<IndexBuffer> indexBuffer)
 {
 	glBindVertexArray(m_RendererID);
 	indexBuffer->Bind();
-	m_IndexBuffer = indexBuffer;
+	m_IndexBuffer = std::move(indexBuffer);
 }

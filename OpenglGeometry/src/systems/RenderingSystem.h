@@ -15,7 +15,7 @@ class RenderingSystem : public ISystem
 {
 private:
 	Ref<Scene> m_Scene;
-	Ref<Renderer> m_Renderer;
+	Unique<Renderer> m_Renderer;
 	UniformApplier m_UniformApplier;
 
 	Viewport& m_Viewport;

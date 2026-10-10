@@ -63,7 +63,7 @@ Two consequences worth internalising:
 
 ## The system pipeline
 
-[`SystemPipeline`](../OpenglGeometry/src/systems/SystemPipeline.cpp) is a `std::vector<Ref<ISystem>>`
+[`SystemPipeline`](../OpenglGeometry/src/systems/SystemPipeline.cpp) is a `std::vector<Unique<ISystem>>`
 constructed once and iterated in order every frame. The order is deliberate:
 
 | # | System | Responsibility |

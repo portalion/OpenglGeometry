@@ -21,19 +21,16 @@ Systems hold a `Ref<Scene>` and are constructed once. `Process()` is called once
 SystemPipeline::SystemPipeline(Ref<Scene> scene, Viewport& viewport)
 {
     m_Scene = scene;
-    m_Systems =
-    {
-        CreateRef<NotificationSystem>(scene),
-        CreateRef<RemovalSystem>(scene),
+    m_Systems.push_back(CreateUnique<NotificationSystem>(scene));
+    m_Systems.push_back(CreateUnique<RemovalSystem>(scene));
 
-        CreateRef<GUISystem>(scene, viewport),   // draws panels + shape-list/inspector, viewport picking, cursor
-        CreateRef<PopupSystem>(scene),
+    m_Systems.push_back(CreateUnique<GUISystem>(scene, viewport)); // draws panels + shape-list/inspector, viewport picking, cursor
+    m_Systems.push_back(CreateUnique<PopupSystem>(scene));
 
-        CreateRef<CurveBernsteinSystem>(scene),  // C2 curves: keep the virtual Bézier points in step
-        CreateRef<MeshGeneratingSystem>(scene),
-        CreateRef<SelectionMarkerSystem>(scene),
-        CreateRef<RenderingSystem>(scene, viewport)
-    };
+    m_Systems.push_back(CreateUnique<CurveBernsteinSystem>(scene)); // C2 curves: keep the virtual Bézier points in step
+    m_Systems.push_back(CreateUnique<MeshGeneratingSystem>(scene));
+    m_Systems.push_back(CreateUnique<SelectionMarkerSystem>(scene));
+    m_Systems.push_back(CreateUnique<RenderingSystem>(scene, viewport));
 }
 
 void SystemPipeline::Update()

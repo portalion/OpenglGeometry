@@ -231,8 +231,7 @@ public:
 Implementations are registered with [`PopupSystem`](systems/gui-systems.md#popupsystem),
 which handles `OpenPopup` / `BeginPopup` / `EndPopup` so `Display()` only writes the contents.
 
-`IPopup` has no virtual destructor although it is held via `Ref<IPopup>`; `shared_ptr`'s
-type-erased deleter makes this work in practice.
+`PopupSystem` owns popups as `Unique<IPopup>`, so `IPopup` declares a virtual destructor.
 
 ### `ShapeCreation`
 

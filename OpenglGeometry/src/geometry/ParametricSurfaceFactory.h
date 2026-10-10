@@ -41,7 +41,7 @@ namespace Geometry
 			|| *type == ObjectType::BezierSurfaceC2);
 	}
 
-	inline Ref<IParametricSurface> MakeParametricSurface(Entity entity)
+	inline Unique<IParametricSurface> MakeParametricSurface(Entity entity)
 	{
 		const std::optional<ObjectType> type = GetObjectType(entity);
 		if (!type)
@@ -52,7 +52,7 @@ namespace Geometry
 		if (*type == ObjectType::Torus)
 		{
 			const auto& torus = entity.GetComponent<TorusGenerationComponent>();
-			return CreateRef<TorusParametricSurface>(torus.radius, torus.tubeRadius, EntityModelMatrix(entity));
+			return CreateUnique<TorusParametricSurface>(torus.radius, torus.tubeRadius, EntityModelMatrix(entity));
 		}
 
 		if (*type != ObjectType::BezierSurfaceC0 && *type != ObjectType::BezierSurfaceC2)
@@ -119,6 +119,6 @@ namespace Geometry
 			return nullptr;
 		}
 
-		return CreateRef<BezierSurfaceParametricSurface>(std::move(patches));
+		return CreateUnique<BezierSurfaceParametricSurface>(std::move(patches));
 	}
 }

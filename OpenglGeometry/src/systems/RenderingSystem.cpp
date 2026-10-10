@@ -15,7 +15,7 @@
 RenderingSystem::RenderingSystem(Ref<Scene> m_Scene, Viewport& viewport)
 	: m_Scene(m_Scene), m_Viewport(viewport)
 {
-	m_Renderer = CreateRef<Renderer>();
+	m_Renderer = CreateUnique<Renderer>();
 	m_Renderer->SetShader(AvailableShaders::Default);
 }
 
