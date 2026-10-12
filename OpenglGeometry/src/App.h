@@ -1,12 +1,9 @@
 #pragma once
 #include <string>
-#include "utils/Initialization.h"
-#include "Algebra.h"
 #include "core/Window.h"
-#include <unordered_set>
 #include "core/Base.h"
 #include "core/Viewport.h"
-#include "systems/SystemPipeline.h"
+#include "managers/ModeManager.h"
 
 class App {
 public:
@@ -25,6 +22,7 @@ private:
 	// Declared before the pipeline: the systems hold a reference to it.
 	Viewport m_Viewport;
 
-	Unique<SystemPipeline> m_SystemPipeline;
+	Unique<ModeManager> m_ModeManager;
+
 	Ref<Scene> m_CurrentScene;
 };

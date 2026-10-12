@@ -1,7 +1,5 @@
 #include "App.h"
 #include <string>
-#include <stdexcept>
-#include <iostream>
 #include "core/Globals.h"
 #include "core/Log.h"
 #include <scene/BaseScene.h>
@@ -17,7 +15,7 @@ App::App()
     m_Window.SetAppPointerData(this);
 
 	m_CurrentScene = CreateRef<BaseScene>();
-	m_SystemPipeline = CreateUnique<SystemPipeline>(m_CurrentScene, m_Viewport);
+	m_ModeManager = CreateUnique<ModeManager>(m_CurrentScene, m_Viewport);
 
 	Logger::Info("Application started");
 }
@@ -56,10 +54,9 @@ void App::Run()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-		if (m_SystemPipeline)
-		{
-			m_SystemPipeline->Update();
-		}
+        if (m_ModeManager->ShouldChange()) m_ModeManager->ChangeMode();
+
+        m_ModeManager->Update();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
     "src/managers/IdManager.cpp"
     "src/managers/ShaderManager.cpp"
     "src/managers/StaticMeshManager.cpp"
+    "src/managers/ModeManager.cpp"
 
     "src/meshGenerators/BezierCurveGenerator.cpp"
     "src/meshGenerators/InterpolatedBezierCurveGenerator.cpp"

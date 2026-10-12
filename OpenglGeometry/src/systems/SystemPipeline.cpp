@@ -1,7 +1,5 @@
 #include "SystemPipeline.h"
 #include "scene/Scene.h"
-#include "scene/Entity.h"
-#include "scene/Components.h"
 
 #include "RenderingSystem.h"
 #include "MeshGeneratingSystem.h"
@@ -11,12 +9,17 @@
 #include "CurveBernsteinSystem.h"
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
-#include <core/Globals.h>
 
-SystemPipeline::SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
+void SystemPipeline::Update()
 {
-	this->m_Scene = m_Scene;
+	for(auto& system : m_Systems)
+	{
+		system->Process();
+	}
+}
 
+ModellingSystemPipeline::ModellingSystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
+{
 	m_Systems.push_back(CreateUnique<NotificationSystem>(m_Scene));
 	m_Systems.push_back(CreateUnique<RemovalSystem>(m_Scene));
 
@@ -29,14 +32,7 @@ SystemPipeline::SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 	m_Systems.push_back(CreateUnique<RenderingSystem>(m_Scene, viewport));
 }
 
-SystemPipeline::~SystemPipeline()
+CAMSystemPipeline::CAMSystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 {
-}
-
-void SystemPipeline::Update()
-{
-	for(auto& system : m_Systems)
-	{
-		system->Process();
-	}
+	m_Systems.push_back(CreateUnique<RenderingSystem>(m_Scene, viewport));
 }

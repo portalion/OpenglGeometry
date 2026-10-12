@@ -8,13 +8,21 @@ class Viewport;
 
 class SystemPipeline
 {
-private:
+protected:
 	std::vector<Unique<ISystem>> m_Systems;
-
-	Ref<Scene> m_Scene;
 public:
-	SystemPipeline(Ref<Scene> m_Scene, Viewport& viewport);
-	~SystemPipeline();
-
+	virtual ~SystemPipeline() = default;
 	void Update();
+};
+
+class ModellingSystemPipeline : public SystemPipeline
+{
+public:
+	ModellingSystemPipeline(Ref<Scene> m_Scene, Viewport& viewport);
+};
+
+class CAMSystemPipeline : public SystemPipeline
+{
+public:
+	CAMSystemPipeline(Ref<Scene> scene, Viewport& viewport);
 };
