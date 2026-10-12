@@ -45,6 +45,8 @@ add_executable(${PROJECT_NAME}
 
     "src/systems/gui/GUISystem.cpp"
     "src/systems/gui/PopupSystem.cpp"
+    "src/systems/gui/LoggerSystem.cpp"
+    "src/systems/gui/StatusBarSystem.cpp"
     "src/ui/ShapeInspectorRegistry.cpp"
     "src/ui/Inspector.cpp"
     "src/ui/CursorPanel.cpp"

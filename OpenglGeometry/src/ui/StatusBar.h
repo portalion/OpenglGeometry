@@ -2,14 +2,14 @@
 #include <ranges>
 #include <imgui/imgui_internal.h>
 #include "core/Globals.h"
+#include "core/Log.h"
 #include "core/Viewport.h"
 #include "SceneActions.h"
 #include "Style.h"
-#include "model/UiState.h"
 
 namespace GUI
 {
-	inline void DrawStatusBar(Ref<Scene> scene, const ViewportData& viewport, const UiState& uiState)
+	inline void DrawStatusBar(Ref<Scene> scene, const ViewportData& viewport)
 	{
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
 		const float height = ImGui::GetFrameHeight() + Style::StatusBarExtraHeight;
@@ -31,19 +31,20 @@ namespace GUI
 			ImGui::SameLine();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
-			ImGui::Text("pivot: %s", ToDisplayString(uiState.pivot));
-			ImGui::SameLine();
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-			ImGui::SameLine();
-			ImGui::Text("cursor %.3f, %.3f, %.3f",
-				uiState.cursor.world.x, uiState.cursor.world.y, uiState.cursor.world.z);
+			for (Entity cursor : scene->GetAllEntitiesWith<CursorTag, PositionComponent>())
+			{
+				const Algebra::Vector4 world = cursor.GetComponent<PositionComponent>().position;
+				ImGui::Text("cursor %.3f, %.3f, %.3f", world.x, world.y, world.z);
+				break;
+			}
 
-			if (!uiState.statusMessage.empty())
+			const auto& entries = Logger::Entries();
+			if (!entries.empty())
 			{
 				ImGui::SameLine();
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 				ImGui::SameLine();
-				ImGui::TextDisabled("%s", uiState.statusMessage.c_str());
+				ImGui::TextDisabled("%s", entries.back().message.c_str());
 			}
 		}
 		ImGui::End();

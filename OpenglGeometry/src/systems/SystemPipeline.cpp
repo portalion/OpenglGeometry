@@ -9,6 +9,8 @@
 #include "CurveBernsteinSystem.h"
 #include "gui/GUISystem.h"
 #include "gui/PopupSystem.h"
+#include "gui/LoggerSystem.h"
+#include "gui/StatusBarSystem.h"
 
 void SystemPipeline::Update()
 {
@@ -25,6 +27,8 @@ ModellingSystemPipeline::ModellingSystemPipeline(Ref<Scene> m_Scene, Viewport& v
 
 	m_Systems.push_back(CreateUnique<GUISystem>(m_Scene, viewport));
 	m_Systems.push_back(CreateUnique<PopupSystem>(m_Scene));
+	m_Systems.push_back(CreateUnique<LoggerSystem>());
+	m_Systems.push_back(CreateUnique<StatusBarSystem>(m_Scene, viewport));
 
 	m_Systems.push_back(CreateUnique<CurveBernsteinSystem>(m_Scene));
 	m_Systems.push_back(CreateUnique<MeshGeneratingSystem>(m_Scene));
@@ -34,5 +38,8 @@ ModellingSystemPipeline::ModellingSystemPipeline(Ref<Scene> m_Scene, Viewport& v
 
 CAMSystemPipeline::CAMSystemPipeline(Ref<Scene> m_Scene, Viewport& viewport)
 {
+	m_Systems.push_back(CreateUnique<LoggerSystem>());
+	m_Systems.push_back(CreateUnique<StatusBarSystem>(m_Scene, viewport));
+
 	m_Systems.push_back(CreateUnique<RenderingSystem>(m_Scene, viewport));
 }

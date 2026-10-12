@@ -232,7 +232,7 @@ void GUI::DrawSaveSceneDialog(UiState& state, Ref<Scene> scene)
 	static std::string path = "scenes/untitled.json";
 	if (DrawFileDialogBody(SaveSceneDialogTitle, path, "Save"))
 	{
-		state.statusMessage = Serialization::SaveScene(*scene, path).message;
+		Serialization::SaveScene(*scene, path);
 	}
 }
 
@@ -241,6 +241,6 @@ void GUI::DrawOpenSceneDialog(UiState& state, Ref<Scene> scene)
 	static std::string path = "scenes/untitled.json";
 	if (DrawFileDialogBody(OpenSceneDialogTitle, path, "Open"))
 	{
-		state.statusMessage = Serialization::LoadScene(*scene, path).message;
+		Serialization::LoadScene(*scene, path);
 	}
 }

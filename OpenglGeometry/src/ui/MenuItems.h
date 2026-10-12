@@ -50,7 +50,7 @@ namespace GUI
 		{
 			scene->Clear();
 			uiState.activeCurveId.reset();
-			uiState.statusMessage = "new scene";
+			Logger::Info("New scene");
 		}
 		if (ImGui::MenuItem("Open...", "Ctrl+O"))
 		{
@@ -236,10 +236,9 @@ namespace GUI
 	}
 
 	inline void DrawViewMenuItems(UiState& uiState, bool& showParameterSpace, bool& showImGuiDemo,
-		bool& showLog, const UICallbacks& callbacks)
+		const UICallbacks& callbacks)
 	{
 		DrawViewDisplayItems(uiState, showParameterSpace);
-		ImGui::MenuItem("Log", nullptr, &showLog);
 		ImGui::Separator();
 		ImGui::MenuItem("Dear ImGui demo", nullptr, &showImGuiDemo);
 		if (ImGui::MenuItem("Reset layout"))
