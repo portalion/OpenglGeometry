@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME}
     "src/renderer/UniformApplier.cpp"
 
     "src/systems/gui/GUISystem.cpp"
+    "src/systems/gui/CAMGUISystem.cpp"
     "src/systems/gui/PopupSystem.cpp"
     "src/systems/gui/LoggerSystem.cpp"
     "src/systems/gui/StatusBarSystem.cpp"
@@ -67,11 +68,13 @@ add_executable(${PROJECT_NAME}
     "src/ui/popups/BezierSurfaceDialog.cpp"
     "src/ui/popups/IntersectionDialog.cpp"
     "src/ui/popups/SceneFileDialog.cpp"
+    "src/ui/popups/FileDialog.cpp"
     "src/ui/popups/StereoDialog.cpp"
 
     "src/utils/GlCall.cpp"
     "src/utils/Initialization.cpp" 
-    "src/ui/core/DockSpace.cpp" "src/ui/layouts/DefaultLayout.cpp")
+    "src/ui/core/DockSpace.cpp" "src/ui/layouts/DefaultLayout.cpp"
+    "src/ui/layouts/CAMLayout.cpp")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
