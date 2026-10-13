@@ -58,123 +58,123 @@ namespace
 		ImGui::SetNextItemWidth(360.f);
 		ImGui::InputText("##Path", &path);
 	}
+}
 
-	bool DrawFileBrowser(const char* title, std::string& path, const std::vector<std::string>& extensions)
+bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<std::string>& extensions, ImVec2 size)
+{
+	static std::unordered_map<std::string, fs::path> browseDirs;
+	const bool initialised = browseDirs.contains(id);
+	fs::path& browseDir = browseDirs[id];
+
+	std::error_code ec;
+
+	if (!initialised)
 	{
-		static std::unordered_map<std::string, fs::path> browseDirs;
-		const bool initialised = browseDirs.contains(title);
-		fs::path& browseDir = browseDirs[title];
-
-		std::error_code ec;
-
-		if (!initialised)
-		{
-			const fs::path parent = fs::path(path).parent_path();
-			browseDir = (!parent.empty() && fs::is_directory(parent, ec))
-				? fs::absolute(parent, ec)
-				: fs::current_path(ec);
-		}
-
-		if (!fs::is_directory(browseDir, ec))
-		{
-			browseDir = fs::current_path(ec);
-		}
-
-		{
-			const fs::path typedParent = fs::path(path).parent_path();
-			if (!typedParent.empty())
-			{
-				const fs::path abs = fs::absolute(typedParent, ec);
-				if (!ec && fs::is_directory(abs, ec) && !fs::equivalent(abs, browseDir, ec))
-				{
-					browseDir = abs;
-				}
-			}
-		}
-
-		ImGui::TextDisabled("%s", browseDir.generic_string().c_str());
-
-		bool confirmed = false;
-
-		if (ImGui::BeginChild("##FileBrowser", ImVec2(360.f, 170.f), ImGuiChildFlags_Border))
-		{
-			if (browseDir.has_parent_path() && browseDir.parent_path() != browseDir)
-			{
-				if (ImGui::Selectable(".."))
-				{
-					browseDir = browseDir.parent_path();
-					path = RelativePath(browseDir / FileNameOf(path));
-				}
-			}
-
-			std::vector<fs::path> directories;
-			std::vector<fs::path> files;
-
-			for (fs::directory_iterator it(browseDir, fs::directory_options::skip_permission_denied, ec);
-				it != fs::directory_iterator(); it.increment(ec))
-			{
-				if (ec)
-				{
-					break;
-				}
-
-				const fs::directory_entry& entry = *it;
-				std::error_code entryEc;
-
-				if (entry.is_directory(entryEc))
-				{
-					directories.push_back(entry.path());
-				}
-				else if (entry.is_regular_file(entryEc) && MatchesExtension(entry.path(), extensions))
-				{
-					files.push_back(entry.path());
-				}
-			}
-
-			const auto byFileName = [](const fs::path& a, const fs::path& b)
-			{
-				return a.filename().string() < b.filename().string();
-			};
-			std::sort(directories.begin(), directories.end(), byFileName);
-			std::sort(files.begin(), files.end(), byFileName);
-
-			for (const fs::path& directory : directories)
-			{
-				const std::string label = "[ " + directory.filename().string() + " ]";
-				if (ImGui::Selectable(label.c_str()))
-				{
-					browseDir = directory;
-					path = RelativePath(browseDir / FileNameOf(path));
-				}
-			}
-
-			const fs::path currentFile = fs::absolute(fs::path(path), ec);
-
-			for (const fs::path& file : files)
-			{
-				const bool selected = fs::equivalent(file, currentFile, ec);
-
-				if (ImGui::Selectable(file.filename().string().c_str(), selected,
-					ImGuiSelectableFlags_AllowDoubleClick))
-				{
-					path = RelativePath(file);
-
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-					{
-						confirmed = true;
-					}
-				}
-			}
-
-			if (directories.empty() && files.empty())
-			{
-				ImGui::TextDisabled("no matching files here");
-			}
-		}
-		ImGui::EndChild();
-
-		return confirmed;
+		const fs::path parent = fs::path(path).parent_path();
+		browseDir = (!parent.empty() && fs::is_directory(parent, ec))
+			? fs::absolute(parent, ec)
+			: fs::current_path(ec);
 	}
+
+	if (!fs::is_directory(browseDir, ec))
+	{
+		browseDir = fs::current_path(ec);
+	}
+
+	{
+		const fs::path typedParent = fs::path(path).parent_path();
+		if (!typedParent.empty())
+		{
+			const fs::path abs = fs::absolute(typedParent, ec);
+			if (!ec && fs::is_directory(abs, ec) && !fs::equivalent(abs, browseDir, ec))
+			{
+				browseDir = abs;
+			}
+		}
+	}
+
+	ImGui::TextDisabled("%s", browseDir.generic_string().c_str());
+
+	bool confirmed = false;
+
+	if (ImGui::BeginChild(id, size, ImGuiChildFlags_Border))
+	{
+		if (browseDir.has_parent_path() && browseDir.parent_path() != browseDir)
+		{
+			if (ImGui::Selectable(".."))
+			{
+				browseDir = browseDir.parent_path();
+				path = RelativePath(browseDir / FileNameOf(path));
+			}
+		}
+
+		std::vector<fs::path> directories;
+		std::vector<fs::path> files;
+
+		for (fs::directory_iterator it(browseDir, fs::directory_options::skip_permission_denied, ec);
+			it != fs::directory_iterator(); it.increment(ec))
+		{
+			if (ec)
+			{
+				break;
+			}
+
+			const fs::directory_entry& entry = *it;
+			std::error_code entryEc;
+
+			if (entry.is_directory(entryEc))
+			{
+				directories.push_back(entry.path());
+			}
+			else if (entry.is_regular_file(entryEc) && MatchesExtension(entry.path(), extensions))
+			{
+				files.push_back(entry.path());
+			}
+		}
+
+		const auto byFileName = [](const fs::path& a, const fs::path& b)
+		{
+			return a.filename().string() < b.filename().string();
+		};
+		std::sort(directories.begin(), directories.end(), byFileName);
+		std::sort(files.begin(), files.end(), byFileName);
+
+		for (const fs::path& directory : directories)
+		{
+			const std::string label = "[ " + directory.filename().string() + " ]";
+			if (ImGui::Selectable(label.c_str()))
+			{
+				browseDir = directory;
+				path = RelativePath(browseDir / FileNameOf(path));
+			}
+		}
+
+		const fs::path currentFile = fs::absolute(fs::path(path), ec);
+
+		for (const fs::path& file : files)
+		{
+			const bool selected = fs::equivalent(file, currentFile, ec);
+
+			if (ImGui::Selectable(file.filename().string().c_str(), selected,
+				ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				path = RelativePath(file);
+
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					confirmed = true;
+				}
+			}
+		}
+
+		if (directories.empty() && files.empty())
+		{
+			ImGui::TextDisabled("no matching files here");
+		}
+	}
+	ImGui::EndChild();
+
+	return confirmed;
 }
 
 bool GUI::DrawFileDialog(const char* title, std::string& path, const FileDialogOptions& options)
@@ -185,7 +185,7 @@ bool GUI::DrawFileDialog(const char* title, std::string& path, const FileDialogO
 	}
 
 	DrawPathField(path);
-	const bool browserConfirmed = DrawFileBrowser(title, path, options.extensions);
+	const bool browserConfirmed = GUI::DrawFileBrowser(title, path, options.extensions, ImVec2(360.f, 170.f));
 
 	if (options.note != nullptr)
 	{

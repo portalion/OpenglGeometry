@@ -3,9 +3,7 @@
 
 namespace GUI
 {
-	inline constexpr const char* CAMTopPanelWindow = "Top##CAM Top Panel";
-	inline constexpr const char* CAMMiddlePanelWindow = "Middle##CAM Middle Panel";
-	inline constexpr const char* CAMBottomPanelWindow = "Bottom##CAM Bottom Panel";
+	inline constexpr const char* CAMPathPanelWindow = "Path##CAM Path Panel";
 
 	namespace Layout
 	{

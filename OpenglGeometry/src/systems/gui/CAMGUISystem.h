@@ -13,9 +13,10 @@ private:
 	Viewport& m_Viewport;
 	Dockspace m_Dockspace{ "CAMDockspace" };
 	std::string m_PathFile;
-	bool m_OpenLoadPathDialog = false;
+	std::string m_BrowsePath;
 
 	void DrawMenuBar();
+	void DrawPathPanel();
 	void LoadPath(const std::string& file);
 public:
 	CAMGUISystem(Ref<Scene> scene, Viewport& viewport);

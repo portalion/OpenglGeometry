@@ -1,13 +1,13 @@
 #include "CAMGUISystem.h"
+#include <filesystem>
 #include <imgui/imgui.h>
 #include <utils/Initialization.h>
-#include <core/Log.h>
 #include <ui/layouts/CAMLayout.h>
 #include <ui/popups/FileDialog.h>
 
 namespace
 {
-	inline constexpr const char* LoadPathDialogTitle = "Load path##LoadPathDialog";
+	inline constexpr const char* SelectPathDialogTitle = "Select path##SelectPathDialog";
 }
 
 CAMGUISystem::CAMGUISystem(Ref<Scene> scene, Viewport& viewport)
@@ -24,11 +24,6 @@ void CAMGUISystem::DrawMenuBar()
 
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::MenuItem("Load path..."))
-		{
-			m_OpenLoadPathDialog = true;
-		}
-		ImGui::Separator();
 		if (ImGui::MenuItem("Exit"))
 		{
 			glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
@@ -48,25 +43,54 @@ void CAMGUISystem::DrawMenuBar()
 	ImGui::EndMainMenuBar();
 }
 
+void CAMGUISystem::DrawPathPanel()
+{
+	if (!ImGui::Begin(GUI::CAMPathPanelWindow))
+	{
+		ImGui::End();
+		return;
+	}
+
+	std::error_code ec;
+	const bool hasFile = std::filesystem::is_regular_file(m_PathFile, ec);
+
+	if (ImGui::Button("Browse..."))
+	{
+		m_BrowsePath = m_PathFile;
+		ImGui::OpenPopup(SelectPathDialogTitle);
+	}
+	ImGui::SameLine();
+	if (hasFile)
+	{
+		ImGui::TextUnformatted(std::filesystem::path(m_PathFile).stem().string().c_str());
+	}
+	else
+	{
+		ImGui::TextDisabled("none");
+	}
+
+	ImGui::BeginDisabled(!hasFile);
+	if (ImGui::Button("Load", ImVec2(-FLT_MIN, 0.f)))
+	{
+		LoadPath(m_PathFile);
+	}
+	ImGui::EndDisabled();
+
+	if (GUI::DrawFileDialog(SelectPathDialogTitle, m_BrowsePath, { "Select" }))
+	{
+		m_PathFile = m_BrowsePath;
+	}
+
+	ImGui::End();
+}
+
 void CAMGUISystem::LoadPath(const std::string& file)
 {
-	Logger::Info("Load path: {}", file);
 }
 
 void CAMGUISystem::Process()
 {
 	DrawMenuBar();
-
-	if (m_OpenLoadPathDialog)
-	{
-		ImGui::OpenPopup(LoadPathDialogTitle);
-		m_OpenLoadPathDialog = false;
-	}
-
-	if (GUI::DrawFileDialog(LoadPathDialogTitle, m_PathFile, { "Load" }))
-	{
-		LoadPath(m_PathFile);
-	}
 
 	if (!m_Dockspace.Created())
 	{
@@ -81,9 +105,5 @@ void CAMGUISystem::Process()
 		m_Viewport.Change(sceneRect);
 	}
 
-	for (const char* panel : { GUI::CAMTopPanelWindow, GUI::CAMMiddlePanelWindow, GUI::CAMBottomPanelWindow })
-	{
-		ImGui::Begin(panel);
-		ImGui::End();
-	}
+	DrawPathPanel();
 }

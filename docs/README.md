@@ -39,6 +39,7 @@ Practical, step-by-step guides for the changes you are most likely to make:
 - [Add a new shader](how-to/add-a-new-shader.md)
 - [Add a new file to the build](how-to/add-a-file-to-the-build.md)
 - [Add a new inspector field](how-to/add-an-inspector-field.md)
+- [Render something (CAM tool path example)](how-to/render-something.md)
 
 ## Also worth reading
 
