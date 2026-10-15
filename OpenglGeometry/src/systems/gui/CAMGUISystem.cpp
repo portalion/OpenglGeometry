@@ -1,6 +1,8 @@
 #include "CAMGUISystem.h"
 #include <filesystem>
 #include <imgui/imgui.h>
+#include <imgui/imgui_stdlib.h>
+#include <algorithm>
 #include <utils/Initialization.h>
 #include <ui/layouts/CAMLayout.h>
 #include <ui/popups/FileDialog.h>
@@ -83,7 +85,61 @@ void CAMGUISystem::DrawPathPanel()
 		m_PathFile = m_BrowsePath;
 	}
 
+	DrawLoadedPaths();
+
 	ImGui::End();
+}
+
+void CAMGUISystem::DrawLoadedPaths()
+{
+	ImGui::SeparatorText("Loaded paths");
+
+	auto paths = m_Scene->GetAllEntitiesWith<PathComponent>();
+	if (paths.begin() == paths.end())
+	{
+		ImGui::TextDisabled("No paths loaded");
+		return;
+	}
+
+	for (Entity entity : paths)
+	{
+		auto& tool = entity.GetComponent<PathComponent>().m_Tool;
+		auto& name = entity.GetComponent<NameComponent>().name;
+		const auto id = entity.GetComponent<IdComponent>().id;
+		ImGui::PushID(static_cast<int>(id));
+
+		const std::string header = name + "###PathHeader";
+		if (ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			bool visible = !entity.HasComponent<IsInvisibleTag>();
+			if (ImGui::Checkbox("Visible", &visible))
+			{
+				if (visible)
+				{
+					entity.RemoveTag<IsInvisibleTag>();
+				}
+				else
+				{
+					entity.AddTag<IsInvisibleTag>();
+				}
+			}
+
+			ImGui::InputText("Name", &name);
+
+			int toolType = tool.m_IsFlat ? 1 : 0;
+			if (ImGui::Combo("Tool", &toolType, "Ball\0Flat\0"))
+			{
+				tool.m_IsFlat = toolType == 1;
+			}
+
+			if (ImGui::InputFloat("Diameter", &tool.m_Diameter, 1.f, 5.f, "%.0f mm"))
+			{
+				tool.m_Diameter = std::max(tool.m_Diameter, 1.f);
+			}
+		}
+
+		ImGui::PopID();
+	}
 }
 
 void CAMGUISystem::LoadPath(const std::string& file)
@@ -94,7 +150,7 @@ void CAMGUISystem::LoadPath(const std::string& file)
 	auto pathEntity = m_Scene->CreateEntity();
 	
 	Archetypes::AddPathToEntity(pathEntity, path);
-
+	pathEntity.GetComponent<NameComponent>().name = std::filesystem::path(file).filename().string();
 }
 
 void CAMGUISystem::Process()

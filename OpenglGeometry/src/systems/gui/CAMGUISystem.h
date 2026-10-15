@@ -17,6 +17,7 @@ private:
 
 	void DrawMenuBar();
 	void DrawPathPanel();
+	void DrawLoadedPaths();
 	void LoadPath(const std::string& file);
 public:
 	CAMGUISystem(Ref<Scene> scene, Viewport& viewport);
