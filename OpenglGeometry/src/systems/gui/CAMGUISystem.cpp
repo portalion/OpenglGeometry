@@ -4,7 +4,9 @@
 #include <utils/Initialization.h>
 #include <ui/layouts/CAMLayout.h>
 #include <ui/popups/FileDialog.h>
-
+#include <serialization/PathFileReader.h>
+#include <core/Log.h>
+#include <archetypes/Archetypes.h>
 namespace
 {
 	inline constexpr const char* SelectPathDialogTitle = "Select path##SelectPathDialog";
@@ -86,6 +88,13 @@ void CAMGUISystem::DrawPathPanel()
 
 void CAMGUISystem::LoadPath(const std::string& file)
 {
+	PathFileReader reader;
+	auto path = reader.ReadFile(file);
+
+	auto pathEntity = m_Scene->CreateEntity();
+	
+	Archetypes::AddPathToEntity(pathEntity, path);
+
 }
 
 void CAMGUISystem::Process()

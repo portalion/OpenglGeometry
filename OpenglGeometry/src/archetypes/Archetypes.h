@@ -9,3 +9,4 @@
 #include "BezierSurfaceArchetypeCreation.h"
 #include "GregoryPatchArchetypeCreation.h"
 #include "IntersectionArchetypeCreation.h"
+#include "PathArchetypeCreation.h"

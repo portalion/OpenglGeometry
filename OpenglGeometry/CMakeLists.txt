@@ -33,6 +33,7 @@ add_executable(${PROJECT_NAME}
     "src/scene/Scene.cpp"
 
     "src/serialization/SceneSerialization.cpp"
+    "src/serialization/PathFileReader.cpp"
 
     "src/systems/CurveBernsteinSystem.cpp"
     "src/systems/MeshGeneratingSystem.cpp"

@@ -255,3 +255,19 @@ struct IntersectionCurveComponent
 	IntersectionCurveComponent() = default;
 	IntersectionCurveComponent(const IntersectionCurveComponent& other) = default;
 };
+
+struct Tool
+{
+	float m_Diameter;
+	bool m_IsFlat;
+};
+
+struct PathComponent
+{
+	Tool m_Tool;
+	std::vector<Algebra::Vector4> m_Positions;
+
+	PathComponent() = default;
+	PathComponent(const PathComponent& other) = default;
+};
+
