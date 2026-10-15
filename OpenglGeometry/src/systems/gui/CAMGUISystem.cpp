@@ -14,8 +14,8 @@ namespace
 	inline constexpr const char* SelectPathDialogTitle = "Select path##SelectPathDialog";
 }
 
-CAMGUISystem::CAMGUISystem(Ref<Scene> scene, Viewport& viewport)
-	:m_Scene(scene), m_Viewport(viewport)
+CAMGUISystem::CAMGUISystem(Ref<Scene> scene, Ref<CAMSettings> settings, Viewport& viewport)
+	:m_Scene(scene), m_Settings(settings), m_Viewport(viewport)
 {
 }
 
@@ -55,6 +55,10 @@ void CAMGUISystem::DrawPathPanel()
 		return;
 	}
 
+	DrawMaterialSection();
+	DrawSimulationSection();
+
+	ImGui::SeparatorText("Load path");
 	std::error_code ec;
 	const bool hasFile = std::filesystem::is_regular_file(m_PathFile, ec);
 
@@ -140,6 +144,78 @@ void CAMGUISystem::DrawLoadedPaths()
 
 		ImGui::PopID();
 	}
+}
+
+void CAMGUISystem::DrawMaterialSection()
+{
+	ImGui::SeparatorText("Material");
+
+	auto& material = m_Settings->m_Material;
+
+	if (ImGui::DragFloat3("Size [mm]", material.m_Size.data(), 1.f, 1.f, 1000.f, "%.1f"))
+	{
+		for (float& size : material.m_Size)
+		{
+			size = std::max(size, 1.f);
+		}
+		material.m_MaxDepth = std::min(material.m_MaxDepth, material.m_Size[2]);
+	}
+
+	if (ImGui::DragInt2("Divisions X/Y", material.m_Resolution.data(), 10.f, 2, 4000))
+	{
+		for (int& resolution : material.m_Resolution)
+		{
+			resolution = std::clamp(resolution, 2, 4000);
+		}
+	}
+	ImGui::TextDisabled("Cell: %.3f x %.3f mm",
+		material.m_Size[0] / material.m_Resolution[0],
+		material.m_Size[1] / material.m_Resolution[1]);
+
+	ImGui::SliderFloat("Max depth [mm]", &material.m_MaxDepth, 0.f, material.m_Size[2], "%.1f");
+}
+
+void CAMGUISystem::DrawSimulationSection()
+{
+	ImGui::SeparatorText("Simulation");
+
+	auto& simulation = m_Settings->m_Simulation;
+	const bool running = simulation.m_State == SimulationState::Running;
+	const bool finished = simulation.m_State == SimulationState::Finished;
+
+	const float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+
+	ImGui::BeginDisabled(finished);
+	if (ImGui::Button(running ? "Pause" : "Start", ImVec2(buttonWidth, 0.f)))
+	{
+		simulation.m_State = running ? SimulationState::Paused : SimulationState::Running;
+	}
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+	ImGui::BeginDisabled(simulation.m_State == SimulationState::Stopped);
+	if (ImGui::Button("Reset", ImVec2(buttonWidth, 0.f)))
+	{
+		simulation.m_State = SimulationState::Stopped;
+		simulation.m_Progress = 0.f;
+		simulation.m_ResetRequested = true;
+	}
+	ImGui::EndDisabled();
+
+	ImGui::BeginDisabled(finished);
+	if (ImGui::Button("Finish instantly", ImVec2(-FLT_MIN, 0.f)))
+	{
+		simulation.m_FinishRequested = true;
+	}
+	ImGui::EndDisabled();
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("Run the whole simulation without preview");
+	}
+
+	ImGui::SliderFloat("Speed [mm/s]", &simulation.m_Speed, 1.f, 1000.f, "%.0f", ImGuiSliderFlags_Logarithmic);
+
+	ImGui::ProgressBar(simulation.m_Progress, ImVec2(-FLT_MIN, 0.f));
 }
 
 void CAMGUISystem::LoadPath(const std::string& file)

@@ -16,15 +16,7 @@ void GUI::Layout::CAM(Dockspace& dockspace)
 	ImGuiID centralId = 0;
 	ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, ratio, &rightId, &centralId);
 
-	ImGuiID pathId = 0;
-	ImGuiID restId = 0;
-	ImGui::DockBuilderSplitNode(rightId, ImGuiDir_Down, 0.72f, &restId, &pathId);
-
-	ImGuiID bottomId = 0;
-	ImGuiID middleId = 0;
-	ImGui::DockBuilderSplitNode(restId, ImGuiDir_Down, 0.35f, &bottomId, &middleId);
-
-	ImGui::DockBuilderDockWindow(GUI::CAMPathPanelWindow, pathId);
+	ImGui::DockBuilderDockWindow(GUI::CAMPathPanelWindow, rightId);
 
 	dockspace.FinishCreation();
 }

@@ -3,7 +3,7 @@
 
 namespace GUI
 {
-	inline constexpr const char* CAMPathPanelWindow = "Path##CAM Path Panel";
+	inline constexpr const char* CAMPathPanelWindow = "CAM##CAM Path Panel";
 
 	namespace Layout
 	{
