@@ -151,6 +151,7 @@ void CAMGUISystem::DrawMaterialSection()
 	ImGui::SeparatorText("Material");
 
 	auto& material = m_Settings->m_Material;
+	ImGui::BeginDisabled(m_Settings->m_Simulation.m_State != SimulationState::Stopped);
 
 	if (ImGui::DragFloat3("Size [mm]", material.m_Size.data(), 1.f, 1.f, 1000.f, "%.1f"))
 	{
@@ -173,6 +174,7 @@ void CAMGUISystem::DrawMaterialSection()
 		material.m_Size[1] / material.m_Resolution[1]);
 
 	ImGui::SliderFloat("Max depth [mm]", &material.m_MaxDepth, 0.f, material.m_Size[2], "%.1f");
+	ImGui::EndDisabled();
 }
 
 void CAMGUISystem::DrawSimulationSection()

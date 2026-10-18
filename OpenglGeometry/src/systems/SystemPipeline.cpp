@@ -7,7 +7,7 @@
 #include "RemovalSystem.h"
 #include "SelectionMarkerSystem.h"
 #include "CurveBernsteinSystem.h"
-#include "SimulationSystem.h"
+#include "simulationSystem/SimulationSystem.h"
 #include "gui/GUISystem.h"
 #include "gui/CAMGUISystem.h"
 #include "gui/PopupSystem.h"
