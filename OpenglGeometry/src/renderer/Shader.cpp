@@ -4,6 +4,7 @@
 #include "RendererContext.h"
 #include "core/Log.h"
 #include <functional>
+#include "Texture2D.h"
 
 struct UniformInfo
 {
@@ -145,6 +146,7 @@ void Shader::WarnOnce(const std::string& uniformName, const std::string& message
 
 void Shader::ApplyContext(UniformContext context)
 {
+    int textureUnit = 0;
     for (const auto& uniform : m_Uniforms)
     {
         switch (uniform.type)
@@ -173,7 +175,6 @@ void Shader::ApplyContext(UniformContext context)
             break;
         case GL_INT:
         case GL_BOOL:
-        case GL_SAMPLER_2D:
             if (context.IntUniforms.contains(uniform.name))
             {
                 auto& value = context.IntUniforms[uniform.name];
@@ -182,6 +183,19 @@ void Shader::ApplyContext(UniformContext context)
             else
             {
                 WarnOnce(uniform.name, "The context carries no int named");
+            }
+            break;
+        case GL_SAMPLER_2D:
+            if (context.TextureUniforms.contains(uniform.name) && context.TextureUniforms[uniform.name])
+            {
+                auto& value = context.TextureUniforms[uniform.name];
+                value->Bind(textureUnit);
+                SetUniformVec1i(uniform.name, textureUnit);
+                textureUnit++;
+            }
+            else
+            {
+                WarnOnce(uniform.name, "The context carries no texture named");
             }
             break;
         default:

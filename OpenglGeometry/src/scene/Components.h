@@ -230,6 +230,14 @@ struct TrimmingComponent
 	TrimmingComponent(const TrimmingComponent& other) = default;
 };
 
+struct HeightMapComponent
+{
+	Ref<Texture2D> texture;
+
+	HeightMapComponent() = default;
+	HeightMapComponent(const HeightMapComponent& other) = default;
+};
+
 struct IntersectionCurveComponent
 {
 	Entity surfaceP;

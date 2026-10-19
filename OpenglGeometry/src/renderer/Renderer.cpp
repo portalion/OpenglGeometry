@@ -43,12 +43,9 @@ void Renderer::Render(RenderingMode mode, const EntityContext& context)
 	const bool trimming = context.ShouldTrim && context.TrimTexture != nullptr;
 	uniformContext.IntUniforms["u_shouldTrim"] = trimming ? 1 : 0;
 	uniformContext.IntUniforms["u_keepFilled"] = context.KeepFilled ? 1 : 0;
-	uniformContext.IntUniforms["u_trimTex"] = 0;
-	if (trimming)
-	{
-		context.TrimTexture->Bind(0);
-	}
-
+	uniformContext.TextureUniforms["u_trimTex"] = context.TrimTexture;
+	uniformContext.TextureUniforms["u_heightMap"] = context.HeightTexture;
+	
 	m_ActualShader->ApplyContext(uniformContext);
 
 	m_ActualMesh->Bind();

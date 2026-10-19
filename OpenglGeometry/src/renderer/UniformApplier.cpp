@@ -48,6 +48,11 @@ void UniformApplier::TrimApplier(Entity entity, EntityContext& context)
 	context.TrimTexture = trimming.mask;
 }
 
+void UniformApplier::HeightMapApplier(Entity entity, EntityContext& context)
+{
+	context.HeightTexture = entity.GetComponent<HeightMapComponent>().texture;
+}
+
 UniformApplier::UniformApplier()
 {
 	Bind<PositionComponent>(&UniformApplier::PositionApplier);
@@ -57,4 +62,5 @@ UniformApplier::UniformApplier()
 	Bind<BezierSurfaceGenerationComponent>(&UniformApplier::SamplesApplier);
 	Bind<GregoryPatchGenerationComponent>(&UniformApplier::GregorySamplesApplier);
 	Bind<TrimmingComponent>(&UniformApplier::TrimApplier);
+	Bind<HeightMapComponent>(&UniformApplier::HeightMapApplier);
 }

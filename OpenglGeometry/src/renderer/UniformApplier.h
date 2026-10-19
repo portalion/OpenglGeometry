@@ -13,6 +13,7 @@ private:
 	void SamplesApplier(Entity entity, EntityContext& context);
 	void GregorySamplesApplier(Entity entity, EntityContext& context);
 	void TrimApplier(Entity entity, EntityContext& context);
+	void HeightMapApplier(Entity entity, EntityContext& context);
 public:
 	UniformApplier();
 };
