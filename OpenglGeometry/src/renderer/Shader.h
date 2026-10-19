@@ -12,7 +12,8 @@ enum class ShaderType
 	Fragment = 2,
 	Geometry = 3,
 	TesselationControl = 4,
-	TesselationEvaluation = 5
+	TesselationEvaluation = 5,
+	Compute = 6
 };
 
 struct ShaderTypeInfo
@@ -42,6 +43,10 @@ public:
 
 	void Bind() const;
 	void UnBind() const;
+
+	// Runs a compute program; groups are counts of work groups, not invocations.
+	// Bind the shader and apply its context first.
+	void Dispatch(unsigned int groupsX, unsigned int groupsY = 1, unsigned int groupsZ = 1) const;
 private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	unsigned int CreateShader(const std::unordered_map<ShaderType, std::string>& shaderSourceCodes);

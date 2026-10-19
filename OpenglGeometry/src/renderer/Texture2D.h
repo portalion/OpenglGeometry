@@ -25,6 +25,8 @@ public:
 	void Upload(const std::vector<float>& values);
 	void Upload(const float& value);
 	void Bind(int unit) const;
+	// Binds as an image for imageLoad/imageStore, e.g. from a compute shader.
+	void BindImage(int unit) const;
 
 	int Width() const { return m_Width; }
 	int Height() const { return m_Height; }

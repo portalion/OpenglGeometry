@@ -101,3 +101,8 @@ void Texture2D::Bind(int unit) const
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 }
+
+void Texture2D::BindImage(int unit) const
+{
+	glBindImageTexture(unit, m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, ToGL(m_Format).internalFormat);
+}

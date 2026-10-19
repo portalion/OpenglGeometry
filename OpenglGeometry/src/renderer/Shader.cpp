@@ -4,6 +4,7 @@
 #include "RendererContext.h"
 #include "core/Log.h"
 #include <functional>
+#include <algorithm>
 #include "Texture2D.h"
 
 struct UniformInfo
@@ -20,6 +21,7 @@ const std::unordered_map<ShaderType, ShaderTypeInfo> Shader::shaderInfoMap =
     { ShaderType::Geometry, ShaderTypeInfo{.fileExtension = ".geom", .glShaderId = GL_GEOMETRY_SHADER }},
     { ShaderType::TesselationControl, ShaderTypeInfo{.fileExtension = ".tesc", .glShaderId = GL_TESS_CONTROL_SHADER }},
     { ShaderType::TesselationEvaluation, ShaderTypeInfo{.fileExtension = ".tese", .glShaderId = GL_TESS_EVALUATION_SHADER }},
+    { ShaderType::Compute, ShaderTypeInfo{.fileExtension = ".comp", .glShaderId = GL_COMPUTE_SHADER }},
 };
 
 Shader::Shader(const std::unordered_map<ShaderType, std::string>& sourceCodes, unsigned int patchSize)
@@ -69,8 +71,10 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
         GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         char* message = (char*)alloca(length * sizeof(char));
         GLCall(glGetShaderInfoLog(id, length, &length, message));
+        auto typeInfo = std::find_if(shaderInfoMap.begin(), shaderInfoMap.end(),
+            [type](const auto& entry) { return entry.second.glShaderId == type; });
         Logger::Error("Failed to compile {} shader: {}",
-            (type == GL_VERTEX_SHADER) ? "vertex" : "fragment", message);
+            typeInfo != shaderInfoMap.end() ? typeInfo->second.fileExtension : "unknown", message);
         GLCall(glDeleteShader(id));
         return 0;
     }
@@ -105,6 +109,13 @@ void Shader::Bind() const
 void Shader::UnBind() const
 {
     GLCall(glUseProgram(0));
+}
+
+void Shader::Dispatch(unsigned int groupsX, unsigned int groupsY, unsigned int groupsZ) const
+{
+    GLCall(glDispatchCompute(groupsX, groupsY, groupsZ));
+    // Make image writes visible to later image loads and texture sampling.
+    GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT));
 }
 
 int Shader::GetUniformLocation(const std::string& name)
@@ -147,6 +158,7 @@ void Shader::WarnOnce(const std::string& uniformName, const std::string& message
 void Shader::ApplyContext(UniformContext context)
 {
     int textureUnit = 0;
+    int imageUnit = 0;
     for (const auto& uniform : m_Uniforms)
     {
         switch (uniform.type)
@@ -196,6 +208,19 @@ void Shader::ApplyContext(UniformContext context)
             else
             {
                 WarnOnce(uniform.name, "The context carries no texture named");
+            }
+            break;
+        case GL_IMAGE_2D:
+            if (context.TextureUniforms.contains(uniform.name) && context.TextureUniforms[uniform.name])
+            {
+                auto& value = context.TextureUniforms[uniform.name];
+                value->BindImage(imageUnit);
+                SetUniformVec1i(uniform.name, imageUnit);
+                imageUnit++;
+            }
+            else
+            {
+                WarnOnce(uniform.name, "The context carries no image named");
             }
             break;
         default:
