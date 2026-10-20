@@ -1,0 +1,25 @@
+#version 460
+layout(local_size_x = 16, local_size_y = 16) in;
+
+layout(r32f) uniform image2D uHeightMap;
+uniform vec4 uTool;        // xyz = tool tip position [mm], w = radius [mm]
+uniform vec4 uMaterial;    // xy = material size [mm]
+uniform vec4 uRegion;      // xy = first texel of the tool's footprint
+uniform int uIsFlat;
+
+void main()
+{
+    ivec2 p = ivec2(uRegion.xy) + ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(uHeightMap);
+    if (any(lessThan(p, ivec2(0))) || any(greaterThanEqual(p, size))) return;
+
+    // texel centre in material space, origin at the material centre
+    vec2 world = (vec2(p) + 0.5) / vec2(size) * uMaterial.xy - 0.5 * uMaterial.xy;
+    float d = distance(world, uTool.xy);
+    float r = uTool.w;
+    if (d > r) return;
+
+    float toolZ = uIsFlat != 0 ? uTool.z : uTool.z + r - sqrt(r * r - d * d);
+    float h = imageLoad(uHeightMap, p).r;
+    imageStore(uHeightMap, p, vec4(min(h, toolZ)));
+}

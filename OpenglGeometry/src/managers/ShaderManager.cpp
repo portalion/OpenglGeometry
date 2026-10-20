@@ -50,6 +50,11 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::TesselationEvaluation, "gregoryVertical")
 		.AddShader(ShaderType::Fragment, "gregory")
 		.ChangePatchSize(20));
+	AssignShader(AvailableShaders::HeightMap, ShaderBuilder("resources/shaders/heightMap/")
+		.AddShader(ShaderType::Vertex, "default")
+		.AddShader(ShaderType::Fragment, "default"));
+	AssignShader(AvailableShaders::HeightMapMill, ShaderBuilder("resources/shaders/heightMap/")
+		.AddShader(ShaderType::Compute, "mill"));
 	Logger::Info("Loaded shaders");
 }
 
