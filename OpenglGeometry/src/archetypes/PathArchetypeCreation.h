@@ -1,6 +1,7 @@
 #pragma once
 #include "SimpleArchetypeCreation.h"
 #include <renderer/VertexArray.h>
+#include <numbers>
 
 namespace Archetypes
 {
@@ -29,5 +30,8 @@ namespace Archetypes
 		meshComponent.mesh = vertexArray;
 
 		entity.AddComponent<ColorComponent>().color = {0.f, 1.f, 0.f, 1.f};
+
+		entity.AddComponent<RotationComponent>().rotation =
+			Algebra::Quaternion::CreateFromAxisAngle({ 1.f, 0.f, 0.f, 0.f }, std::numbers::pi_v<float> / 2.f);
 	}
 }
