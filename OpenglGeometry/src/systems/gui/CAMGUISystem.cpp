@@ -58,19 +58,33 @@ void CAMGUISystem::DrawPathPanel()
 	DrawMaterialSection();
 	DrawSimulationSection();
 
-	ImGui::SeparatorText("Load path");
+	ImGui::SeparatorText("Load paths");
 	std::error_code ec;
-	const bool hasFile = std::filesystem::is_regular_file(m_PathFile, ec);
+	const bool hasFile = std::any_of(m_PathFiles.begin(), m_PathFiles.end(),
+		[&](const std::string& file) { return std::filesystem::is_regular_file(file, ec); });
 
 	if (ImGui::Button("Browse..."))
 	{
-		m_BrowsePath = m_PathFile;
+		m_BrowsePaths = m_PathFiles;
 		ImGui::OpenPopup(SelectPathDialogTitle);
 	}
 	ImGui::SameLine();
-	if (hasFile)
+	if (m_PathFiles.size() == 1)
 	{
-		ImGui::TextUnformatted(std::filesystem::path(m_PathFile).stem().string().c_str());
+		ImGui::TextUnformatted(std::filesystem::path(m_PathFiles.front()).stem().string().c_str());
+	}
+	else if (!m_PathFiles.empty())
+	{
+		ImGui::Text("%zu files", m_PathFiles.size());
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			for (const auto& file : m_PathFiles)
+			{
+				ImGui::TextUnformatted(std::filesystem::path(file).filename().string().c_str());
+			}
+			ImGui::EndTooltip();
+		}
 	}
 	else
 	{
@@ -80,13 +94,19 @@ void CAMGUISystem::DrawPathPanel()
 	ImGui::BeginDisabled(!hasFile);
 	if (ImGui::Button("Load", ImVec2(-FLT_MIN, 0.f)))
 	{
-		LoadPath(m_PathFile);
+		for (const auto& file : m_PathFiles)
+		{
+			if (std::filesystem::is_regular_file(file, ec))
+			{
+				LoadPath(file);
+			}
+		}
 	}
 	ImGui::EndDisabled();
 
-	if (GUI::DrawFileDialog(SelectPathDialogTitle, m_BrowsePath, { "Select" }))
+	if (GUI::DrawMultiFileDialog(SelectPathDialogTitle, m_BrowsePaths, { "Select" }))
 	{
-		m_PathFile = m_BrowsePath;
+		m_PathFiles = m_BrowsePaths;
 	}
 
 	DrawLoadedPaths();

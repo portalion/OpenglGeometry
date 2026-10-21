@@ -60,7 +60,8 @@ namespace
 	}
 }
 
-bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<std::string>& extensions, ImVec2 size)
+bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<std::string>& extensions, ImVec2 size,
+	std::vector<std::string>* selection)
 {
 	static std::unordered_map<std::string, fs::path> browseDirs;
 	const bool initialised = browseDirs.contains(id);
@@ -96,6 +97,7 @@ bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<s
 	ImGui::TextDisabled("%s", browseDir.generic_string().c_str());
 
 	bool confirmed = false;
+	std::vector<fs::path> files;
 
 	if (ImGui::BeginChild(id, size, ImGuiChildFlags_Border))
 	{
@@ -105,11 +107,14 @@ bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<s
 			{
 				browseDir = browseDir.parent_path();
 				path = RelativePath(browseDir / FileNameOf(path));
+				if (selection != nullptr)
+				{
+					selection->clear();
+				}
 			}
 		}
 
 		std::vector<fs::path> directories;
-		std::vector<fs::path> files;
 
 		for (fs::directory_iterator it(browseDir, fs::directory_options::skip_permission_denied, ec);
 			it != fs::directory_iterator(); it.increment(ec))
@@ -146,19 +151,60 @@ bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<s
 			{
 				browseDir = directory;
 				path = RelativePath(browseDir / FileNameOf(path));
+				if (selection != nullptr)
+				{
+					selection->clear();
+				}
 			}
 		}
 
 		const fs::path currentFile = fs::absolute(fs::path(path), ec);
+		const auto anchor = std::find_if(files.begin(), files.end(),
+			[&](const fs::path& file) { return fs::equivalent(file, currentFile, ec); });
 
-		for (const fs::path& file : files)
+		for (std::size_t i = 0; i < files.size(); i++)
 		{
-			const bool selected = fs::equivalent(file, currentFile, ec);
+			const fs::path& file = files[i];
+			const std::string relative = RelativePath(file);
+			const bool selected = selection != nullptr
+				? std::find(selection->begin(), selection->end(), relative) != selection->end()
+				: fs::equivalent(file, currentFile, ec);
 
 			if (ImGui::Selectable(file.filename().string().c_str(), selected,
 				ImGuiSelectableFlags_AllowDoubleClick))
 			{
-				path = RelativePath(file);
+				path = relative;
+
+				if (selection != nullptr)
+				{
+					const ImGuiIO& io = ImGui::GetIO();
+					if (io.KeyShift && anchor != files.end())
+					{
+						const std::size_t from = std::min<std::size_t>(anchor - files.begin(), i);
+						const std::size_t to = std::max<std::size_t>(anchor - files.begin(), i);
+						selection->clear();
+						for (std::size_t j = from; j <= to; j++)
+						{
+							selection->push_back(RelativePath(files[j]));
+						}
+					}
+					else if (io.KeyCtrl)
+					{
+						const auto it = std::find(selection->begin(), selection->end(), relative);
+						if (it != selection->end())
+						{
+							selection->erase(it);
+						}
+						else
+						{
+							selection->push_back(relative);
+						}
+					}
+					else
+					{
+						*selection = { relative };
+					}
+				}
 
 				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
@@ -174,6 +220,61 @@ bool GUI::DrawFileBrowser(const char* id, std::string& path, const std::vector<s
 	}
 	ImGui::EndChild();
 
+	if (selection != nullptr && !files.empty() && ImGui::Button("Select all"))
+	{
+		selection->clear();
+		for (const fs::path& file : files)
+		{
+			selection->push_back(RelativePath(file));
+		}
+	}
+
+	return confirmed;
+}
+
+bool GUI::DrawMultiFileDialog(const char* title, std::vector<std::string>& paths, const FileDialogOptions& options)
+{
+	if (!ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return false;
+	}
+
+	static std::string lastClicked;
+	if (ImGui::IsWindowAppearing())
+	{
+		lastClicked = paths.empty() ? std::string() : paths.back();
+	}
+
+	const bool browserConfirmed = GUI::DrawFileBrowser(title, lastClicked, options.extensions,
+		ImVec2(360.f, 170.f), &paths);
+
+	ImGui::TextDisabled("%zu selected (Ctrl+click to toggle, Shift+click for a range)", paths.size());
+	if (options.note != nullptr)
+	{
+		ImGui::TextDisabled("%s", options.note);
+	}
+
+	ImGui::Separator();
+
+	bool confirmed = browserConfirmed;
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+	ImGui::SameLine();
+	ImGui::BeginDisabled(paths.empty());
+	if (ImGui::Button(options.confirmLabel))
+	{
+		confirmed = true;
+	}
+	ImGui::EndDisabled();
+
+	if (confirmed)
+	{
+		ImGui::CloseCurrentPopup();
+	}
+
+	ImGui::EndPopup();
 	return confirmed;
 }
 

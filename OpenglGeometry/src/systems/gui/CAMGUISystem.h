@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "interfaces/ISystem.h"
 #include "core/Base.h"
 #include <scene/Scene.h>
@@ -14,8 +15,8 @@ private:
 	Ref<CAMSettings> m_Settings;
 	Viewport& m_Viewport;
 	Dockspace m_Dockspace{ "CAMDockspace" };
-	std::string m_PathFile;
-	std::string m_BrowsePath;
+	std::vector<std::string> m_PathFiles;
+	std::vector<std::string> m_BrowsePaths;
 
 	void DrawMenuBar();
 	void DrawPathPanel();
