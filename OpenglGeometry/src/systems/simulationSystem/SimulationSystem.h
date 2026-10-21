@@ -4,6 +4,7 @@
 #include "interfaces/ISystem.h"
 #include "scene/CAMSettings.h"
 #include "HeightMap.h"
+#include "MaterialBlock.h"
 
 class Scene;
 
@@ -14,6 +15,7 @@ private:
 	Ref<CAMSettings> m_Settings;
 
 	HeightMap m_HeightMap;
+	MaterialBlock m_Block;
 
 	void ResetMaterial();
 public:

@@ -43,6 +43,7 @@ add_executable(${PROJECT_NAME}
     "src/systems/SelectionMarkerSystem.cpp"
     "src/systems/simulationSystem/SimulationSystem.cpp"
     "src/systems/simulationSystem/HeightMap.cpp"
+    "src/systems/simulationSystem/MaterialBlock.cpp"
     "src/systems/SystemPipeline.cpp"
     "src/renderer/UniformApplier.cpp"
 
