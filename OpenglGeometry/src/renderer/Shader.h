@@ -56,6 +56,8 @@ private:
 
 	void SetUniformMat4f(const std::string& name, const Algebra::Matrix4& matrix);
 	void SetUniformVec1i(const std::string& name, const int& value);
+	void SetUniformVec1ui(const std::string& name, const unsigned int& value);
+	void SetUniformVec1f(const std::string& name, const float& value);
 	void SetUniformVec4f(const std::string& name, const Algebra::Vector4& vector);
 	void SetUniformVec2f(const std::string& name, const Algebra::Vector4& vector);
 };

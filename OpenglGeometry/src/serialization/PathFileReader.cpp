@@ -27,6 +27,7 @@ PathComponent PathFileReader::ReadFile(std::string file)
 	PathComponent result;
 	result.m_Tool.m_Diameter = std::stoi(file.substr(file.find_last_of('.') + 2, 2));
 	result.m_Tool.m_IsFlat = file[file.find_last_of('.') + 1] == 'f';
+	result.m_Tool.m_CuttingLength = 2.f * result.m_Tool.m_Diameter;
 
 	std::ifstream stream(file);
 	if (!stream.is_open())

@@ -21,6 +21,7 @@ private:
 	void DrawMenuBar();
 	void DrawPathPanel();
 	void DrawLoadedPaths();
+	void DrawPathControls(ID pathId);
 	void DrawMaterialSection();
 	void DrawSimulationSection();
 	void LoadPath(const std::string& file);

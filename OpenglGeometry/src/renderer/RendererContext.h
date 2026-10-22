@@ -34,5 +34,7 @@ struct UniformContext
 	std::unordered_map<std::string, Algebra::Vector4> Vector4Uniforms;
 	std::unordered_map<std::string, Algebra::Matrix4> Matrix4Uniforms;
 	std::unordered_map<std::string, int> IntUniforms;
+	std::unordered_map<std::string, unsigned int> UIntUniforms;
+	std::unordered_map<std::string, float> FloatUniforms;
 	std::unordered_map<std::string, Ref<Texture2D>> TextureUniforms;
 };

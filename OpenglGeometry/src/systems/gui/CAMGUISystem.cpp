@@ -135,6 +135,8 @@ void CAMGUISystem::DrawLoadedPaths()
 		const std::string header = name + "###PathHeader";
 		if (ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			DrawPathControls(id);
+
 			bool visible = !entity.HasComponent<IsInvisibleTag>();
 			if (ImGui::Checkbox("Visible", &visible))
 			{
@@ -160,9 +162,71 @@ void CAMGUISystem::DrawLoadedPaths()
 			{
 				tool.m_Diameter = std::max(tool.m_Diameter, 1.f);
 			}
+
+			if (ImGui::InputFloat("Cutting length", &tool.m_CuttingLength, 1.f, 5.f, "%.1f mm"))
+			{
+				tool.m_CuttingLength = std::max(tool.m_CuttingLength, 1.f);
+			}
 		}
 
 		ImGui::PopID();
+	}
+}
+
+void CAMGUISystem::DrawPathControls(ID pathId)
+{
+	auto& simulation = m_Settings->m_Simulation;
+	const bool active = simulation.m_ActivePath == pathId;
+	const bool otherRunning = !active && simulation.m_State == SimulationState::Running;
+	const bool inProgress = active
+		&& (simulation.m_State == SimulationState::Running || simulation.m_State == SimulationState::Paused);
+	const float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+
+	const char* label = "Start";
+	if (active && simulation.m_State == SimulationState::Running)
+	{
+		label = "Pause";
+	}
+	else if (active && simulation.m_State == SimulationState::Paused)
+	{
+		label = "Resume";
+	}
+
+	ImGui::BeginDisabled(otherRunning);
+	if (ImGui::Button(label, ImVec2(buttonWidth, 0.f)))
+	{
+		if (active && simulation.m_State == SimulationState::Running)
+		{
+			simulation.m_State = SimulationState::Paused;
+		}
+		else if (active && simulation.m_State == SimulationState::Paused)
+		{
+			simulation.m_State = SimulationState::Running;
+		}
+		else
+		{
+			simulation.m_ActivePath = pathId;
+			simulation.m_Progress = 0.f;
+			simulation.m_State = SimulationState::Running;
+		}
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Apply", ImVec2(buttonWidth, 0.f)))
+	{
+		// Mills the rest of the path in one step; a path not in progress starts from its beginning
+		if (!inProgress)
+		{
+			simulation.m_ActivePath = pathId;
+			simulation.m_Progress = 0.f;
+		}
+		simulation.m_State = SimulationState::Running;
+		simulation.m_FinishRequested = true;
+	}
+	ImGui::EndDisabled();
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("Mill this path instantly, without preview");
 	}
 }
 
@@ -202,40 +266,28 @@ void CAMGUISystem::DrawSimulationSection()
 	ImGui::SeparatorText("Simulation");
 
 	auto& simulation = m_Settings->m_Simulation;
-	const bool running = simulation.m_State == SimulationState::Running;
-	const bool finished = simulation.m_State == SimulationState::Finished;
-
-	const float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
-
-	ImGui::BeginDisabled(finished);
-	if (ImGui::Button(running ? "Pause" : "Start", ImVec2(buttonWidth, 0.f)))
+	std::string activeName = "none";
+	for (Entity entity : m_Scene->GetAllEntitiesWith<PathComponent>())
 	{
-		simulation.m_State = running ? SimulationState::Paused : SimulationState::Running;
+		if (simulation.m_ActivePath == entity.GetComponent<IdComponent>().id)
+		{
+			activeName = entity.GetComponent<NameComponent>().name;
+		}
 	}
-	ImGui::EndDisabled();
+	ImGui::Text("Active path: %s", activeName.c_str());
 
-	ImGui::SameLine();
 	ImGui::BeginDisabled(simulation.m_State == SimulationState::Stopped);
-	if (ImGui::Button("Reset", ImVec2(buttonWidth, 0.f)))
+	if (ImGui::Button("Reset", ImVec2(-FLT_MIN, 0.f)))
 	{
 		simulation.m_State = SimulationState::Stopped;
+		simulation.m_ActivePath.reset();
 		simulation.m_Progress = 0.f;
 		simulation.m_ResetRequested = true;
 	}
 	ImGui::EndDisabled();
 
-	ImGui::BeginDisabled(finished);
-	if (ImGui::Button("Finish instantly", ImVec2(-FLT_MIN, 0.f)))
-	{
-		simulation.m_FinishRequested = true;
-	}
-	ImGui::EndDisabled();
-	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-	{
-		ImGui::SetTooltip("Run the whole simulation without preview");
-	}
-
 	ImGui::SliderFloat("Speed [mm/s]", &simulation.m_Speed, 1.f, 1000.f, "%.0f", ImGuiSliderFlags_Logarithmic);
+	ImGui::Checkbox("Show tool", &simulation.m_ShowTool);
 
 	ImGui::ProgressBar(simulation.m_Progress, ImVec2(-FLT_MIN, 0.f));
 }

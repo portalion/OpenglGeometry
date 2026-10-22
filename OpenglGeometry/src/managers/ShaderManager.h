@@ -16,6 +16,7 @@ enum class AvailableShaders
 	GregoryPatchVertical = 8,
 	TorusSurface = 9,
 	HeightMap = 10,
+	HeightMapCarve = 11,
 };
 
 class ShaderBuilder;

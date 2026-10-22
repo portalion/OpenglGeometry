@@ -268,6 +268,7 @@ struct Tool
 {
 	float m_Diameter;
 	bool m_IsFlat;
+	float m_CuttingLength;	// height above the tip where the cutting part ends
 };
 
 struct PathComponent
