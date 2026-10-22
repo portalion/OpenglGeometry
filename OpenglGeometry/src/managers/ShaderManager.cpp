@@ -55,6 +55,8 @@ ShaderManager::ShaderManager()
 		.AddShader(ShaderType::Fragment, "default"));
 	AssignShader(AvailableShaders::HeightMapCarve, ShaderBuilder("resources/shaders/heightMap/")
 		.AddShader(ShaderType::Compute, "carve"));
+	AssignShader(AvailableShaders::HeightMapCarveBall, ShaderBuilder("resources/shaders/heightMap/")
+		.AddShader(ShaderType::Compute, "carveBall"));
 	Logger::Info("Loaded shaders");
 }
 

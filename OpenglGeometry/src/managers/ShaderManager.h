@@ -17,6 +17,7 @@ enum class AvailableShaders
 	TorusSurface = 9,
 	HeightMap = 10,
 	HeightMapCarve = 11,
+	HeightMapCarveBall = 12,
 };
 
 class ShaderBuilder;

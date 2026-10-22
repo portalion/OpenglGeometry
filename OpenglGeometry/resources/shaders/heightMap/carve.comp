@@ -1,0 +1,64 @@
+#version 460 core
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(binding = 0, r32f) uniform image2D heightmap;
+// kolejno punkty lamanej, ktora chcemy wydrazyc
+layout(std430, binding = 0) buffer VectorBuffer {
+    vec4 vectors[];
+};
+
+uniform uint vectorCount; // dlugosc vector[]
+uniform uint cutterRadius;
+uniform int nx;
+uniform int nz;
+uniform float sizeX;
+uniform float sizeZ;
+
+const float EPS = 1e-12;
+const float INF = 1.0 / 0.0;
+
+// jak odleglosc punkty od prostej + sprawdzenie czy nie jest blizej do koncow
+float distanceToSegment(vec2 segmentStart, vec2 segmentEnd, vec2 point)
+{
+    vec2 segment = segmentEnd - segmentStart;
+    float denom = dot(segment, segment);
+    if (denom < EPS) {
+        return length(point - segmentStart);
+    }
+    float t = clamp(dot(point - segmentStart, segment) / denom, 0.0, 1.0);
+    float projectedDistance = length(point - (segmentStart + t * segment));
+    float startDistance = length(point - segmentStart);
+    float endDistance = length(point - segmentEnd);
+    return min(projectedDistance, min(startDistance, endDistance));
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(heightmap);
+    if (pixel.x >= size.x || pixel.y >= size.y) { // poniewaz wywolywana grupa chyba moze byc czasami poza tekstura
+        return;
+    }
+
+    // X i Z heightmapy w koordynatach globalnych
+    vec2 pixelPosition = (gl_GlobalInvocationID.xy / vec2(nx, nz)) - 0.5;
+    pixelPosition.x = pixelPosition.x * sizeX;
+    pixelPosition.y = pixelPosition.y * sizeZ;
+
+    // dla kazdej pary dwoch kolejnych punktow policz odleglosc (X,Z) od odcinka, jesli jest mniejsza niz promien freza, to nowa wysokosc w (X,Z) to Y freza
+    // poniewaz sprawdzamy kilka odcinkow, to zmienna newHeight trzyma dotychczasowa "najlesza" wartosc
+    float newHeight = INF;
+    for (int i = 0; i < vectorCount - 1; ++i) {
+        float d = distanceToSegment(vectors[i].xz, vectors[i + 1].xz, pixelPosition);
+        if (d < cutterRadius) {
+            if (vectors[i].y < newHeight) {
+                newHeight = vectors[i].y;
+            }
+        }
+    }
+
+    if (!isinf(newHeight)) {
+        float height = imageLoad(heightmap, pixel).r;
+        if (height > newHeight) {
+            imageStore(heightmap, pixel, vec4(newHeight, 0.0, 0.0, 1.0));
+        }
+    }
+}
