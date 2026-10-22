@@ -53,6 +53,8 @@ ShaderManager::ShaderManager()
 	AssignShader(AvailableShaders::HeightMap, ShaderBuilder("resources/shaders/heightMap/")
 		.AddShader(ShaderType::Vertex, "default")
 		.AddShader(ShaderType::Fragment, "default"));
+	AssignShader(AvailableShaders::HeightMapCarve, ShaderBuilder("resources/shaders/heightMap/")
+		.AddShader(ShaderType::Compute, "carve"));
 	Logger::Info("Loaded shaders");
 }
 

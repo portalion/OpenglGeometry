@@ -56,6 +56,16 @@ void Shader::SetUniformVec1i(const std::string& name, const int& value)
     GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
+void Shader::SetUniformVec1ui(const std::string& name, const unsigned int& value)
+{
+    GLCall(glUniform1ui(GetUniformLocation(name), value));
+}
+
+void Shader::SetUniformVec1f(const std::string& name, const float& value)
+{
+    GLCall(glUniform1f(GetUniformLocation(name), value));
+}
+
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
@@ -195,6 +205,26 @@ void Shader::ApplyContext(UniformContext context)
             else
             {
                 WarnOnce(uniform.name, "The context carries no int named");
+            }
+            break;
+        case GL_UNSIGNED_INT:
+            if (context.UIntUniforms.contains(uniform.name))
+            {
+                SetUniformVec1ui(uniform.name, context.UIntUniforms[uniform.name]);
+            }
+            else
+            {
+                WarnOnce(uniform.name, "The context carries no uint named");
+            }
+            break;
+        case GL_FLOAT:
+            if (context.FloatUniforms.contains(uniform.name))
+            {
+                SetUniformVec1f(uniform.name, context.FloatUniforms[uniform.name]);
+            }
+            else
+            {
+                WarnOnce(uniform.name, "The context carries no float named");
             }
             break;
         case GL_SAMPLER_2D:

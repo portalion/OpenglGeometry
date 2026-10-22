@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     "src/renderer/Renderer.cpp"
     "src/renderer/Shader.cpp"
     "src/renderer/ShaderBuilder.cpp"
+    "src/renderer/StorageBuffer.cpp"
     "src/renderer/Texture2D.cpp"
     "src/renderer/VertexArray.cpp"
     "src/renderer/VertexBuffer.cpp"
@@ -44,6 +45,7 @@ add_executable(${PROJECT_NAME}
     "src/systems/simulationSystem/SimulationSystem.cpp"
     "src/systems/simulationSystem/HeightMap.cpp"
     "src/systems/simulationSystem/MaterialBlock.cpp"
+    "src/systems/simulationSystem/ToolModel.cpp"
     "src/systems/SystemPipeline.cpp"
     "src/renderer/UniformApplier.cpp"
 

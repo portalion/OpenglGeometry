@@ -1,5 +1,7 @@
 #pragma once
 #include <array>
+#include <optional>
+#include "managers/IdManager.h"
 
 struct MaterialSettings
 {
@@ -20,9 +22,11 @@ struct SimulationSettings
 {
 	float m_Speed = 50.f;
 	SimulationState m_State = SimulationState::Stopped;
+	std::optional<ID> m_ActivePath; // path being milled, chosen with its Start button
 	float m_Progress = 0.f;
 	bool m_FinishRequested = false;
 	bool m_ResetRequested = false;
+	bool m_ShowTool = true;
 };
 
 struct CAMSettings
