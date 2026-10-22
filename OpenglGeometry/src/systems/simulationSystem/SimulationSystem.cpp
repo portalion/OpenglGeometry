@@ -207,7 +207,7 @@ void SimulationSystem::ProcessHeightMap(const std::vector<Algebra::Vector4>& swe
 	UniformContext context;
 	context.TextureUniforms["heightmap"] = m_HeightMap.Texture();
 	context.UIntUniforms["vectorCount"] = static_cast<unsigned int>(vectors.size());
-	context.UIntUniforms["cutterRadius"] = static_cast<unsigned int>(tool.m_Diameter / 2.f);
+	context.FloatUniforms["cutterRadius"] = tool.m_Diameter / 2.f;
 	context.IntUniforms["nx"] = material.m_Resolution[0];
 	context.IntUniforms["nz"] = material.m_Resolution[1];
 	context.FloatUniforms["sizeX"] = material.m_Size[0];

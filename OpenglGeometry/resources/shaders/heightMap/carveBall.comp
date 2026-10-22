@@ -7,7 +7,7 @@ layout(std430, binding = 0) buffer VectorBuffer {
 };
 
 uniform uint vectorCount; // dlugosc vector[]
-uniform uint cutterRadius;
+uniform float cutterRadius; // w mm, moze byc ulamkowy (np. frez k01 -> 0.5)
 uniform int nx;
 uniform int nz;
 uniform float sizeX;
@@ -24,11 +24,13 @@ float distanceToSegment(vec2 segmentStart, vec2 segmentEnd, vec2 point, out floa
     if (denom < EPS) {
         return length(point - segmentStart);
     }
-    t = clamp(dot(point - segmentStart, segment) / denom, 0.0, 1.0);
-    float projectedDistance = length(point - (segmentStart + t * segment));
-    float startDistance = length(point - segmentStart);
-    float endDistance = length(point - segmentEnd);
-    return min(projectedDistance, min(startDistance, endDistance));
+   t = clamp(
+        dot(point - segmentStart, segment) / denom,
+        0.0,
+        1.0
+    );
+
+    return length(point - (segmentStart + t * segment));
 }
 
 void main() {
@@ -46,13 +48,13 @@ void main() {
     // dla kazdej pary dwoch kolejnych punktow policz odleglosc (X,Z) od odcinka, jesli jest mniejsza niz promien freza, to nowa wysokosc w (X,Z) to Y freza
     // poniewaz sprawdzamy kilka odcinkow, to zmienna newHeight trzyma dotychczasowa "najlesza" wartosc
     float newHeight = INF;
+    float r = cutterRadius;
     for (int i = 0; i < vectorCount - 1; ++i) {
-        float t;
+        float t = 0.0;
         float d = distanceToSegment(vectors[i].xz, vectors[i + 1].xz, pixelPosition, t);
-        vec3 p = vec3(vectors[i] + t * (vectors[i + 1] - vectors[i]));
-        if (d < cutterRadius) {
+        if (d <  r) {
             float tipY = mix(vectors[i].y, vectors[i + 1].y, t);    
-            float newY = tipY + cutterRadius - sqrt(max(cutterRadius * cutterRadius - d * d, 0.0));  
+            float newY = tipY +  r - sqrt(max( r *  r - d * d, 0.0));  
             newHeight = min(newHeight, newY);
         }
     }

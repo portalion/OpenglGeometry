@@ -250,7 +250,7 @@ void CAMGUISystem::DrawMaterialSection()
 	{
 		for (int& resolution : material.m_Resolution)
 		{
-			resolution = std::clamp(resolution, 2, 4000);
+			resolution = std::clamp(resolution, 2, 10000);
 		}
 	}
 	ImGui::TextDisabled("Cell: %.3f x %.3f mm",
